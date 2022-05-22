@@ -1,2 +1,3 @@
-gcc ListaComConsultaERemoção.c -o ListaComConsultaERemoção
-./ListaComConsultaERemoção
+cd Trabalho_Final
+gcc main.c -o main
+./main

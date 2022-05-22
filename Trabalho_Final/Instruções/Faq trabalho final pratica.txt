@@ -1,0 +1,50 @@
+Perguntas dos colegas e algumas respostas.
+
+1. "incluir as ofertas online", devo buscar as ofertas Online via codigo? 
+
+Resposta
+é criar um menu contendo uma opção para inserção de oferta de compra ou venda.
+pode até separar em duas opções no menu (uma de compra e outra de venda)
+ao entrar nessa opção, o usuário deve dizer o papel que deseja operar
+(PETR4, VALE3, LAME4, e outros que ele desejar)
+depois a quantidade deseja e o valor inteiro
+Ao finalizar a oferta essa deve ser um elemento de sua estrutura de dados dinâmica.
+Vimos que uma boa opção é construir uma struct com esses elementos contendo
+um ponteiro para um elemento similar.
+blz?
+
+2. "carregar as ofertas [...] via arquivo." isso significa que todas as operacoes
+realizadas serao inseridas via arquivo sem interacao com o "usuario"?
+
+Resposta
+Sao 2 opções.  Uma é para carregar as ofertas que estão no arquivo (nao precisa 
+salvar as ofertas depois de volta no arquivo, sendo somente leitura).
+A segunda opção foi a explicada no item 1 - oferta online.
+blz?
+
+3. Nos casos de operacao de compra e venda incompleta(quando o valor 
+de compra/venda sao diferentes), essa operacao volta para o "mercado" 
+buscando uma nova oferta certo? entao todas as ofertas de compra
+teriam procurar por todas a ofertas de venda disponiveis ate ela acabar, certo?
+
+Resposta
+as ofertas lançadas vao ser incluídas na sua estrutura dinâmica.
+Alguns colegas sugeriram a criação de duas listas, uma pra ofertas de compra e outra 
+para ofertas de venda de cada um dos papeis (PETR4, Vale5, LAME4...)
+
+Se chegar uma oferta de compra, por exemplo, que tenha o mesmo valor ou maior de uma
+oferta de venda, esta será realizada. Se tiver uma oferta de venda, por exemplo,
+tiver uma valor igual ou menor que de uma oferta de venda, está será realizada.
+
+Atenção para quando o valor de uma oferta de compra for maior que o valor 
+de uma oferta de venda. Ai tem que tirar a média entre os dois valores.
+
+Por outro lado, se uma oferta de compra for menor que uma oferta de venda,
+elas vao continuar na estrutura dinamica e a operação NÃO será realizada.
+
+4. Devo registrar todas as operacoes em um arquivo tambem certo?
+
+Resposta
+Não 
+Não deve salvar no arquivo.
+Apenas ler o arquivo e carregar as ofertas deste arquivo na sua estrutura dinamica.
