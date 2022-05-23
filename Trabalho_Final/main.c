@@ -9,34 +9,41 @@ int main( ){
     
     int resposta,
         subResposta;
+    papel *primeiro = NULL;
     
-    if( criaArquivos( ) ){
-        if( recuperaDados( ) ){
-            do{ resposta = MENU_PRINCIPAL( ); 
-                switch( resposta ){
-                    case COMPRAR: 
-                    break;
-        
-                    case VENDER:
-                    break;
-        
-                    case CARTEIRA:
-                    break;
-        
-                    case PAPEIS: 
-                        switch( MENU_PAPEL( ) ){
-                            case ADICIONAR: 
-                                if( adiciona_papel( ) ){
-                                    puts("\t\tPAPEIS ADICIONADOS COM SUCESSO!\n\n");
-                                }else{
-                                    puts("   OPS! OS PAPEIS NÃO FORAM ADICIONADOS.\n\n");    
-                                }break;
-                            case RETIRAR: retira_papel( ); break;
-                            case LISTAR: listar_papeis( ); break;}
-                }
-            }while( resposta != SAIR );
-        }else{ puts( "\tNÃO FOI POSSÍVEL RECUPERAR OS DADOS :(\n\n" ); }
-    }else{ puts( "   NÃO FOI POSSÍVEL CRIAR ARQUIVO DE PAPEIS :(\n\n" ); }
+    if( inicializar( &primeiro ) ){
+        do{ resposta = MENU_PRINCIPAL( ); 
+            switch( resposta ){
+                case COMPRAR: 
+                break;
+    
+                case VENDER:
+                break;
+    
+                case CARTEIRA:
+                break;
+    
+                case PAPEIS: 
+                    switch( MENU_PAPEL( ) ){
+                        case ADICIONAR: 
+                            if( adiciona_papel( &primeiro ) ){
+                                puts("\t\tPAPEIS ADICIONADOS COM SUCESSO!\n\n");
+                            }else{
+                                puts("   OPS! OS PAPEIS NÃO FORAM ADICIONADOS.\n\n");    
+                            }break;
+                        case RETIRAR:
+                            if( retira_papel( &primeiro ) ){
+                                puts("\t\tPAPEIS RETIRADOS COM SUCESSO!\n\n");
+                            }else{
+                                puts("   OPS! OS PAPEIS NÃO FORAM RETIRADOS.\n\n");    
+                            }break;
+                        case LISTAR: 
+                            if( !listar_papeis( &primeiro ) ){
+                                puts("\t\tPROBLEMAS COM A LISTA DE PAPEIS!\n\n");
+                            }break;}
+            }
+        }while( resposta != SAIR );
+    }else{ puts( "\tNÃO FOI POSSÍVEL INICIALIZAR :(\n\n" ); }
     puts( "\t\t\tPROGRAMA ENCERRADO\n\n" );
     return 0;
 }
