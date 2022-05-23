@@ -1,37 +1,42 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <stdbool.h>
-
-unsigned MENU_PRINCIPAL( void );
+#include "agregados.h"
 
 int main( ){
-    enum OPCOES { SAIR = 0, COMPRAR = 1, VENDER = 2, CARTEIRA = 3, PAPEIS = 4 };
-    int resposta;
+    enum OPCOES{ SAIR = 0, COMPRAR = 1, VENDER = 2, CARTEIRA = 3, PAPEIS = 4 };
+    enum MANUTENCAO_PAPEIS{  ADICIONAR = 1, RETIRAR = 2, LISTAR = 3 };
     
-    do{ resposta = MENU_PRINCIPAL( ); 
+    int resposta,
+        subResposta;
+    
+    if( criaArquivos( ) ){
+        if( recuperaDados( ) ){
+            do{ resposta = MENU_PRINCIPAL( ); 
+                switch( resposta ){
+                    case COMPRAR: 
+                    break;
         
-            
-    
-    }while( resposta != SAIR );
-    
-    
+                    case VENDER:
+                    break;
+        
+                    case CARTEIRA:
+                    break;
+        
+                    case PAPEIS: 
+                        switch( MENU_PAPEL( ) ){
+                            case ADICIONAR: 
+                                if( adiciona_papel( ) ){
+                                    puts("\t\tPAPEIS ADICIONADOS COM SUCESSO!\n\n");
+                                }else{
+                                    puts("   OPS! OS PAPEIS NÃO FORAM ADICIONADOS.\n\n");    
+                                }break;
+                            case RETIRAR: retira_papel( ); break;
+                            case LISTAR: listar_papeis( ); break;}
+                }
+            }while( resposta != SAIR );
+        }else{ puts( "\tNÃO FOI POSSÍVEL RECUPERAR OS DADOS :(\n\n" ); }
+    }else{ puts( "   NÃO FOI POSSÍVEL CRIAR ARQUIVO DE PAPEIS :(\n\n" ); }
+    puts( "\t\t\tPROGRAMA ENCERRADO\n\n" );
     return 0;
 }
- unsigned MENU_PRINCIPAL(  ){
-    int resposta;
-    printf( "=========================================\n"
-            "\t\t\tBOLSO DE VALORES\n\n" 
-            "[1] COMPRAR\n"
-            "[2] VENDER\n"
-            "[3] CARTEIRA\n"
-            "[4] PAPEIS\n"
-            "[0] SAIR\n\n"
-            "[ ] <- " 
-        );
-    scanf( "%d", &resposta ); getchar( ); 
-    while( resposta < 0 || resposta > 4 ){
-        puts( "\t\t\tOPÇÃO INVÁLIDA!\n\n"
-              "[ ] <-  " ); 
-        scanf( "%d", &resposta ); getchar( );}
-    return resposta;
- }
