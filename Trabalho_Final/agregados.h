@@ -31,54 +31,7 @@ bool listar_papeis( papel** );
 void limpaTexto( char* );
 bool inicializar( papel** );
 
-unsigned MENU_PRINCIPAL(  ){
-    int resposta;
-    printf( "=========================================\n"
-            "\t\t\tBOLSO DE VALORES\n\n" 
-            "[1] COMPRAR\n"
-            "[2] VENDER\n"
-            "[3] CARTEIRA\n"
-            "[4] PAPEIS\n"
-            "[0] SAIR\n\n"
-            "[ ] <- " 
-        );
-    scanf( "%d", &resposta ); getchar( ); 
-    while( resposta < 0 || resposta > 4 ){
-        printf( "\t\t\tOPÇÃO INVÁLIDA!\n\n"
-              "[ ] <- " ); 
-        scanf( "%d", &resposta ); getchar( );}
-     printf("[%d] ", resposta );
-     switch( resposta ){
-         case 0: puts( "SAIR\n" ); break;
-         case 1: puts( "COMPRAR\n" ); break;
-         case 2: puts( "VENDER\n" ); break;
-         case 3: puts( "CARTEIRA\n" ); break;
-         case 4: puts( "PAPEIS\n" ); break;}
-    return resposta;
-}
-unsigned MENU_PAPEL( ){
-    int resposta;
-    printf( "=========================================\n"
-                "\t\t\t\t PAPEIS\n\n" 
-                "[1] ADICIONAR\n"
-                "[2] RETIRAR\n"
-                "[3] LISTAR\n"
-                "[0] SAIR\n\n"
-                "[ ] <- " 
-            );
-        scanf( "%d", &resposta ); getchar( ); 
-        while( resposta < 0 || resposta > 3 ){
-            printf( "\t\t\tOPÇÃO INVÁLIDA!\n\n"
-                  "[ ] <- " ); 
-            scanf( "%d", &resposta ); getchar( );}
-         printf("[%d] ", resposta );
-         switch( resposta ){
-             case 0: puts( "SAIR\n" ); break;
-             case 1: puts( "ADICIONAR\n" ); break;
-             case 2: puts( "RETIRAR\n" ); break;
-             case 3: puts( "LISTAR\n" ); break;}    
-    return resposta;
-}
+
 bool criaArquivos( ){
     FILE *arquivo;
 
@@ -109,6 +62,7 @@ bool salvaPapeis( papel *head ){
             free( atual );
             atual = backup;}
         fprintf( arquivoConfig, "%d", dados.quantidade_de_papel ); }
+    
     fclose( arquivoPapeis );
     fclose( arquivoConfig );
     return true;
@@ -118,27 +72,27 @@ bool recuperaPapeis( papel **head ){
           *proximo;
     FILE *arquivoPapeis = fopen( papeis, "r" ),
          *arquivoConfig = fopen( dadosConfig, "r" );
-    int fila; ///SALVAR
     
     if( arquivoPapeis && arquivoConfig ){
         fscanf( arquivoConfig, "%d", &dados.quantidade_de_papel );
-        fila = dados.quantidade_de_papel;
-        atual = (papel*)malloc( sizeof(papel) );
-        fscanf( arquivoPapeis, "%s%s", atual->codigo, atual->nomeDePregao);
-        atual->next = NULL;
-        *head = atual;
-        fila--;
+        int fila = dados.quantidade_de_papel;
         
-        while( fila > 0 ){
-            proximo = (papel*)malloc( sizeof(papel) );
-            fscanf( arquivoPapeis, "%s%s",proximo->codigo, proximo->nomeDePregao);
-            atual->next = proximo;
-            proximo->next = NULL;
+        if( fila > 0 ){
+            atual = (papel*)malloc( sizeof(papel) );
+            fscanf( arquivoPapeis, "%s%s", atual->codigo, atual->nomeDePregao);
+            atual->next = NULL;
+            *head = atual;
             fila--;
-        }
-        fclose( arquivoConfig );
-        fclose( arquivoPapeis );
-        return true;
+            
+            do{ proximo = (papel*)malloc( sizeof(papel) );
+                fscanf( arquivoPapeis, "%s%s",proximo->codigo, proximo->nomeDePregao);
+                atual->next = proximo;
+                proximo->next = NULL;
+                fila--; 
+            }while( fila > 0 );
+            fclose( arquivoConfig );
+            fclose( arquivoPapeis );
+            return true;}
     }return false;
 }
 bool salvaDados( ){
@@ -181,7 +135,6 @@ bool adiciona_papel( papel **head ){
             limpaTexto( novo->nomeDePregao );
         
             if( novo->nomeDePregao[0] == '0'){ 
-                dados.quantidade_de_papel--;
                 free(novo);
                 break;
             }else{          
@@ -209,12 +162,23 @@ bool listar_papeis( papel **head ){
     printf( "=========================================\n" 
             "\t\t\t\t PAPEIS\n\n%15s       %10s\t\t\n", 
             "CÓDIGO", "NOME");
-
-    while( primeiro != NULL ){
-        printf( "%14s            %-10s\n", primeiro->codigo, primeiro->nomeDePregao );
-        primeiro = primeiro->next;}
     
-    return true;
+    if( primeiro != NULL ){
+        do{ printf( "%14s             %-10s\n", primeiro->codigo, primeiro->nomeDePregao );
+            primeiro = primeiro->next;
+        }while( primeiro != NULL );
+        return true;
+    }else{ 
+        recuperaPapeis( head );
+        if( *head ){
+            primeiro = *head; 
+            do{ printf( "%14s             %-10s\n", primeiro->codigo, primeiro->nomeDePregao );
+                primeiro = primeiro->next;
+            }while( primeiro != NULL );
+            return true;
+        }else{
+            return false; }
+    }
 }
 void limpaTexto( char *texto ){
     for( int caracter = 0; texto[caracter] != '\0'; caracter++ ){
@@ -225,7 +189,8 @@ bool inicializar( papel **head ){
     if( !criaArquivos( ) ){
         puts( "\tNÃO FOI POSSÍVEL CRIAR OS ARQUIVOS :(\n\n" );}
     if( !recuperaPapeis( head ) ){
-        puts( "\tLISTA DE AÇÕES VAZIA :(\n\n" );}
+        //puts( "\tLISTA DE AÇÕES VAZIA :(\n\n" );
+        }
     
     return true;
 }
