@@ -4,6 +4,8 @@
 #include <string.h>
 
 char *papeis = "papeis.txt";
+char *dadosConfig = "dadosConfig.txt"; 
+
 #define TAM_NOME_PREGAO 15   
 #define TAM_CODIGO 9
 
@@ -57,7 +59,7 @@ unsigned MENU_PRINCIPAL(  ){
 unsigned MENU_PAPEL( ){
     int resposta;
     printf( "=========================================\n"
-                "\t\t\t\t  PAPEIS\n\n" 
+                "\t\t\t\t PAPEIS\n\n" 
                 "[1] ADICIONAR\n"
                 "[2] RETIRAR\n"
                 "[3] LISTAR\n"
@@ -82,47 +84,60 @@ bool criaArquivos( ){
 
     if( ( arquivo = fopen( papeis, "r" ) ) == NULL ){
         if( ( arquivo = fopen( papeis, "w" ) ) == NULL ){
-            return false;
-        }else{ 
-            //fprintf( arquivo, "\t\tPAPEIS\n\n%-*s%-*s\t\t\n", 
-                     //TAM_CODIGO*2, "CÓDIGO", TAM_NOME_PREGAO, "NOME");
-            }
+            return false;}
+    }fclose(arquivo);
+    if( ( arquivo = fopen( dadosConfig, "r" ) ) == NULL ){
+        if( ( arquivo = fopen( dadosConfig, "w" ) ) == NULL ){
+            return false;}
     }fclose(arquivo);
     return true;
 }
 bool salvaPapeis( papel *head ){
-    papel *atual = head;
-    FILE *arquivoPapeis = fopen( papeis, "a" );
+    papel *atual = head,
+          *backup = NULL;
+    FILE *arquivoPapeis = fopen( papeis, "a" ),
+         *arquivoConfig = fopen( dadosConfig, "w" );
 
     if( !arquivoPapeis ){
         fclose( arquivoPapeis );
         return false;
     }else{
         while( atual != NULL ){
+            backup = atual->next; 
             fprintf( arquivoPapeis, "%-*s%-*s\n", TAM_CODIGO*2-1, atual->codigo, 
                      TAM_NOME_PREGAO, atual->nomeDePregao );
-            atual = atual->next;}
-    }fclose( arquivoPapeis );
+            free( atual );
+            atual = backup;}
+        fprintf( arquivoConfig, "%d", dados.quantidade_de_papel ); }
+    fclose( arquivoPapeis );
+    fclose( arquivoConfig );
     return true;
 }
 bool recuperaPapeis( papel **head ){
     papel *atual = *head,
           *proximo;
-    FILE *arquivoPapeis = fopen( papeis, "r" );
-    int fila = dados.quantidade_de_papel; ///SALVAR
+    FILE *arquivoPapeis = fopen( papeis, "r" ),
+         *arquivoConfig = fopen( dadosConfig, "r" );
+    int fila; ///SALVAR
     
-    if( arquivoPapeis ){
+    if( arquivoPapeis && arquivoConfig ){
+        fscanf( arquivoConfig, "%d", &dados.quantidade_de_papel );
+        fila = dados.quantidade_de_papel;
         atual = (papel*)malloc( sizeof(papel) );
         fscanf( arquivoPapeis, "%s%s", atual->codigo, atual->nomeDePregao);
         atual->next = NULL;
-        ///printf( "%s", atual->codigo );
-        while( fila > 1 ){
+        *head = atual;
+        fila--;
+        
+        while( fila > 0 ){
             proximo = (papel*)malloc( sizeof(papel) );
             fscanf( arquivoPapeis, "%s%s",proximo->codigo, proximo->nomeDePregao);
             atual->next = proximo;
             proximo->next = NULL;
             fila--;
-        }fclose( arquivoPapeis );
+        }
+        fclose( arquivoConfig );
+        fclose( arquivoPapeis );
         return true;
     }return false;
 }
@@ -135,7 +150,7 @@ bool adiciona_papel( papel **head ){
             "\t\t\t ADICIONANDO PAPEIS\n\n" 
             "DIGITE [0 PARA SAIR]:\n\n");
     
-    papel *primeiro = *head,
+    papel *primeiro = NULL,
           *atual = NULL,
           *novo = NULL;
     
@@ -146,7 +161,6 @@ bool adiciona_papel( papel **head ){
             limpaTexto( primeiro->nomeDePregao );
         
             if( primeiro->nomeDePregao[0] == '0' ){ 
-                dados.quantidade_de_papel--;
                 free(primeiro);
                 break;
             }else{
@@ -193,12 +207,11 @@ bool listar_papeis( papel **head ){
     papel *primeiro = *head;
     
     printf( "=========================================\n" 
-            "\t\tPAPEIS\n\n%-*s%-*s\t\t\n", 
-            TAM_CODIGO*2, "CÓDIGO", TAM_NOME_PREGAO, "NOME");
+            "\t\t\t\t PAPEIS\n\n%15s       %10s\t\t\n", 
+            "CÓDIGO", "NOME");
 
     while( primeiro != NULL ){
-        printf( "%-*s%-*s\n", TAM_CODIGO*2-1, primeiro->codigo, 
-                         TAM_NOME_PREGAO, primeiro->nomeDePregao );
+        printf( "%14s            %-10s\n", primeiro->codigo, primeiro->nomeDePregao );
         primeiro = primeiro->next;}
     
     return true;
