@@ -1,7 +1,13 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <stdbool.h>
-#include "agregados.h"
+#include "papelConfig.h"
+#include "vendaConfig.h"
+#include "compraConfig.h"
+
+unsigned MENU_PRINCIPAL( void );
+unsigned MENU_PAPEL( void );
+bool inicializar( papel** );
 
 int main( ){
     enum OPCOES{ SAIR = 0, COMPRAR = 1, VENDER = 2, CARTEIRA = 3, PAPEIS = 4 };
@@ -94,4 +100,13 @@ unsigned MENU_PAPEL( ){
              case 2: puts( "RETIRAR\n" ); break;
              case 3: puts( "LISTAR\n" ); break;}    
     return resposta;
+}
+bool inicializar( papel **head ){
+    if( !criaArquivos( ) ){
+        puts( "\tNÃO FOI POSSÍVEL CRIAR OS ARQUIVOS :(\n\n" );}
+    if( !recuperaPapeis( head ) ){
+        //puts( "\tLISTA DE AÇÕES VAZIA :(\n\n" );
+        }
+    
+    return true;
 }
