@@ -2,6 +2,7 @@
 #define papelConfig_h
 #include "gerais.h"
 #include "dadosConfig.h"
+#include <string.h>
 
 #define TAM_NOME_PREGAO 15   
 #define TAM_CODIGO 9
@@ -18,7 +19,7 @@ bool recuperaPapeis( papel** );
 bool listar_papeis( papel** );
 bool retira_papel( papel** );
 
-bool adiciona_papel( papel **head ){
+bool adiciona_papel( ){
     printf( "=========================================\n" 
             "\t\t\t ADICIONANDO PAPEIS\n\n" 
             "DIGITE [0 PARA SAIR]:\n\n");
@@ -26,6 +27,11 @@ bool adiciona_papel( papel **head ){
     papel *primeiro = NULL,
           *atual = NULL,
           *novo = NULL;
+    
+    FILE *quantidadePapel = fopen( dadosConfig, "r" );
+    
+    fscanf( quantidadePapel, "%d", &dados.quantidade_de_papel );
+    fclose( quantidadePapel );
     
     do{ if( primeiro == NULL ){
             primeiro = (papel*)malloc( sizeof(papel) );
@@ -69,25 +75,40 @@ bool adiciona_papel( papel **head ){
     }while( true );
     putchar('\n');
     
+    int quantidadeBackup = dados.quantidade_de_papel;
+    
     if( salvaPapeis( primeiro ) ){
+        quantidadePapel = fopen( dadosConfig, "w" );
+        fprintf( quantidadePapel, "%d", quantidadeBackup ); 
+        fclose( quantidadePapel );
         return true;
     }else { return false; }
 }
 bool salvaPapeis( papel *head ){
     papel *atual = head,
-          *backup = NULL;
-    FILE *arquivoPapeis = fopen( papeis, "a" ),
+          *inicioBackup = NULL,
+          *backup = NULL,
+          *inicio = NULL;
+
+    recuperaPapeis( &inicio );
+    inicioBackup = inicio;
+
+    while( inicioBackup->next != NULL ){
+        inicioBackup = inicioBackup->next;}
+    
+    FILE *arquivoPapeis = fopen( papeis, "w" ),
          *arquivoConfig = fopen( dadosConfig, "w" );
 
     if( !arquivoPapeis ){
         return false;
     }else{
-        while( atual != NULL ){
-            backup = atual->next; 
-            fprintf( arquivoPapeis, "%-*s%-*s\n", TAM_CODIGO*2-1, atual->codigo, 
-                     TAM_NOME_PREGAO, atual->nomeDePregao );
-            free( atual );
-            atual = backup;}
+        inicioBackup->next = head;
+        while( inicio != NULL ){
+            backup = inicio->next; 
+            fprintf( arquivoPapeis, "%-*s%-*s\n", TAM_CODIGO*2-1, inicio->codigo, 
+                     TAM_NOME_PREGAO, inicio->nomeDePregao );
+            free( inicio );
+            inicio = backup;}
         fprintf( arquivoConfig, "%d", dados.quantidade_de_papel ); }
     
     fclose( arquivoPapeis );
@@ -95,7 +116,7 @@ bool salvaPapeis( papel *head ){
     return true;
 }
 bool recuperaPapeis( papel **head ){
-    papel *atual = *head,
+    papel *atual,
           *proximo;
     FILE *arquivoPapeis = fopen( papeis, "r" ),
          *arquivoConfig = fopen( dadosConfig, "r" );
@@ -119,14 +140,19 @@ bool recuperaPapeis( papel **head ){
                 proximo->next = NULL;
                 fila--; 
             }while( fila > 0 );
-            
+            /*
+            papel *teste = *head;
+            while( teste != NULL ){
+                printf( "%s\n", teste->codigo );
+                teste = teste->next;}
+            */
             fclose( arquivoConfig );
             fclose( arquivoPapeis );
             return true;}
     }return false;
 }
 bool listar_papeis( papel **head ){
-    papel *primeiro = *head;
+    papel *primeiro;
     
     printf( "=========================================\n" 
             "\t\t\t\t PAPEIS\n\n%15s       %10s\t\t\n", 
@@ -143,7 +169,43 @@ bool listar_papeis( papel **head ){
         return false; }
 }
 bool retira_papel( papel **head ){
+    recuperaPapeis( head );
     
-    return true;
+    printf( "=========================================\n" 
+            "\t\t\t EXCLUINDO PAPEIS\n\n" 
+            "DIGITE [0 PARA SAIR]:\n\n");
+    
+    papel *atual = *head,
+          *backup = NULL;
+          
+    char codigo_temp[TAM_CODIGO];
+    int quantidade_de_papel_backup = dados.quantidade_de_papel;
+    
+        do{ 
+            printf( "CÓDIGO: " );
+            fgets( codigo_temp, TAM_CODIGO, stdin );///validar
+            
+            if( codigo_temp[0] == '0' ){ 
+                break;
+            }else{
+                limpaTexto( codigo_temp );
+                while( atual->next != NULL ){
+                    backup = atual;
+                    atual = atual->next;
+                    if( ( strcmp( codigo_temp, atual->codigo ) )  == 0 ){
+                        puts( "teste");
+                        printf( "%d", dados.quantidade_de_papel );
+                        backup->next = atual->next;
+                        dados.quantidade_de_papel--;
+                        free( atual );
+                        break;}
+                }
+            }
+            if( quantidade_de_papel_backup < dados.quantidade_de_papel ){
+                if( salvaPapeis( *head ) ){
+                    return true;}
+            }else return false; 
+    }while( true );
+    putchar('\n');
 }
 #endif

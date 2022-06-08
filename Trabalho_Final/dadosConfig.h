@@ -1,6 +1,10 @@
 #ifndef dadosConfig_h
 #define dadosConfig_h
 
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <unistd.h>
+
 char *papeis = "papeis.txt";
 char *dadosConfig = "dadosConfig.txt"; 
 
@@ -13,7 +17,7 @@ bool salvaDados( );
 
 bool criaArquivos( ){
     FILE *arquivo;
-
+    
     if( ( arquivo = fopen( papeis, "r" ) ) == NULL ){
         if( ( arquivo = fopen( papeis, "w" ) ) == NULL ){
             return false;}

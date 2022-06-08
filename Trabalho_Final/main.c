@@ -32,7 +32,7 @@ int main( ){
                 case PAPEIS: 
                     switch( MENU_PAPEL( ) ){
                         case ADICIONAR: 
-                            if( adiciona_papel( &primeiro ) ){
+                            if( adiciona_papel( ) ){
                                 puts("\t\tPAPEIS ADICIONADOS COM SUCESSO!\n\n");
                             }else{
                                 puts("   OPS! OS PAPEIS NÃO FORAM ADICIONADOS.\n\n");    
@@ -107,6 +107,5 @@ bool inicializar( papel **head ){
     if( !recuperaPapeis( head ) ){
         //puts( "\tLISTA DE AÇÕES VAZIA :(\n\n" );
         }
-    
     return true;
 }
