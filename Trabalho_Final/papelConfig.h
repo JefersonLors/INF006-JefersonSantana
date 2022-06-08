@@ -26,9 +26,13 @@ bool adiciona_papel( ){
     
     papel *primeiro = NULL,
           *atual = NULL,
+          *inicio = NULL,
+          *inicioBackup = NULL,
           *novo = NULL;
-    
-    FILE *quantidadePapel = fopen( dadosConfig, "r" );
+
+    recuperaPapeis( &inicio );
+
+    FILE *quantidadePapel = fopen( papeis, "r" );
     
     fscanf( quantidadePapel, "%d", &dados.quantidade_de_papel );
     fclose( quantidadePapel );
@@ -74,41 +78,37 @@ bool adiciona_papel( ){
                 putchar('\n');}}
     }while( true );
     putchar('\n');
-    
-    int quantidadeBackup = dados.quantidade_de_papel;
-    
-    if( salvaPapeis( primeiro ) ){
-        quantidadePapel = fopen( dadosConfig, "w" );
-        fprintf( quantidadePapel, "%d", quantidadeBackup ); 
-        fclose( quantidadePapel );
-        return true;
-    }else { return false; }
+
+    if( inicio != NULL ){
+        inicioBackup = inicio;
+        while( inicioBackup->next != NULL ){
+            inicioBackup = inicioBackup->next;}
+        inicioBackup->next = primeiro;
+          
+        if( salvaPapeis( inicio ) ){
+            return true;}
+    }else{
+        if( salvaPapeis( primeiro ) ){
+            return true;}}
+    return false;
 }
 bool salvaPapeis( papel *head ){
     papel *atual = head,
-          *inicioBackup = NULL,
-          *backup = NULL,
-          *inicio = NULL;
+          *backup = NULL;
 
-    recuperaPapeis( &inicio );
-    inicioBackup = inicio;
-
-    while( inicioBackup->next != NULL ){
-        inicioBackup = inicioBackup->next;}
-    
     FILE *arquivoPapeis = fopen( papeis, "w" ),
          *arquivoConfig = fopen( dadosConfig, "w" );
 
     if( !arquivoPapeis ){
         return false;
     }else{
-        inicioBackup->next = head;
-        while( inicio != NULL ){
-            backup = inicio->next; 
-            fprintf( arquivoPapeis, "%-*s%-*s\n", TAM_CODIGO*2-1, inicio->codigo, 
-                     TAM_NOME_PREGAO, inicio->nomeDePregao );
-            free( inicio );
-            inicio = backup;}
+        atual = head;
+        while( atual != NULL ){
+            backup = atual->next; 
+            fprintf( arquivoPapeis, "%-*s%-*s\n", TAM_CODIGO*2-1, atual->codigo, 
+                     TAM_NOME_PREGAO, atual->nomeDePregao );
+            free( atual );
+            atual = backup;}
         fprintf( arquivoConfig, "%d", dados.quantidade_de_papel ); }
     
     fclose( arquivoPapeis );
@@ -140,12 +140,7 @@ bool recuperaPapeis( papel **head ){
                 proximo->next = NULL;
                 fila--; 
             }while( fila > 0 );
-            /*
-            papel *teste = *head;
-            while( teste != NULL ){
-                printf( "%s\n", teste->codigo );
-                teste = teste->next;}
-            */
+
             fclose( arquivoConfig );
             fclose( arquivoPapeis );
             return true;}
@@ -189,23 +184,29 @@ bool retira_papel( papel **head ){
                 break;
             }else{
                 limpaTexto( codigo_temp );
-                while( atual->next != NULL ){
-                    backup = atual;
-                    atual = atual->next;
-                    if( ( strcmp( codigo_temp, atual->codigo ) )  == 0 ){
-                        puts( "teste");
-                        printf( "%d", dados.quantidade_de_papel );
-                        backup->next = atual->next;
-                        dados.quantidade_de_papel--;
-                        free( atual );
-                        break;}
-                }
-            }
-            if( quantidade_de_papel_backup < dados.quantidade_de_papel ){
+                backup = atual->next;
+                if( ( strcmp( codigo_temp, atual->codigo ) ) == 0 ){
+                    free( atual );
+                    *head = backup;
+                    dados.quantidade_de_papel--;
+                }else{
+                    while( atual != NULL ){ 
+                        backup = atual;
+                        atual = atual->next;
+                        if( ( strcmp( codigo_temp, atual->codigo ) ) == 0 ){
+                            if( atual->next != NULL ){
+                                atual->next = backup->next;
+                            }else{
+                                backup->next = NULL;
+                            }
+                            dados.quantidade_de_papel--;
+                            free( atual );
+                            break;}}}}
+            if( quantidade_de_papel_backup > dados.quantidade_de_papel ){
                 if( salvaPapeis( *head ) ){
                     return true;}
             }else return false; 
-    }while( true );
+        }while( true );
     putchar('\n');
 }
 #endif
