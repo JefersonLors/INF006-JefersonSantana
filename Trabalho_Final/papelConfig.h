@@ -175,17 +175,17 @@ bool retira_papel( papel **head ){
           
     char codigo_temp[TAM_CODIGO];
     int quantidade_de_papel_backup = dados.quantidade_de_papel;
-    
-        do{ 
-            printf( "CÓDIGO: " );
+
+    if( *head ){
+        do{ printf( "CÓDIGO: " );
             fgets( codigo_temp, TAM_CODIGO, stdin );///validar
             
             if( codigo_temp[0] == '0' ){ 
                 break;
             }else{
                 limpaTexto( codigo_temp );
-                backup = atual->next;
                 if( ( strcmp( codigo_temp, atual->codigo ) ) == 0 ){
+                    backup = atual->next;
                     free( atual );
                     *head = backup;
                     dados.quantidade_de_papel--;
@@ -197,16 +197,15 @@ bool retira_papel( papel **head ){
                             if( atual->next != NULL ){
                                 atual->next = backup->next;
                             }else{
-                                backup->next = NULL;
-                            }
+                                backup->next = NULL; }
                             dados.quantidade_de_papel--;
                             free( atual );
                             break;}}}}
             if( quantidade_de_papel_backup > dados.quantidade_de_papel ){
                 if( salvaPapeis( *head ) ){
-                    return true;}
-            }else return false; 
+                    return true;}}
         }while( true );
+    }else return false;
     putchar('\n');
 }
 #endif

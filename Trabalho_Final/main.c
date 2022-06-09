@@ -30,23 +30,25 @@ int main( ){
                 break;
     
                 case PAPEIS: 
-                    switch( MENU_PAPEL( ) ){
-                        case ADICIONAR: 
-                            if( adiciona_papel( ) ){
-                                puts("\t\tPAPEIS ADICIONADOS COM SUCESSO!\n\n");
-                            }else{
-                                puts("   OPS! OS PAPEIS NÃO FORAM ADICIONADOS.\n\n");    
-                            }break;
-                        case RETIRAR:
-                            if( retira_papel( &primeiro ) ){
-                                puts("\t\tPAPEIS RETIRADOS COM SUCESSO!\n\n");
-                            }else{
-                                puts("   OPS! OS PAPEIS NÃO FORAM RETIRADOS.\n\n");    
-                            }break;
-                        case LISTAR: 
-                            if( !listar_papeis( &primeiro ) ){
-                                puts("\n\t  NÃO HÁ PAPEIS PARA NEGOCIAR!\n\n");
-                            }break;}
+                    do{ subResposta = MENU_PAPEL( );
+                        switch( subResposta ){
+                            case ADICIONAR: 
+                                if( adiciona_papel( ) ){
+                                    puts("\t\tPAPEIS ADICIONADOS COM SUCESSO!\n\n");
+                                }else{
+                                    puts("   OPS! OS PAPEIS NÃO FORAM ADICIONADOS.\n\n");    
+                                }break;
+                            case RETIRAR:
+                                if( retira_papel( &primeiro ) ){
+                                    puts("\t\tPAPEIS RETIRADOS COM SUCESSO!\n\n");
+                                }else{
+                                    puts("   OPS! OS PAPEIS NÃO FORAM RETIRADOS.\n\n");    
+                                }break;
+                            case LISTAR: 
+                                if( !listar_papeis( &primeiro ) ){
+                                    puts("\n\t  NÃO HÁ PAPEIS PARA NEGOCIAR!\n\n");
+                                }break;}
+                    }while( subResposta != SAIR );
             }
         }while( resposta != SAIR );
     }else{ puts( "\tNÃO FOI POSSÍVEL INICIALIZAR :(\n\n" ); }
