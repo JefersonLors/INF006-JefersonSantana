@@ -1,6 +1,8 @@
 #ifndef gerais_h
 #define gerais_h
 
+#include <string.h>
+
 void limpaTexto( char* );
 
 void limpaTexto( char *texto ){

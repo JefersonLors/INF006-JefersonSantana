@@ -5,8 +5,9 @@
 #include <sys/stat.h>
 #include <unistd.h>
 
-char *papeis = "papeis.txt";
-char *dadosConfig = "dadosConfig.txt"; 
+char *papeis = "arquivos/papeis.txt";
+char *dadosConfig = "arquivos/dadosConfig.txt"; 
+char *carteiraConfig = "arquivos/carteiraConfig.txt";
 
 struct{
     int quantidade_de_papel;
@@ -24,6 +25,10 @@ bool criaArquivos( ){
     }fclose(arquivo);
     if( ( arquivo = fopen( dadosConfig, "r" ) ) == NULL ){
         if( ( arquivo = fopen( dadosConfig, "w" ) ) == NULL ){
+            return false;}
+    }fclose(arquivo);
+    if( ( arquivo = fopen( carteiraConfig, "r" ) ) == NULL ){
+        if( ( arquivo = fopen( carteiraConfig, "w" ) ) == NULL ){
             return false;}
     }fclose(arquivo);
     return true;

@@ -1,8 +1,9 @@
 #ifndef papelConfig_h
 #define papelConfig_h
+
 #include "gerais.h"
 #include "dadosConfig.h"
-#include <string.h>
+
 
 #define TAM_NOME_PREGAO 15   
 #define TAM_CODIGO 9

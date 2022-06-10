@@ -1,16 +1,20 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <stdbool.h>
-#include "papelConfig.h"
-#include "vendaConfig.h"
-#include "compraConfig.h"
+
+#include "includes/papelConfig.h"
+#include "includes/vendaConfig.h"
+#include "includes/compraConfig.h"
+#include "includes/carteiraConfig.h"
+#include "includes/cotacoesConfig.h"
 
 unsigned MENU_PRINCIPAL( void );
 unsigned MENU_PAPEL( void );
+
 bool inicializar( papel** );
 
 int main( ){
-    enum OPCOES{ SAIR = 0, COMPRAR = 1, VENDER = 2, CARTEIRA = 3, PAPEIS = 4 };
+    enum OPCOES{ SAIR = 0, COTACOES = 1, COMPRAR = 2, VENDER = 3, CARTEIRA = 4, PAPEIS = 5 };
     enum MANUTENCAO_PAPEIS{  ADICIONAR = 1, RETIRAR = 2, LISTAR = 3 };
     
     int resposta,
@@ -20,14 +24,18 @@ int main( ){
     if( inicializar( &primeiro ) ){
         do{ resposta = MENU_PRINCIPAL( ); 
             switch( resposta ){
+                case COTACOES: 
+                break;
+                
                 case COMPRAR: 
                 break;
     
                 case VENDER:
                 break;
     
-                case CARTEIRA:
-                break;
+                case CARTEIRA: 
+                    CARTEIRA_INTERFACE(  );
+                    break;
     
                 case PAPEIS: 
                     do{ subResposta = MENU_PAPEL( );
@@ -59,25 +67,27 @@ unsigned MENU_PRINCIPAL(  ){
     int resposta;
     printf( "=========================================\n"
             "\t\t\tBOLSO DE VALORES\n\n" 
-            "[1] COMPRAR\n"
-            "[2] VENDER\n"
-            "[3] CARTEIRA\n"
-            "[4] PAPEIS\n"
+            "[1] COTAÇÕES\n"
+            "[2] COMPRAR\n"
+            "[3] VENDER\n"
+            "[4] CARTEIRA\n"
+            "[5] PAPEIS\n"
             "[0] SAIR\n\n"
             "[ ] <- " 
         );
     scanf( "%d", &resposta ); getchar( ); 
-    while( resposta < 0 || resposta > 4 ){
+    while( resposta < 0 || resposta > 5 ){
         printf( "\t\t\tOPÇÃO INVÁLIDA!\n\n"
               "[ ] <- " ); 
         scanf( "%d", &resposta ); getchar( );}
      printf("[%d] ", resposta );
      switch( resposta ){
          case 0: puts( "SAIR\n" ); break;
-         case 1: puts( "COMPRAR\n" ); break;
-         case 2: puts( "VENDER\n" ); break;
-         case 3: puts( "CARTEIRA\n" ); break;
-         case 4: puts( "PAPEIS\n" ); break;}
+         case 1: puts( "COTAÇÕES\n" ); break;
+         case 2: puts( "COMPRAR\n" ); break;
+         case 3: puts( "VENDER\n" ); break;
+         case 4: puts( "CARTEIRA\n" ); break;
+         case 5: puts( "PAPEIS\n" ); break;}
     return resposta;
 }
 unsigned MENU_PAPEL( ){
