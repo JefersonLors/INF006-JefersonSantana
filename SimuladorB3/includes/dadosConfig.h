@@ -6,6 +6,8 @@
 char *papeis = "arquivos/papeis.txt";
 char *dadosConfig = "arquivos/dadosConfig.txt"; 
 char *carteiraConfig = "arquivos/carteiraConfig.txt";
+char *acoesValorVenda = "arquivos/acoesValorVenda.txt";
+char *acoesValorCompra = "arquivos/acoesValorCompra.txt";
 
 struct{
     int quantidade_de_papel;
@@ -27,6 +29,14 @@ bool criaArquivos( ){
     }fclose(arquivo);
     if( ( arquivo = fopen( carteiraConfig, "r" ) ) == NULL ){
         if( ( arquivo = fopen( carteiraConfig, "w" ) ) == NULL ){
+            return false;}
+    }fclose(arquivo);
+    if( ( arquivo = fopen( acoesValorVenda, "r" ) ) == NULL ){
+        if( ( arquivo = fopen( acoesValorVenda, "w" ) ) == NULL ){
+            return false;}
+    }fclose(arquivo);
+    if( ( arquivo = fopen( acoesValorCompra, "r" ) ) == NULL ){
+        if( ( arquivo = fopen( acoesValorCompra, "w" ) ) == NULL ){
             return false;}
     }fclose(arquivo);
     return true;

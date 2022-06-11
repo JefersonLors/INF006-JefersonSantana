@@ -21,10 +21,6 @@ bool listar_papeis( papel** );
 bool retira_papel( papel** );
 
 bool adiciona_papel( ){
-    printf( "=========================================\n" 
-            "\t\t\t ADICIONANDO PAPEIS\n\n" 
-            "DIGITE [0 PARA SAIR]:\n\n");
-    
     papel *primeiro = NULL,
           *atual = NULL,
           *inicio = NULL,
@@ -42,7 +38,7 @@ bool adiciona_papel( ){
             primeiro = (papel*)malloc( sizeof(papel) );
             printf( "NOME: " );
             fgets( primeiro->nomeDePregao, TAM_NOME_PREGAO, stdin );///validar
-            limpaTexto( primeiro->nomeDePregao );
+            formata_texto( primeiro->nomeDePregao );
         
             if( primeiro->nomeDePregao[0] == '0' ){ 
                 free(primeiro);
@@ -51,7 +47,7 @@ bool adiciona_papel( ){
             }else{
                 printf( "CÓDIGO: " );
                 fgets( primeiro->codigo, TAM_CODIGO, stdin );///validar
-                limpaTexto( primeiro->codigo );
+                formata_texto( primeiro->codigo );
                 primeiro->next = NULL;
                 dados.quantidade_de_papel++;
                 putchar('\n');}
@@ -63,7 +59,7 @@ bool adiciona_papel( ){
             novo = (papel*)malloc( sizeof(papel) );
             printf( "NOME: " );
             fgets( novo->nomeDePregao, TAM_NOME_PREGAO, stdin );///validar
-            limpaTexto( novo->nomeDePregao );
+            formata_texto( novo->nomeDePregao );
         
             if( novo->nomeDePregao[0] == '0'){ 
                 free(novo);
@@ -72,7 +68,7 @@ bool adiciona_papel( ){
             }else{          
                 printf( "CÓDIGO: " );
                 fgets( novo->codigo, TAM_CODIGO, stdin );///validar
-                limpaTexto( novo->codigo );
+                formata_texto( novo->codigo );
                 atual->next = novo;
                 novo->next = NULL;
                 dados.quantidade_de_papel++;
@@ -149,14 +145,13 @@ bool recuperaPapeis( papel **head ){
 }
 bool listar_papeis( papel **head ){
     papel *primeiro;
-    
-    printf( "=========================================\n" 
-            "\t\t\t  AÇÕES ATIVAS\n\n%15s       %10s\t\t\n", 
-            "CÓDIGO", "NOME");
+    int contador = 1;
     
     if( recuperaPapeis( head ) ){
         primeiro = *head; 
-        do{ printf( "%*s             %-*s\n\n", 14, primeiro->codigo, TAM_NOME_PREGAO, primeiro->nomeDePregao );
+        do{ printf( "%-*d%*s             %-*s\n\n",
+            3, contador++, 14, primeiro->codigo, TAM_NOME_PREGAO, 
+            primeiro->nomeDePregao );
             primeiro = primeiro->next;
         }while( primeiro != NULL );
         
@@ -166,10 +161,6 @@ bool listar_papeis( papel **head ){
 }
 bool retira_papel( papel **head ){
     recuperaPapeis( head );
-    
-    printf( "=========================================\n" 
-            "\t\t\t EXCLUINDO PAPEIS\n\n" 
-            "DIGITE [0 PARA SAIR]:\n\n");
     
     papel *atual = *head,
           *backup = NULL;
@@ -184,7 +175,7 @@ bool retira_papel( papel **head ){
             if( codigo_temp[0] == '0' ){ 
                 break;
             }else{
-                limpaTexto( codigo_temp );
+                formata_texto( codigo_temp );
                 if( ( strcmp( codigo_temp, atual->codigo ) ) == 0 ){
                     backup = atual->next;
                     free( atual );

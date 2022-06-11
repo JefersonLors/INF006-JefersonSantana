@@ -17,4 +17,4 @@ JBSS3            JBS_ON
 B3SA3            B3_ON
 HAPV3            HAPVIDA_ON
 VBBR3            VIBRA_ON
-CSNA3            SID_NACIONAL_ON      
+CSNA3            SID_NACIONAL_ON
