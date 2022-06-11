@@ -9,7 +9,7 @@
 #include "includes/cotacoesConfig.h"
 #include "includes/menus_interfaces.h"
 
-bool inicializar( papel**, acao** );
+bool inicializar( papel**, acao**, acao** );
 
 int main( ){
     enum OPCOES{ SAIR = 0, COTACOES = 1, COMPRAR = 2, VENDER = 3, CARTEIRA = 4, PAPEIS = 5 };
@@ -20,15 +20,16 @@ int main( ){
     
     papel *primeiro = NULL;
     
-    acao *primeira = NULL;
+    acao *primeiraVenda = NULL,
+         *primeiraCompra = NULL;
     
-    if( inicializar( &primeiro, &primeira ) ){
+    if( inicializar( &primeiro, &primeiraVenda, &primeiraCompra ) ){
         do{ resposta = MENU_PRINCIPAL( ); 
             switch( resposta ){
                 case COTACOES:
                     if( primeiro ){
                         do{ subResposta = MENU_COTACOES( primeiro );
-                            gerador_de_cotacoes( primeiro, primeira );
+                            
                         }while( subResposta != SAIR );   
                     }else{
                         puts( "\t\t\tOPS! NÃO HÁ COTAÇÕES\n" );}
@@ -79,11 +80,11 @@ int main( ){
     puts( "\t\t\tPREGÃO ENCERRADO\n\n" );
     return 0;
 }
-bool inicializar( papel **head_papel, acao **head_acao ){
+bool inicializar( papel **headPapel, acao **headVenda, acao **headCompra  ){
     if( !criaArquivos( ) ){
         puts( "\tNÃO FOI POSSÍVEL CRIAR OS ARQUIVOS :(\n\n" );}
-    if( recuperaPapeis( head_papel ) ){
-        gerador_de_cotacoes( *head_papel, *head_acao );
+    if( recuperaPapeis( headPapel ) ){
+        gerador_de_cotacoes( *headPapel, headVenda, headCompra );
     }
     return true;
 }

@@ -10,7 +10,8 @@ char *acoesValorVenda = "arquivos/acoesValorVenda.txt";
 char *acoesValorCompra = "arquivos/acoesValorCompra.txt";
 
 struct{
-    int quantidade_de_papel;
+    int quantidade_de_papel,
+        quantidade_de_acoes;
 }dados;
 
 bool criaArquivos( );
