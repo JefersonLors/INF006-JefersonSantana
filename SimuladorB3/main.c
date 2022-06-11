@@ -10,12 +10,11 @@
 
 unsigned MENU_PRINCIPAL( void );
 unsigned MENU_PAPEL( void );
-
 bool inicializar( papel** );
 
 int main( ){
     enum OPCOES{ SAIR = 0, COTACOES = 1, COMPRAR = 2, VENDER = 3, CARTEIRA = 4, PAPEIS = 5 };
-    enum MANUTENCAO_PAPEIS{  ADICIONAR = 1, RETIRAR = 2, LISTAR = 3 };
+    enum MANUTENCAO_PAPEIS{ ADICIONAR = 1, RETIRAR = 2, LISTAR = 3 };
     
     int resposta,
         subResposta;
@@ -60,13 +59,13 @@ int main( ){
             }
         }while( resposta != SAIR );
     }else{ puts( "\tNÃO FOI POSSÍVEL INICIALIZAR :(\n\n" ); }
-    puts( "\t\t\tPROGRAMA ENCERRADO\n\n" );
+    puts( "\t\t\tPREGÃO ENCERRADO\n\n" );
     return 0;
 }
 unsigned MENU_PRINCIPAL(  ){
     int resposta;
     printf( "=========================================\n"
-            "\t\t\tBOLSO DE VALORES\n\n" 
+            "\t\t\t  SIMULADOR B3\n\n" 
             "[1] COTAÇÕES\n"
             "[2] COMPRAR\n"
             "[3] VENDER\n"
@@ -80,14 +79,14 @@ unsigned MENU_PRINCIPAL(  ){
         printf( "\t\t\tOPÇÃO INVÁLIDA!\n\n"
               "[ ] <- " ); 
         scanf( "%d", &resposta ); getchar( );}
-     printf("[%d] ", resposta );
-     switch( resposta ){
-         case 0: puts( "SAIR\n" ); break;
-         case 1: puts( "COTAÇÕES\n" ); break;
-         case 2: puts( "COMPRAR\n" ); break;
-         case 3: puts( "VENDER\n" ); break;
-         case 4: puts( "CARTEIRA\n" ); break;
-         case 5: puts( "PAPEIS\n" ); break;}
+    printf("[%d] ", resposta );
+    switch( resposta ){
+        case 0: puts( "SAIR\n" ); break;
+        case 1: puts( "COTAÇÕES\n" ); break;
+        case 2: puts( "COMPRAR\n" ); break;
+        case 3: puts( "VENDER\n" ); break;
+        case 4: puts( "CARTEIRA\n" ); break;
+        case 5: puts( "PAPEIS\n" ); break;}
     return resposta;
 }
 unsigned MENU_PAPEL( ){
@@ -105,12 +104,12 @@ unsigned MENU_PAPEL( ){
             printf( "\t\t\tOPÇÃO INVÁLIDA!\n\n"
                   "[ ] <- " ); 
             scanf( "%d", &resposta ); getchar( );}
-         printf("[%d] ", resposta );
-         switch( resposta ){
-             case 0: puts( "SAIR\n" ); break;
-             case 1: puts( "ADICIONAR\n" ); break;
-             case 2: puts( "RETIRAR\n" ); break;
-             case 3: puts( "LISTAR\n" ); break;}    
+        printf("[%d] ", resposta );
+        switch( resposta ){
+            case 0: puts( "SAIR\n" ); break;
+            case 1: puts( "ADICIONAR\n" ); break;
+            case 2: puts( "RETIRAR\n" ); break;
+            case 3: puts( "LISTAR\n" ); break;}    
     return resposta;
 }
 bool inicializar( papel **head ){
@@ -118,6 +117,6 @@ bool inicializar( papel **head ){
         puts( "\tNÃO FOI POSSÍVEL CRIAR OS ARQUIVOS :(\n\n" );}
     if( !recuperaPapeis( head ) ){
         //puts( "\tLISTA DE AÇÕES VAZIA :(\n\n" );
-        }
+    }
     return true;
 }

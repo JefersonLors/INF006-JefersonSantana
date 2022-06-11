@@ -1,9 +1,7 @@
 #ifndef dadosConfig_h
 #define dadosConfig_h
 
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <unistd.h>
+#include <dirent.h>
 
 char *papeis = "arquivos/papeis.txt";
 char *dadosConfig = "arquivos/dadosConfig.txt"; 

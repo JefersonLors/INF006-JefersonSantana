@@ -5,8 +5,8 @@
 #include "dadosConfig.h"
 
 
-#define TAM_NOME_PREGAO 15   
-#define TAM_CODIGO 9
+#define TAM_NOME_PREGAO 20
+#define TAM_CODIGO 8
 
 typedef struct papel{
     char nomeDePregao[TAM_NOME_PREGAO],
@@ -151,12 +151,12 @@ bool listar_papeis( papel **head ){
     papel *primeiro;
     
     printf( "=========================================\n" 
-            "\t\t\t\t PAPEIS\n\n%15s       %10s\t\t\n", 
+            "\t\t\t  AÇÕES ATIVAS\n\n%15s       %10s\t\t\n", 
             "CÓDIGO", "NOME");
     
     if( recuperaPapeis( head ) ){
         primeiro = *head; 
-        do{ printf( "%14s             %-10s\n", primeiro->codigo, primeiro->nomeDePregao );
+        do{ printf( "%*s             %-*s\n\n", 14, primeiro->codigo, TAM_NOME_PREGAO, primeiro->nomeDePregao );
             primeiro = primeiro->next;
         }while( primeiro != NULL );
         
