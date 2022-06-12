@@ -8,8 +8,8 @@ void CARTEIRA_INTERFACE( void );
 
 unsigned MENU_PRINCIPAL(  ){
     unsigned resposta;
-    printf( "=========================================\n"
-            "\t\t\t  SIMULADOR B3\n\n" 
+    printf( "======================================================\n"
+            "\t\t\t\t\tSIMULADOR B3\n\n" 
             "[1] COTAÇÕES\n"
             "[2] COMPRAR\n"
             "[3] VENDER\n"
@@ -35,8 +35,8 @@ unsigned MENU_PRINCIPAL(  ){
 }
 unsigned MENU_PAPEL( ){
     unsigned resposta;
-    printf( "=========================================\n"
-                "\t\t\t\t PAPEIS\n\n" 
+    printf( "======================================================\n"
+                "\t\t\t\t\t\tPAPEIS\n\n" 
                 "[1] ADICIONAR\n"
                 "[2] RETIRAR\n"
                 "[3] LISTAR\n"
@@ -76,8 +76,10 @@ void CARTEIRA_INTERFACE( ){
 }
 unsigned MENU_COTACOES( papel *primeiroPapel ){
     unsigned resposta;
-    printf( "=========================================\n"
-            "\t\t\t\tESCOLHA A AÇÃO\n\n" );
+    printf( "======================================================\n" 
+            "\t\t\t\t\tESCOLHA A AÇÃO\n\n"
+            "#\t\t   CODIGO\t\t\t  NOME DE PREGÃO\n\n"
+            );
 
     listar_papeis( &primeiroPapel );
     printf( "[0] SAIR\n\n"
@@ -93,6 +95,6 @@ unsigned MENU_COTACOES( papel *primeiroPapel ){
         case 0: puts( "SAIR\n" ); break;
         default: puts( "ESCOLHIDA\n" ); break;}
     return resposta;
-    
 }
+
 #endif

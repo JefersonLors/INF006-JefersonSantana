@@ -29,8 +29,9 @@ int main( ){
                 case COTACOES:
                     if( primeiro ){
                         do{ subResposta = MENU_COTACOES( primeiro );
-                            printf( "=========================================\n" 
-                                    "\t\t\t\t\tAÇÃO\n\n" );
+                            printf( "==========================="
+                                    "===========================\n" 
+                                    "\t\t\t\t\t\tAÇÃO\n\n" );
                             visualizar_ofertas_acao( subResposta, primeiraVenda, primeiraCompra );
                         }while( subResposta != SAIR );   
                     }else{
@@ -51,7 +52,7 @@ int main( ){
                     do{ subResposta = MENU_PAPEL( );
                         switch( subResposta ){
                             case ADICIONAR: 
-                                printf( "=========================================\n" 
+                                printf( "======================================================\n" 
                                         "\t\t\t ADICIONANDO PAPEIS\n\n" 
                                         "DIGITE [0 PARA SAIR]:\n\n");
                                 if( adiciona_papel( ) ){
@@ -60,7 +61,7 @@ int main( ){
                                     puts("   OPS! OS PAPEIS NÃO FORAM ADICIONADOS.\n\n");    
                                 }break;
                             case RETIRAR: 
-                                printf( "=========================================\n" 
+                                printf( "======================================================\n" 
                                         "\t\t\t EXCLUINDO PAPEIS\n\n" 
                                         "DIGITE [0 PARA SAIR]:\n\n");
                                 if( retira_papel( &primeiro ) ){
@@ -69,7 +70,7 @@ int main( ){
                                     puts("   OPS! OS PAPEIS NÃO FORAM RETIRADOS.\n\n");    
                                 }break;
                             case LISTAR: 
-                                    printf( "=========================================\n" 
+                                    printf( "======================================================\n" 
                                             "\t\t\t\t AÇÕES ATIVAS\n\n%18s        %10s\t\t\n", 
                                             "CÓDIGO", "NOME\n");
                                 if( !listar_papeis( &primeiro ) ){

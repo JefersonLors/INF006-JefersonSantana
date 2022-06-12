@@ -4,6 +4,8 @@
 #include <time.h>
 #include <string.h>
 
+#define teste puts("teste");
+
 typedef struct qtd_valores{
     int quantidade;
     float valor;
@@ -49,7 +51,7 @@ bool preenche_cotacoes( papel **inicioPapel, acao **inicioAcaoVenda, acao **inic
     
     if( obtem_nome_e_codigo( *inicioPapel, *inicioAcaoVenda) ){
         if( obtem_nome_e_codigo( *inicioPapel, *inicioAcaoCompra ) ){
-            while( atualAcaoV != NULL ){
+            while( atualAcaoV != NULL ||  atualAcaoC != NULL ){
                 if( gerador_de_quantidade_de_acoes( atualAcaoV->valor ) ){
                     if( gerador_de_quantidade_de_acoes( atualAcaoC->valor ) ){
                         if( gerador_de_valor( atualAcaoV->valor ) ){
@@ -184,23 +186,23 @@ bool visualizar_ofertas_acao( unsigned posicao, acao *inicioVenda, acao *inicioC
     
     printf( "%s\n%s\n\n", atualVenda->identificacao.nomeDePregao, 
             atualVenda->identificacao.codigo );
-    printf( "\t\t\t\t\tOFERTAS\n\n" );
+    printf( "%30s\n\n", "OFERTAS" );
     
     qtd_valores *ofertaVendaAtual = atualVenda->valor,
                 *ofertaCompraAtual = atualCompra->valor;
     
-    printf( "quantidade\tvalor\t\t\tquantidade\tvalor\n\n");
+    printf( "%10s%11s%21s%11s\n\n", "Quantidade", "Valor", "Quantidade", "Valor" );
     do{
-        printf( "%d\t%.2f\t\t", ofertaVendaAtual->quantidade, ofertaVendaAtual->valor );
+        printf( "%10d%11.2f\t\t", ofertaVendaAtual->quantidade, ofertaVendaAtual->valor );
                 ofertaVendaAtual = ofertaVendaAtual->next;
         while( ofertaCompraAtual != NULL ){
-            printf( "%d\t%.2f", ofertaCompraAtual->quantidade, ofertaCompraAtual->valor );
+            printf( "%14d%11.2f", ofertaCompraAtual->quantidade, ofertaCompraAtual->valor );
             ofertaCompraAtual = ofertaCompraAtual->next;
             break;}
         puts( "\n" );
     }while( ofertaVendaAtual != NULL );
 
-    printf( "\t\tVENDA\t\t\t\t\t\tCOMPRA\n\n");
+    printf( "%15s%33s\n\n", "VENDA", "COMPRA" );
 }
 bool recupera_cotacoes( acao **inicioAcaoVenda, acao **inicioAcaoCompra ){
 
@@ -210,7 +212,38 @@ bool retira_cotacoes( acao **inicioAcaoVenda, acao **inicioAcaoCompra  ){
     
 }
 bool salva_cotacoes( acao **inicioVenda, acao **inicioCompra ){
+    acao *atualVenda = *inicioVenda,
+         *atualCompra = *inicioCompra;
 
-    return true;
+    FILE *arquivoAcoesValorVenda = fopen( acoesValorVenda, "w" ),
+         *arquivoAcoesValorCompra = fopen( acoesValorCompra, "w" );
+
+    if( arquivoAcoesValorVenda && arquivoAcoesValorVenda ){
+        while( atualVenda != NULL ||  atualCompra != NULL ){
+            qtd_valores *atualV = atualVenda->valor,
+                        *atualC = atualCompra->valor;
+            
+            fprintf( arquivoAcoesValorVenda, "%s\n%s\n%d\n", 
+                     atualVenda->identificacao.nomeDePregao, 
+                     atualVenda->identificacao.codigo, atualVenda->quantidadeCotado ); 
+            
+            while( atualV != NULL  ){
+                fprintf( arquivoAcoesValorVenda, "%-6d%-6.2f\n", atualV->quantidade, atualV->valor );
+                atualV = atualV->next; }
+            
+            fprintf( arquivoAcoesValorCompra, "%s\n%s\n%d\n", 
+                     atualCompra->identificacao.nomeDePregao, 
+                     atualCompra->identificacao.codigo, atualCompra->quantidadeCotado );
+            while( atualC != NULL ){
+                fprintf( arquivoAcoesValorCompra, "%-6d%-6.2f\n", atualC->quantidade, atualC->valor ); 
+                atualC = atualC->next;}
+            
+            atualVenda = atualVenda->next;
+            atualCompra = atualCompra->next;
+        }
+        fclose( arquivoAcoesValorVenda );
+        fclose( arquivoAcoesValorCompra );
+        return true;
+    }else return false;
 }
 #endif
