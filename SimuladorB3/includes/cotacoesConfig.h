@@ -235,6 +235,7 @@ bool retira_cotacoes( acao **inicioAcaoVenda, acao **inicioAcaoCompra ){
         atual = atual->next;
         while( atual != NULL ){
             if( strcmp( atual->codigo, atualVenda->identificacao.codigo ) != 0 ){
+                
                 atualVendaBackup->next = atualVenda->next;
                 atualCompraBackup->next = atualCompra->next;
                 free( atualVenda );
