@@ -49,7 +49,15 @@ int main( ){
                     break;
     
                 case PAPEIS: 
-                    do{ subResposta = MENU_PAPEL( );
+                    do{ 
+                        printf( "======================================================\n" 
+                            "\t\t\t\t PAPEIS ATIVOS\n\n#%17s        %10s\t\t\n", 
+                            "CÓDIGO", "NOME\n");
+                        if( !listar_papeis( &primeiro ) ){
+                            puts("\n\t  NÃO HÁ PAPEIS PARA NEGOCIAR!\n\n");}
+                        
+                        subResposta = MENU_PAPEL( );
+                        
                         switch( subResposta ){
                             case ADICIONAR: 
                                 printf( "======================================================\n" 
@@ -62,20 +70,14 @@ int main( ){
                                 }break;
                             case RETIRAR: 
                                 printf( "======================================================\n" 
-                                        "\t\t\t EXCLUINDO PAPEIS\n\n" 
+                                        "\t\t\t\t  EXCLUINDO PAPEIS\n\n" 
                                         "DIGITE [0 PARA SAIR]:\n\n");
                                 if( retira_papel( &primeiro ) ){
-                                    puts("\t\tPAPEIS RETIRADOS COM SUCESSO!\n\n");
-                                }else{
-                                    puts("   OPS! OS PAPEIS NÃO FORAM RETIRADOS.\n\n");    
-                                }break;
-                            case LISTAR: 
-                                    printf( "======================================================\n" 
-                                            "\t\t\t\t AÇÕES ATIVAS\n\n%18s        %10s\t\t\n", 
-                                            "CÓDIGO", "NOME\n");
-                                if( !listar_papeis( &primeiro ) ){
-                                    puts("\n\t  NÃO HÁ PAPEIS PARA NEGOCIAR!\n\n");
-                                }break;}
+                                    if( retira_cotacoes( primeiro, &primeiraVenda, &primeiraCompra ) ){
+                                        puts("\t\tPAPEIS RETIRADOS COM SUCESSO!\n\n");}
+                                }else {
+                                    puts("   OPS! OS PAPEIS NÃO FORAM RETIRADOS.\n\n"); }     
+                                break;}
                     }while( subResposta != SAIR );
             }
         }while( resposta != SAIR );

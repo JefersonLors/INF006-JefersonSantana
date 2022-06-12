@@ -35,16 +35,14 @@ unsigned MENU_PRINCIPAL(  ){
 }
 unsigned MENU_PAPEL( ){
     unsigned resposta;
-    printf( "======================================================\n"
-                "\t\t\t\t\t\tPAPEIS\n\n" 
-                "[1] ADICIONAR\n"
-                "[2] RETIRAR\n"
-                "[3] LISTAR\n"
-                "[0] SAIR\n\n"
-                "[ ] <- " 
+    printf( "======================================================\n\n"
+            "[1] ADICIONAR\n"
+            "[2] RETIRAR\n"
+            "[0] SAIR\n\n"
+            "[ ] <- " 
             );
         scanf( "%d", &resposta ); getchar( ); 
-        while( resposta < 0 || resposta > 3 ){
+        while( resposta < 0 || resposta > 2 ){
             printf( "\t\t\tOPÇÃO INVÁLIDA!\n\n"
                   "[ ] <- " ); 
             scanf( "%d", &resposta ); getchar( );}
@@ -52,8 +50,7 @@ unsigned MENU_PAPEL( ){
         switch( resposta ){
             case 0: puts( "SAIR\n" ); break;
             case 1: puts( "ADICIONAR\n" ); break;
-            case 2: puts( "RETIRAR\n" ); break;
-            case 3: puts( "LISTAR\n" ); break;}    
+            case 2: puts( "RETIRAR\n" ); break;}    
     return resposta;
 }
 void CARTEIRA_INTERFACE( ){

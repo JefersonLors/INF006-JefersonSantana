@@ -24,7 +24,7 @@ bool gerador_de_lista_de_oferta( qtd_valores**, acao* );
 bool gerador_de_cotacoes( papel**, acao**, acao** );
 
 bool preenche_cotacoes( papel**, acao**, acao** );
-bool retira_cotacoes( acao**, acao** );
+bool retira_cotacoes( papel*, acao**, acao** );
 bool obtem_nome_e_codigo( papel*, acao* );
 
 bool gerador_de_quantidade_de_acoes( qtd_valores* );
@@ -208,8 +208,48 @@ bool recupera_cotacoes( acao **inicioAcaoVenda, acao **inicioAcaoCompra ){
 
     
 }
-bool retira_cotacoes( acao **inicioAcaoVenda, acao **inicioAcaoCompra  ){
-    
+bool retira_cotacoes( papel *inicio, acao **inicioAcaoVenda, acao **inicioAcaoCompra ){
+    papel *atual = inicio;
+
+    acao *atualVenda = *inicioAcaoVenda,
+         *atualCompra = *inicioAcaoCompra,
+         *atualVendaBackup = NULL,
+         *atualCompraBackup = NULL;
+
+    if( strcmp( atual->codigo, atualVenda->identificacao.codigo ) != 0 ){
+        atualVendaBackup = atualVenda->next;
+        atualCompraBackup = atualCompra->next;
+        free( atualVenda );
+        free( atualCompra );
+        atualVenda = NULL;
+        atualCompra = NULL;
+        *inicioAcaoVenda = atualVendaBackup;
+        *inicioAcaoCompra = atualCompraBackup;
+    }else{
+        atualVendaBackup = atualVenda;
+        atualCompraBackup = atualCompra;
+        atualVenda = atualVenda->next;
+        atualCompra = atualCompra->next;
+        atual = atual->next;
+        while( atual != NULL ){
+            if( strcmp( atual->codigo, atualVenda->identificacao.codigo ) != 0 ){
+                atualVendaBackup->next = atualVenda->next;
+                atualCompraBackup->next = atualCompra->next;
+                free( atualVenda );
+                free( atualCompra );
+                atualVenda = NULL;
+                atualCompra = NULL;
+                break;
+            }
+            
+            atualVendaBackup = atualVenda;
+            atualCompraBackup = atualCompra;
+            atualVendaBackup = atualVenda->next;
+            atualCompraBackup = atualCompra->next;
+            atual = atual->next;
+        }
+    }
+    salva_cotacoes( inicioAcaoVenda, inicioAcaoCompra );
 }
 bool salva_cotacoes( acao **inicioVenda, acao **inicioCompra ){
     acao *atualVenda = *inicioVenda,

@@ -186,7 +186,7 @@ bool retira_papel( papel **head ){
                         atual = atual->next;
                         if( ( strcmp( codigo_temp, atual->codigo ) ) == 0 ){
                             if( atual->next != NULL ){
-                                atual->next = backup->next;
+                                backup->next = atual->next;
                             }else{
                                 backup->next = NULL; }
                             dados.quantidade_de_papel--;

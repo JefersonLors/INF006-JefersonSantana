@@ -1,8 +1,6 @@
 ELET3          ELETROBRAS_ON       
 VALE3          VALE_ON             
-PETR4          PETROBRAS_PN        
 BBAS3          BRASIL_ON           
-ELET6          ELETROBRAS_PNB      
 ITUB4          ITAUUNIBANCO_PN     
 BBDC4          BRADESCO_PN         
 MGLU3          MAGAZ_LUIZA_ON      
