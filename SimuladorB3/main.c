@@ -73,7 +73,7 @@ int main( ){
                                         "\t\t\t\t  EXCLUINDO PAPEIS\n\n" 
                                         "DIGITE [0 PARA SAIR]:\n\n");
                                 if( retira_papel( &primeiro ) ){
-                                    if( retira_cotacoes( primeiro, &primeiraVenda, &primeiraCompra ) ){
+                                    if( retira_cotacoes( &primeiraVenda, &primeiraCompra ) ){
                                         puts("\t\tPAPEIS RETIRADOS COM SUCESSO!\n\n");}
                                 }else {
                                     puts("   OPS! OS PAPEIS NÃO FORAM RETIRADOS.\n\n"); }     

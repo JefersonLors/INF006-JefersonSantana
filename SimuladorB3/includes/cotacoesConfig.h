@@ -3,6 +3,7 @@
 
 #include <time.h>
 #include <string.h>
+#include "papelConfig.h"
 
 #define teste puts("teste");
 
@@ -24,7 +25,7 @@ bool gerador_de_lista_de_oferta( qtd_valores**, acao* );
 bool gerador_de_cotacoes( papel**, acao**, acao** );
 
 bool preenche_cotacoes( papel**, acao**, acao** );
-bool retira_cotacoes( papel*, acao**, acao** );
+bool retira_cotacoes( acao**, acao** );
 bool obtem_nome_e_codigo( papel*, acao* );
 
 bool gerador_de_quantidade_de_acoes( qtd_valores* );
@@ -208,9 +209,10 @@ bool recupera_cotacoes( acao **inicioAcaoVenda, acao **inicioAcaoCompra ){
 
     
 }
-bool retira_cotacoes( papel *inicio, acao **inicioAcaoVenda, acao **inicioAcaoCompra ){
-    papel *atual = inicio;
-
+bool retira_cotacoes( acao **inicioAcaoVenda, acao **inicioAcaoCompra ){
+    papel *atual;
+    recuperaPapeis( &atual );
+    
     acao *atualVenda = *inicioAcaoVenda,
          *atualCompra = *inicioAcaoCompra,
          *atualVendaBackup = NULL,
@@ -241,14 +243,14 @@ bool retira_cotacoes( papel *inicio, acao **inicioAcaoVenda, acao **inicioAcaoCo
                 atualCompra = NULL;
                 break;
             }
-            
             atualVendaBackup = atualVenda;
             atualCompraBackup = atualCompra;
-            atualVendaBackup = atualVenda->next;
-            atualCompraBackup = atualCompra->next;
+            atualVenda = atualVenda->next;
+            atualCompra = atualCompra->next;
             atual = atual->next;
         }
     }
+    
     salva_cotacoes( inicioAcaoVenda, inicioAcaoCompra );
 }
 bool salva_cotacoes( acao **inicioVenda, acao **inicioCompra ){

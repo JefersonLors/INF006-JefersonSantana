@@ -1,6 +1,7 @@
 #ifndef papelConfig_h
 #define papelConfig_h
 
+#define teste puts("teste");
 #include "gerais.h"
 #include "dadosConfig.h"
 
@@ -190,7 +191,9 @@ bool retira_papel( papel **head ){
                             }else{
                                 backup->next = NULL; }
                             dados.quantidade_de_papel--;
+                            teste
                             free( atual );
+                            teste
                             break;}}}}
             if( quantidade_de_papel_backup > dados.quantidade_de_papel ){
                 if( salvaPapeis( *head ) ){
