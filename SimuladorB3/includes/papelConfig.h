@@ -4,7 +4,6 @@
 #include "gerais.h"
 #include "dadosConfig.h"
 
-
 #define TAM_NOME_PREGAO 20
 #define TAM_CODIGO 8
 
