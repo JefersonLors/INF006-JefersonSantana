@@ -217,7 +217,8 @@ bool retira_cotacoes( acao **inicioAcaoVenda, acao **inicioAcaoCompra ){
          *atualCompra = *inicioAcaoCompra,
          *atualVendaBackup = NULL,
          *atualCompraBackup = NULL;
-
+    
+    //retira o primeiro elemento da lista
     if( strcmp( atual->codigo, atualVenda->identificacao.codigo ) != 0 ){
         atualVendaBackup = atualVenda->next;
         atualCompraBackup = atualCompra->next;
@@ -228,28 +229,37 @@ bool retira_cotacoes( acao **inicioAcaoVenda, acao **inicioAcaoCompra ){
         *inicioAcaoVenda = atualVendaBackup;
         *inicioAcaoCompra = atualCompraBackup;
     }else{
+        ///retira elementos centrais da lista
         atualVendaBackup = atualVenda;
         atualCompraBackup = atualCompra;
         atualVenda = atualVenda->next;
         atualCompra = atualCompra->next;
         atual = atual->next;
+        
         while( atual != NULL ){
             if( strcmp( atual->codigo, atualVenda->identificacao.codigo ) != 0 ){
-                
                 atualVendaBackup->next = atualVenda->next;
-                atualCompraBackup->next = atualCompra->next;
+                atualCompraBackup->next = atualCompra->next; 
                 free( atualVenda );
                 free( atualCompra );
                 atualVenda = NULL;
                 atualCompra = NULL;
-                break;
-            }
+                break;}
+           
             atualVendaBackup = atualVenda;
             atualCompraBackup = atualCompra;
             atualVenda = atualVenda->next;
             atualCompra = atualCompra->next;
             atual = atual->next;
         }
+        ///retira o último elemento da lista
+        if( atual == NULL && atualCompra != NULL || atualVenda != NULL ){
+            atualVendaBackup->next = atualVenda->next;
+            atualCompraBackup->next = atualCompra->next; 
+            free( atualVenda );
+            free( atualCompra );
+            atualVenda = NULL;
+            atualCompra = NULL;}
     }
     
     salva_cotacoes( inicioAcaoVenda, inicioAcaoCompra );
