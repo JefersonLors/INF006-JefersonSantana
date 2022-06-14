@@ -5,6 +5,7 @@ unsigned MENU_PRINCIPAL( void );
 unsigned MENU_PAPEL( void );
 unsigned MENU_COTACOES( papel* );
 void CARTEIRA_INTERFACE( void );
+unsigned SUB_MENU_COTACOES(  );
 
 unsigned MENU_PRINCIPAL(  ){
     unsigned resposta;
@@ -93,5 +94,22 @@ unsigned MENU_COTACOES( papel *primeiroPapel ){
         default: puts( "ESCOLHIDA\n" ); break;}
     return resposta;
 }
+unsigned SUB_MENU_COTACOES(  ){
+    unsigned resposta;
 
+    printf( "[0] SAIR\n"
+            "[1] ATUALIZAR\n\n"
+            "[ ] <- " 
+            );
+    scanf( "%d", &resposta ); getchar( ); 
+    while( resposta != 0 && resposta != 1 ){
+        printf( "\t\t\tOPÇÃO INVÁLIDA!\n\n"
+              "[ ] <- " ); 
+        scanf( "%d", &resposta ); getchar( );}
+    printf("[%d] ", resposta );
+    switch( resposta ){
+        case 0: puts( "SAIR\n" ); break;
+        case 1: puts( "ATUALIZAR\n" ); break;}
+    return resposta;
+}
 #endif

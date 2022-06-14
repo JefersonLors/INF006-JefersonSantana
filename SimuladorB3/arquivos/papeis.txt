@@ -1,4 +1,5 @@
 ELET3          ELETROBRAS_ON       
+VALE3          VALE_ON             
 PETR4          PETROBRAS_PN        
 BBAS3          BRASIL_ON           
 ELET6          ELETROBRAS_PNB      
@@ -12,5 +13,8 @@ GGBR4          GERDAU_PN
 ABEV3          AMBEV_S/A_ON        
 PRIO3          PETRORIO_ON         
 AMER3          AMERICANAS_ON       
+JBSS3          JBS_ON              
 B3SA3          B3_ON               
 HAPV3          HAPVIDA_ON          
+VBBR3          VIBRA_ON            
+CSNA3          SID_NACIONAL_ON     

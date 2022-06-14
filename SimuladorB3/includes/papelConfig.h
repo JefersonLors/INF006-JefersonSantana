@@ -28,7 +28,7 @@ bool adiciona_papel( ){
           *novo = NULL;
 
     recuperaPapeis( &inicio );
-
+    ///impedir de colocar papal repetido
     FILE *quantidadePapel = fopen( papeis, "r" );
     
     fscanf( quantidadePapel, "%d", &dados.quantidade_de_papel );
@@ -166,7 +166,6 @@ bool retira_papel( papel **head ){
           *backup = NULL;
           
     char codigo_temp[TAM_CODIGO];
-    int quantidade_de_papel_backup = dados.quantidade_de_papel;
 
     if( *head ){
         do{ printf( "CÓDIGO: " );
@@ -182,19 +181,26 @@ bool retira_papel( papel **head ){
                     *head = backup;
                     dados.quantidade_de_papel--;
                 }else{
+                    backup = atual;
+                    atual = atual->next;
                     while( atual != NULL ){ 
-                        backup = atual;
-                        atual = atual->next;
                         if( ( strcmp( codigo_temp, atual->codigo ) ) == 0 ){
                             backup->next = atual->next;
                             dados.quantidade_de_papel--;
                             free( atual );
-                            break;}}}}
-            if( quantidade_de_papel_backup > dados.quantidade_de_papel ){
-                if( salvaPapeis( *head ) ){
-                    return true;}}
+                            if( salvaPapeis( *head ) ){
+                                return true;
+                            }else{ break; }
+                        }
+                        backup = atual;
+                        atual = atual->next;
+                        }
+                    }
+                break;
+            }
         }while( true );
-    }else return false;
+    }
+    return false;
     putchar('\n');
 }
 #endif

@@ -12,7 +12,8 @@
 bool inicializar( papel**, acao**, acao** );
 
 int main( ){
-    enum OPCOES{ SAIR = 0, COTACOES = 1, COMPRAR = 2, VENDER = 3, CARTEIRA = 4, PAPEIS = 5 };
+    enum OPCOES{ SAIR = 0, COTACOES = 1, COMPRAR = 2, 
+                 VENDER = 3, CARTEIRA = 4, PAPEIS = 5 };
     enum MANUTENCAO_PAPEIS{ ADICIONAR = 1, RETIRAR = 2, LISTAR = 3 };
     
     int resposta,
@@ -29,11 +30,15 @@ int main( ){
                 case COTACOES:
                     if( primeiro ){
                         do{ subResposta = MENU_COTACOES( primeiro );
-                            printf( "==========================="
-                                    "===========================\n" 
-                                    "\t\t\t\t\t\tAÇÃO\n\n" );
-                            visualizar_ofertas_acao( subResposta, primeiraVenda, primeiraCompra );
-                        }while( subResposta != SAIR );   
+                            if( subResposta != SAIR ){
+                                printf( "==========================="
+                                        "===========================\n" 
+                                        "\t\t\t\t\t\tAÇÃO\n\n" );
+                                visualizar_ofertas_acao( subResposta, primeiraVenda, primeiraCompra );
+                                if( SUB_MENU_COTACOES(  ) ){
+                                    atualiza_cotacoes( subResposta, &primeiraVenda, &primeiraCompra );   }
+                            }else{ break;}
+                        }while( true );   
                     }else{
                         puts( "\t\t\tOPS! NÃO HÁ COTAÇÕES\n" );}
                     break;
@@ -89,7 +94,8 @@ bool inicializar( papel **headPapel, acao **headVenda, acao **headCompra  ){
     if( !criaArquivos( ) ){
         puts( "\tNÃO FOI POSSÍVEL CRIAR OS ARQUIVOS :(\n\n" );}
     if( recuperaPapeis( headPapel ) ){
-        gerador_de_cotacoes( headPapel, headVenda, headCompra );
+        if( !recupera_cotacoes( headVenda, headCompra) ){
+            gerador_de_cotacoes( headPapel, headVenda, headCompra );}
     }
     return true;
 }
