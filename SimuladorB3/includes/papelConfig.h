@@ -5,6 +5,7 @@
 #include "gerais.h"
 #include "dadosConfig.h"
 
+
 #define TAM_NOME_PREGAO 20
 #define TAM_CODIGO 8
 
@@ -27,55 +28,57 @@ bool adiciona_papel( ){
           *inicioBackup = NULL,
           *novo = NULL;
 
+
     recuperaPapeis( &inicio );
+    
+    
     ///impedir de colocar papal repetido
     FILE *quantidadePapel = fopen( papeis, "r" );
     
     fscanf( quantidadePapel, "%d", &dados.quantidade_de_papel );
     fclose( quantidadePapel );
     
-    do{ if( primeiro == NULL ){
-            primeiro = (papel*)malloc( sizeof(papel) );
-            printf( "NOME: " );
-            fgets( primeiro->nomeDePregao, TAM_NOME_PREGAO, stdin );///validar
-            formata_texto( primeiro->nomeDePregao );
-        
-            if( primeiro->nomeDePregao[0] == '0' ){ 
-                free(primeiro);
-                primeiro = NULL;
-                break;
-            }else{
-                printf( "CÓDIGO: " );
-                fgets( primeiro->codigo, TAM_CODIGO, stdin );///validar
-                formata_texto( primeiro->codigo );
-                primeiro->next = NULL;
-                dados.quantidade_de_papel++;
-                putchar('\n');}
+    if( primeiro == NULL ){
+        primeiro = (papel*)malloc( sizeof(papel) );
+        printf( "NOME: " );
+        fgets( primeiro->nomeDePregao, TAM_NOME_PREGAO, stdin );///validar
+        formata_texto( primeiro->nomeDePregao );
+    
+        if( primeiro->nomeDePregao[0] == '0' ){ 
+            free(primeiro);
+            primeiro = NULL;
+
         }else{
-            atual = primeiro;
-            while( atual->next != NULL ){
-                atual = atual->next;}
-            
-            novo = (papel*)malloc( sizeof(papel) );
-            printf( "NOME: " );
-            fgets( novo->nomeDePregao, TAM_NOME_PREGAO, stdin );///validar
-            formata_texto( novo->nomeDePregao );
+            printf( "CÓDIGO: " );
+            fgets( primeiro->codigo, TAM_CODIGO, stdin );///validar
+            formata_texto( primeiro->codigo );
+            primeiro->next = NULL;
+            dados.quantidade_de_papel++;
+            putchar('\n');}
+    }else{
+        atual = primeiro;
+        while( atual->next != NULL ){
+            atual = atual->next;}
         
-            if( novo->nomeDePregao[0] == '0'){ 
-                free(novo);
-                novo = NULL;
-                break;
-            }else{          
-                printf( "CÓDIGO: " );
-                fgets( novo->codigo, TAM_CODIGO, stdin );///validar
-                formata_texto( novo->codigo );
-                atual->next = novo;
-                novo->next = NULL;
-                dados.quantidade_de_papel++;
-                putchar('\n');}}
-    }while( true );
+        novo = (papel*)malloc( sizeof(papel) );
+        printf( "NOME: " );
+        fgets( novo->nomeDePregao, TAM_NOME_PREGAO, stdin );///validar
+        formata_texto( novo->nomeDePregao );
+    
+        if( novo->nomeDePregao[0] == '0'){ 
+            free(novo);
+            novo = NULL;
+        }else{          
+            printf( "CÓDIGO: " );
+            fgets( novo->codigo, TAM_CODIGO, stdin );///validar
+            formata_texto( novo->codigo );
+            atual->next = novo;
+            novo->next = NULL;
+            dados.quantidade_de_papel++;
+            putchar('\n');}}
     putchar('\n');
 
+    
     if( inicio != NULL ){
         inicioBackup = inicio;
         while( inicioBackup->next != NULL ){
@@ -129,14 +132,15 @@ bool recuperaPapeis( papel **head ){
             *head = atual;
             fila--;
             
-            do{ proximo = (papel*)malloc( sizeof(papel) );
+            while( fila > 0 ){ 
+                proximo = (papel*)malloc( sizeof(papel) );
                 while( atual->next != NULL ){
                     atual = atual->next;}
                 fscanf( arquivoPapeis, "%s%s",proximo->codigo, proximo->nomeDePregao);
                 atual->next = proximo;
                 proximo->next = NULL;
                 fila--; 
-            }while( fila > 0 );
+            }
 
             fclose( arquivoConfig );
             fclose( arquivoPapeis );
@@ -180,6 +184,9 @@ bool retira_papel( papel **head ){
                     free( atual );
                     *head = backup;
                     dados.quantidade_de_papel--;
+                    if( salvaPapeis( *head ) ){
+                        return true;
+                    }else{ break; }
                 }else{
                     backup = atual;
                     atual = atual->next;

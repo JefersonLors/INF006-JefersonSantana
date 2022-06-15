@@ -5,7 +5,6 @@
 #include <string.h>
 #include "papelConfig.h"
 
-
 typedef struct qtd_valores{
     int quantidade;
     float valor;
@@ -19,13 +18,13 @@ typedef struct acoes{
     struct acoes *next;
 }acao;
 
-bool gerador_de_lista_de_cotacoes( acao**, acao** );
+bool gerador_de_lista_de_cotacoes(  );
 bool gerador_de_lista_de_oferta( qtd_valores**, acao* );
 bool gerador_de_cotacoes( papel**, acao**, acao** );
 
-bool preenche_cotacoes( papel**, acao**, acao** );
+bool preenche_cotacoes( acao**  );
 bool retira_cotacoes( acao**, acao** );
-bool obtem_nome_e_codigo( papel*, acao* );
+bool obtem_nome_e_codigo( acao* );
 
 bool gerador_de_quantidade_de_acoes( qtd_valores* );
 bool gerador_de_valor( qtd_valores* );
@@ -35,62 +34,47 @@ bool recupera_cotacoes( acao**, acao** );
 bool recupera_de_lista_de_cotacoes( acao**, acao** );
 bool recupera_lista_de_oferta( qtd_valores**, unsigned, FILE* );
 
-bool atualiza_cotacoes( unsigned, acao**, acao** );
+bool atualiza_cotacoes( unsigned );
 bool exclui_lista_de_oferta( qtd_valores** );
 
 bool salva_cotacoes( acao**, acao** );
 
-bool visualizar_ofertas_acao( unsigned, acao*, acao* );
+bool visualizar_ofertas_acao( unsigned );
 
 bool gerador_de_cotacoes( papel **inicioPapel, acao **inicioAcaoVenda, acao **inicioAcaoCompra  ){
-    if( gerador_de_lista_de_cotacoes( inicioAcaoVenda, inicioAcaoCompra ) ){
-            if( preenche_cotacoes( inicioPapel, inicioAcaoVenda, inicioAcaoCompra ) ){ 
-                if( salva_cotacoes( inicioAcaoVenda, inicioAcaoCompra ) ){
+    if( gerador_de_lista_de_cotacoes( ) ){
+        return true;
+    }else{ return false; }
+}
+bool preenche_cotacoes( acao **acao ){
+    if( obtem_nome_e_codigo( *acao ) ){
+        if( gerador_de_quantidade_de_acoes( (*acao)->valor ) ){
+            if( gerador_de_valor( (*acao)->valor ) ){
                     return true;}}}
-    return false;
+    return false; 
 }
-bool preenche_cotacoes( papel **inicioPapel, acao **inicioAcaoVenda, acao **inicioAcaoCompra ){
-    acao *atualAcaoV = *inicioAcaoVenda,
-         *atualAcaoC = *inicioAcaoCompra;
-    
-    if( obtem_nome_e_codigo( *inicioPapel, *inicioAcaoVenda) ){
-        if( obtem_nome_e_codigo( *inicioPapel, *inicioAcaoCompra ) ){
-            while( atualAcaoV != NULL ||  atualAcaoC != NULL ){
-                if( gerador_de_quantidade_de_acoes( atualAcaoV->valor ) ){
-                    if( gerador_de_quantidade_de_acoes( atualAcaoC->valor ) ){
-                        if( gerador_de_valor( atualAcaoV->valor ) ){
-                            if( gerador_de_valor( atualAcaoC->valor ) ){
-                            }else return false;
-                        }else return false;
-                    }else return false;    
-                }else return false;
-                atualAcaoV = atualAcaoV->next;
-                atualAcaoC = atualAcaoC->next;
-            }return true;
-        }return false;
-    }return false;
-}
-bool gerador_de_lista_de_cotacoes( acao **inicioAcaoVenda, acao **inicioAcaoCompra ){
-    acao *atualVenda = *inicioAcaoVenda,
-         *atualCompra = *inicioAcaoCompra,
+bool gerador_de_lista_de_cotacoes( ){
+    acao *atualVenda = NULL,
+         *atualCompra = NULL,
          *novoVenda = NULL,
          *novoCompra = NULL;
-
-    unsigned quantidadeAcoes = dados.quantidade_de_papel;
     
+    unsigned quantidadeAcoes = dados.quantidade_de_papel - dados.quantidade_de_acoes;
+
     while( quantidadeAcoes > 0 ){
         if( atualVenda == NULL ){
             atualVenda = (acao*)(malloc(sizeof(acao) ) );
             atualVenda->valor = NULL;
             gerador_de_lista_de_oferta( &atualVenda->valor, atualVenda );
+            preenche_cotacoes( &atualVenda );
             atualVenda->next = NULL;
-            *inicioAcaoVenda = atualVenda;
         }else{
             while( atualVenda->next != NULL ){
                 atualVenda = atualVenda->next;}
             novoVenda = (acao*)(malloc(sizeof(acao) ) );
             novoVenda->valor = NULL;
             gerador_de_lista_de_oferta( &novoVenda->valor, novoVenda );
+            preenche_cotacoes( &novoVenda );
             novoVenda->next = NULL;
             atualVenda->next = novoVenda;
         }
@@ -98,23 +82,42 @@ bool gerador_de_lista_de_cotacoes( acao **inicioAcaoVenda, acao **inicioAcaoComp
             atualCompra = (acao*)(malloc(sizeof(acao) ) );
             atualCompra->valor = NULL;
             gerador_de_lista_de_oferta( &atualCompra->valor, atualCompra );
+            preenche_cotacoes( &atualCompra );
             atualCompra->next = NULL;
-            *inicioAcaoCompra = atualCompra;
         }else{
             while( atualCompra->next != NULL ){
                 atualCompra = atualCompra->next;}
             novoCompra = (acao*)(malloc(sizeof(acao) ) );
             novoCompra->valor = NULL;
             gerador_de_lista_de_oferta( &novoCompra->valor, novoCompra );
+            preenche_cotacoes( &novoCompra );
             novoCompra->next = NULL;
             atualCompra->next = novoCompra;
         }
-        dados.quantidade_de_acoes++;
         quantidadeAcoes--;}
+        
+    acao *primeirasAcoesVenda = NULL,
+         *primeirasAcoesCompra = NULL;
 
-    if( quantidadeAcoes == 0 )
-        return true;
-    else return false;
+    if( recupera_cotacoes( &primeirasAcoesVenda, &primeirasAcoesCompra ) ){
+       dados.quantidade_de_acoes += dados.quantidade_de_papel - dados.quantidade_de_acoes;
+        while( primeirasAcoesVenda->next != NULL && primeirasAcoesCompra != NULL ){
+            primeirasAcoesVenda = primeirasAcoesVenda->next;
+            primeirasAcoesCompra = primeirasAcoesCompra->next;}
+        primeirasAcoesVenda->next = atualVenda;
+        primeirasAcoesCompra->next = atualCompra;
+        if( quantidadeAcoes == 0 ){
+            if( salva_cotacoes( &primeirasAcoesVenda, &primeirasAcoesCompra ) ){
+                return true;   
+            }}
+    }else{
+        dados.quantidade_de_acoes += dados.quantidade_de_papel - dados.quantidade_de_acoes;
+        if( quantidadeAcoes == 0 ){
+            if( salva_cotacoes( &atualVenda, &atualCompra ) ){
+                return true;   
+            }}}
+   
+    return false;
 }
 bool gerador_de_lista_de_oferta( qtd_valores **inicio, acao *acao ){
     unsigned quantidade = acao->quantidadeCotado = gerador_de_quantidade_de_oferta( );
@@ -139,17 +142,21 @@ bool gerador_de_lista_de_oferta( qtd_valores **inicio, acao *acao ){
         return true;
     else return false;
 }
-bool obtem_nome_e_codigo( papel *inicioPapel, acao *inicioAcao ){
-    papel *papelAtual = inicioPapel;
-    acao *acaoAtual = inicioAcao;
+bool obtem_nome_e_codigo( acao *acao ){
+    papel *papelAtual = NULL;
     
-    while( papelAtual != NULL ){
-        strcpy( acaoAtual->identificacao.nomeDePregao, papelAtual->nomeDePregao );
-        strcpy( acaoAtual->identificacao.codigo, papelAtual->codigo );
-        papelAtual = papelAtual->next;
-        acaoAtual = acaoAtual->next;
-    }
-    return true;
+    recuperaPapeis( &papelAtual );
+
+    if( papelAtual != NULL ){
+        
+        while( papelAtual->next != NULL ){
+            papelAtual = papelAtual->next;}
+
+        strcpy( acao->identificacao.nomeDePregao, papelAtual->nomeDePregao );
+        strcpy( acao->identificacao.codigo, papelAtual->codigo );
+        return true;
+    }return false;
+    
 }
 bool gerador_de_quantidade_de_acoes( qtd_valores *inicioLista ){
     qtd_valores *atual = inicioLista;
@@ -178,16 +185,16 @@ unsigned gerador_de_quantidade_de_oferta( ){
     srand( time(NULL) );
     return 1 + rand( ) % 5;
 }
-bool visualizar_ofertas_acao( unsigned posicao, acao *inicioVenda, acao *inicioCompra ){
-    acao *atualVenda = inicioVenda,
-         *atualCompra = inicioCompra;
+bool visualizar_ofertas_acao( unsigned posicao ){
+    acao *atualVenda = NULL,
+         *atualCompra = NULL;
+
+    recupera_cotacoes( &atualVenda, &atualCompra );
     
     while( posicao > 1 ){
         posicao--;
         atualCompra = atualCompra->next;
         atualVenda = atualVenda->next;}
-
-    
     
     printf( "%s\n%s\n\n", atualVenda->identificacao.nomeDePregao, 
             atualVenda->identificacao.codigo );
@@ -204,9 +211,8 @@ bool visualizar_ofertas_acao( unsigned posicao, acao *inicioVenda, acao *inicioC
             printf( "%14d%11.2f", ofertaCompraAtual->quantidade, ofertaCompraAtual->valor );
             ofertaCompraAtual = ofertaCompraAtual->next;
             break;}
-        puts( "\n" );
-    }
-
+        puts( "\n" );}
+    
     printf( "%15s%33s\n\n", "VENDA", "COMPRA" );
 }
 bool recupera_cotacoes( acao **inicioAcaoVenda, acao **inicioAcaoCompra ){
@@ -404,12 +410,19 @@ bool salva_cotacoes( acao **inicioVenda, acao **inicioCompra ){
         fclose( arquivoAcoesValorCompra );
         fclose( arquivoDadosConfig );
         return true;
-    }else return false;
+    }else{ return false;} 
 }
-bool atualiza_cotacoes( unsigned posicao, acao **inicioAcaoVenda, acao **inicioAcaoCompra ){
-    acao *antigaAcaoVenda = *inicioAcaoVenda,
-         *antigaAcaoCompra = *inicioAcaoCompra;
+bool atualiza_cotacoes( unsigned posicao ){
+    acao *antigaAcaoVenda = NULL,
+         *antigaAcaoCompra = NULL,
+         *inicioAcaoVenda = NULL,
+         *inicioAcaoCompra = NULL; 
 
+    recupera_cotacoes( &antigaAcaoVenda, &antigaAcaoCompra );
+
+    inicioAcaoVenda = antigaAcaoVenda;
+    inicioAcaoCompra = antigaAcaoCompra;
+    
     while( posicao > 1 ){
         antigaAcaoVenda = antigaAcaoVenda->next;
         antigaAcaoCompra = antigaAcaoCompra->next;
@@ -423,7 +436,7 @@ bool atualiza_cotacoes( unsigned posicao, acao **inicioAcaoVenda, acao **inicioA
                         if( gerador_de_quantidade_de_acoes( antigaAcaoCompra->valor ) ){ 
                             if( gerador_de_valor( antigaAcaoVenda->valor ) ){ 
                                 if( gerador_de_valor( antigaAcaoCompra->valor ) ){ 
-                                    if( salva_cotacoes( inicioAcaoVenda, inicioAcaoCompra ) ){ 
+                                    if( salva_cotacoes( &inicioAcaoVenda, &inicioAcaoCompra ) ){ 
                                         return true;}}}}}}}}}
     return false;
 }

@@ -35,11 +35,13 @@ int main( ){
                                 printf( "==========================="
                                         "===========================\n" 
                                         "\t\t\t\t\t\tAÇÃO\n\n" );
-                                //printf( "%s\n", primeiraVenda->identificacao.nomeDePregao );delay
-                                visualizar_ofertas_acao( subResposta, primeiraVenda, primeiraCompra );
-                                if( SUB_MENU_COTACOES(  ) ){
-                                    atualiza_cotacoes( subResposta, &primeiraVenda, &primeiraCompra );   
-                                }
+                                visualizar_ofertas_acao( subResposta );
+                                while( SUB_MENU_COTACOES(  ) ){
+                                    atualiza_cotacoes( subResposta );
+                                    printf( "==========================="
+                                            "===========================\n" 
+                                            "\t\t\t\t\t\tAÇÃO\n\n" );
+                                    visualizar_ofertas_acao( subResposta );}
                             }else{ break;}
                         }while( true );   
                     }else{
@@ -72,7 +74,10 @@ int main( ){
                                         "\t\t\t ADICIONANDO PAPEIS\n\n" 
                                         "DIGITE [0 PARA SAIR]:\n\n");
                                 if( adiciona_papel( ) ){
-                                    puts("\t\tPAPEIS ADICIONADOS COM SUCESSO!\n\n");
+                                    if( gerador_de_cotacoes( &primeiro, &primeiraVenda, &primeiraCompra ) ){
+                                        puts("\t\tPAPEIS ADICIONADOS COM SUCESSO!\n\n");
+                                    }else{
+                                        puts("   OPS! OS PAPEIS NÃO FORAM ADICIONADOS.\n\n");}  
                                 }else{
                                     puts("   OPS! OS PAPEIS NÃO FORAM ADICIONADOS.\n\n");    
                                 }break;
