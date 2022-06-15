@@ -73,11 +73,8 @@ int main( ){
                                 printf( "======================================================\n" 
                                         "\t\t\t ADICIONANDO PAPEIS\n\n" 
                                         "DIGITE [0 PARA SAIR]:\n\n");
-                                if( adiciona_papel( ) ){
-                                    if( gerador_de_cotacoes( &primeiro, &primeiraVenda, &primeiraCompra ) ){
-                                        puts("\t\tPAPEIS ADICIONADOS COM SUCESSO!\n\n");
-                                    }else{
-                                        puts("   OPS! OS PAPEIS NÃO FORAM ADICIONADOS.\n\n");}  
+                                if( adiciona_papel( ) && gerador_de_cotacoes( )  ){
+                                    puts("\t\tPAPEIS ADICIONADOS COM SUCESSO!\n\n");
                                 }else{
                                     puts("   OPS! OS PAPEIS NÃO FORAM ADICIONADOS.\n\n");    
                                 }break;
@@ -85,9 +82,8 @@ int main( ){
                                 printf( "======================================================\n" 
                                         "\t\t\t\t  EXCLUINDO PAPEIS\n\n" 
                                         "DIGITE [0 PARA SAIR]:\n\n");
-                                if( retira_papel( &primeiro ) ){
-                                    if( retira_cotacoes(  ) ){
-                                        puts("\t\tPAPEIS RETIRADOS COM SUCESSO!\n\n");}
+                                if( retira_papel( ) && retira_cotacoes( ) ){
+                                        puts("\t\tPAPEIS RETIRADOS COM SUCESSO!\n\n");
                                 }else {
                                     puts("   OPS! OS PAPEIS NÃO FORAM RETIRADOS.\n\n"); }     
                                 break;}
@@ -99,9 +95,9 @@ int main( ){
     return 0;
 }
 bool inicializar( papel **headPapel, acao **headVenda, acao **headCompra  ){
-    if( !criaArquivos( ) ){
+    if( !cria_arquivos( ) ){
         puts( "\tNÃO FOI POSSÍVEL CRIAR OS ARQUIVOS :(\n\n" );}
-    if( recuperaPapeis( headPapel ) ){
+    if( recupera_papeis( headPapel ) ){
         if( !recupera_cotacoes( headVenda, headCompra) ){
             gerador_de_cotacoes( );}
     }

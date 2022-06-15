@@ -14,10 +14,10 @@ struct{
              quantidade_de_acoes;
 }dados;
 
-bool criaArquivos( );
-bool salvaDados( );
+bool cria_arquivos( );
+bool salva_dados( );
 
-bool criaArquivos( ){
+bool cria_arquivos( ){
     FILE *arquivo;
     
     if( ( arquivo = fopen( papeis, "r" ) ) == NULL ){
@@ -42,7 +42,7 @@ bool criaArquivos( ){
     }fclose(arquivo);
     return true;
 }
-bool salvaDados( ){
+bool salva_dados( ){
 
     return true;
 }

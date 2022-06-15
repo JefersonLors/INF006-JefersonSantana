@@ -5,7 +5,6 @@
 #include "gerais.h"
 #include "dadosConfig.h"
 
-
 #define TAM_NOME_PREGAO 20
 #define TAM_CODIGO 8
 
@@ -16,10 +15,10 @@ typedef struct papel{
 }papel;
 
 bool adiciona_papel( );
-bool salvaPapeis( papel* );
-bool recuperaPapeis( papel** );
+bool salva_papeis( papel* );
+bool recupera_papeis( papel** );
 bool listar_papeis( papel** );
-bool retira_papel( papel** );
+bool retira_papel( );
 
 bool adiciona_papel( ){
     papel *primeiro = NULL,
@@ -28,10 +27,7 @@ bool adiciona_papel( ){
           *inicioBackup = NULL,
           *novo = NULL;
 
-
-    recuperaPapeis( &inicio );
-    
-    
+    recupera_papeis( &inicio );
     ///impedir de colocar papal repetido
     FILE *quantidadePapel = fopen( papeis, "r" );
     
@@ -85,14 +81,14 @@ bool adiciona_papel( ){
             inicioBackup = inicioBackup->next;}
         inicioBackup->next = primeiro;
           
-        if( salvaPapeis( inicio ) ){
+        if( salva_papeis( inicio ) ){
             return true;}
     }else{
-        if( salvaPapeis( primeiro ) ){
+        if( salva_papeis( primeiro ) ){
             return true;}}
     return false;
 }
-bool salvaPapeis( papel *head ){
+bool salva_papeis( papel *head ){
     papel *atual = head,
           *backup = NULL;
 
@@ -115,7 +111,7 @@ bool salvaPapeis( papel *head ){
     fclose( arquivoConfig );
     return true;
 }
-bool recuperaPapeis( papel **head ){
+bool recupera_papeis( papel **head ){
     papel *atual,
           *proximo;
     FILE *arquivoPapeis = fopen( papeis, "r" ),
@@ -151,7 +147,7 @@ bool listar_papeis( papel **head ){
     papel *primeiro;
     int contador = 1;
     
-    if( recuperaPapeis( head ) ){
+    if( recupera_papeis( head ) ){
         primeiro = *head; 
         do{ printf( "%-*d%*s             %-*s\n\n",
             3, contador++, 14, primeiro->codigo, TAM_NOME_PREGAO, 
@@ -163,15 +159,17 @@ bool listar_papeis( papel **head ){
     }else{ 
         return false; }
 }
-bool retira_papel( papel **head ){
-    recuperaPapeis( head );
+bool retira_papel(  ){
+    papel *head = NULL;
     
-    papel *atual = *head,
+    recupera_papeis( &head );
+    
+    papel *atual = head,
           *backup = NULL;
           
     char codigo_temp[TAM_CODIGO];
 
-    if( *head ){
+    if( head ){
         do{ printf( "CÓDIGO: " );
             fgets( codigo_temp, TAM_CODIGO, stdin );///validar
             
@@ -182,9 +180,9 @@ bool retira_papel( papel **head ){
                 if( ( strcmp( codigo_temp, atual->codigo ) ) == 0 ){
                     backup = atual->next;
                     free( atual );
-                    *head = backup;
+                    head = backup;
                     dados.quantidade_de_papel--;
-                    if( salvaPapeis( *head ) ){
+                    if( salva_papeis( head ) ){
                         return true;
                     }else{ break; }
                 }else{
@@ -195,7 +193,7 @@ bool retira_papel( papel **head ){
                             backup->next = atual->next;
                             dados.quantidade_de_papel--;
                             free( atual );
-                            if( salvaPapeis( *head ) ){
+                            if( salva_papeis( head ) ){
                                 return true;
                             }else{ break; }
                         }
