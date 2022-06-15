@@ -1,2 +1,1 @@
 ELET3          ELETROBRAS_ON       
-VALE3          VALE_ON             

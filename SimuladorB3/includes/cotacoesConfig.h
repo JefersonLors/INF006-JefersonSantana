@@ -18,12 +18,11 @@ typedef struct acoes{
     struct acoes *next;
 }acao;
 
-bool gerador_de_lista_de_cotacoes(  );
+bool gerador_de_cotacoes( );
 bool gerador_de_lista_de_oferta( qtd_valores**, acao* );
-bool gerador_de_cotacoes( papel**, acao**, acao** );
 
 bool preenche_cotacoes( acao**  );
-bool retira_cotacoes( acao**, acao** );
+bool retira_cotacoes(  );
 bool obtem_nome_e_codigo( acao* );
 
 bool gerador_de_quantidade_de_acoes( qtd_valores* );
@@ -31,7 +30,6 @@ bool gerador_de_valor( qtd_valores* );
 unsigned gerador_de_quantidade_de_oferta( void );
 
 bool recupera_cotacoes( acao**, acao** );
-bool recupera_de_lista_de_cotacoes( acao**, acao** );
 bool recupera_lista_de_oferta( qtd_valores**, unsigned, FILE* );
 
 bool atualiza_cotacoes( unsigned );
@@ -41,19 +39,7 @@ bool salva_cotacoes( acao**, acao** );
 
 bool visualizar_ofertas_acao( unsigned );
 
-bool gerador_de_cotacoes( papel **inicioPapel, acao **inicioAcaoVenda, acao **inicioAcaoCompra  ){
-    if( gerador_de_lista_de_cotacoes( ) ){
-        return true;
-    }else{ return false; }
-}
-bool preenche_cotacoes( acao **acao ){
-    if( obtem_nome_e_codigo( *acao ) ){
-        if( gerador_de_quantidade_de_acoes( (*acao)->valor ) ){
-            if( gerador_de_valor( (*acao)->valor ) ){
-                    return true;}}}
-    return false; 
-}
-bool gerador_de_lista_de_cotacoes( ){
+bool gerador_de_cotacoes(  ){
     acao *atualVenda = NULL,
          *atualCompra = NULL,
          *novoVenda = NULL,
@@ -119,6 +105,13 @@ bool gerador_de_lista_de_cotacoes( ){
    
     return false;
 }
+bool preenche_cotacoes( acao **acao ){
+    if( obtem_nome_e_codigo( *acao ) ){
+        if( gerador_de_quantidade_de_acoes( (*acao)->valor ) ){
+            if( gerador_de_valor( (*acao)->valor ) ){
+                    return true;}}}
+    return false; 
+}
 bool gerador_de_lista_de_oferta( qtd_valores **inicio, acao *acao ){
     unsigned quantidade = acao->quantidadeCotado = gerador_de_quantidade_de_oferta( );
              
@@ -151,7 +144,6 @@ bool obtem_nome_e_codigo( acao *acao ){
         
         while( papelAtual->next != NULL ){
             papelAtual = papelAtual->next;}
-
         strcpy( acao->identificacao.nomeDePregao, papelAtual->nomeDePregao );
         strcpy( acao->identificacao.codigo, papelAtual->codigo );
         return true;
@@ -216,12 +208,7 @@ bool visualizar_ofertas_acao( unsigned posicao ){
     printf( "%15s%33s\n\n", "VENDA", "COMPRA" );
 }
 bool recupera_cotacoes( acao **inicioAcaoVenda, acao **inicioAcaoCompra ){
-    if( recupera_de_lista_de_cotacoes( inicioAcaoVenda, inicioAcaoCompra ) ){
-       return true;
-    }else return false;
-}
-bool recupera_de_lista_de_cotacoes( acao **inicioAcaoVenda, acao**inicioAcaoCompra ){
-    acao *atualAcaoVenda = *inicioAcaoVenda,
+acao *atualAcaoVenda = *inicioAcaoVenda,
          *atualAcaoCompra = *inicioAcaoCompra,
          *novoAcaoCompra = NULL,
          *novoAcaoVenda = NULL;
@@ -316,12 +303,17 @@ bool recupera_lista_de_oferta( qtd_valores **inicio, unsigned quantidade,  FILE 
         return true;
     else return false;
 }
-bool retira_cotacoes( acao **inicioAcaoVenda, acao **inicioAcaoCompra ){
-    papel *atual;
-    recuperaPapeis( &atual );
+bool retira_cotacoes( ){
+     acao *inicioAcaoVenda = NULL, 
+          *inicioAcaoCompra = NULL;
     
-    acao *atualVenda = *inicioAcaoVenda,
-         *atualCompra = *inicioAcaoCompra,
+    papel *atual;
+    
+    recuperaPapeis( &atual );
+    recupera_cotacoes( &inicioAcaoVenda, &inicioAcaoCompra );
+        
+    acao *atualVenda = inicioAcaoVenda,
+         *atualCompra = inicioAcaoCompra,
          *atualVendaBackup = NULL,
          *atualCompraBackup = NULL;
 
@@ -335,8 +327,8 @@ bool retira_cotacoes( acao **inicioAcaoVenda, acao **inicioAcaoCompra ){
         free( atualCompra );
         atualVenda = NULL;
         atualCompra = NULL;
-        *inicioAcaoVenda = atualVendaBackup;
-        *inicioAcaoCompra = atualCompraBackup;
+        inicioAcaoVenda = atualVendaBackup;
+        inicioAcaoCompra = atualCompraBackup;
     }else{
         ///retira elementos centrais da lista
         atualVendaBackup = atualVenda;
@@ -371,7 +363,7 @@ bool retira_cotacoes( acao **inicioAcaoVenda, acao **inicioAcaoCompra ){
             atualVenda = NULL;
             atualCompra = NULL;}
     }
-    salva_cotacoes( inicioAcaoVenda, inicioAcaoCompra );
+    salva_cotacoes( &inicioAcaoVenda, &inicioAcaoCompra );
 }
 bool salva_cotacoes( acao **inicioVenda, acao **inicioCompra ){
     acao *atualVenda = *inicioVenda,

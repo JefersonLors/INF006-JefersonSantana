@@ -86,7 +86,7 @@ int main( ){
                                         "\t\t\t\t  EXCLUINDO PAPEIS\n\n" 
                                         "DIGITE [0 PARA SAIR]:\n\n");
                                 if( retira_papel( &primeiro ) ){
-                                    if( retira_cotacoes( &primeiraVenda, &primeiraCompra ) ){
+                                    if( retira_cotacoes(  ) ){
                                         puts("\t\tPAPEIS RETIRADOS COM SUCESSO!\n\n");}
                                 }else {
                                     puts("   OPS! OS PAPEIS NÃO FORAM RETIRADOS.\n\n"); }     
@@ -103,7 +103,7 @@ bool inicializar( papel **headPapel, acao **headVenda, acao **headCompra  ){
         puts( "\tNÃO FOI POSSÍVEL CRIAR OS ARQUIVOS :(\n\n" );}
     if( recuperaPapeis( headPapel ) ){
         if( !recupera_cotacoes( headVenda, headCompra) ){
-            gerador_de_cotacoes( headPapel, headVenda, headCompra );}
+            gerador_de_cotacoes( );}
     }
     return true;
 }
