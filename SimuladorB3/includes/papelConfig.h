@@ -14,11 +14,12 @@ typedef struct papel{
     struct papel *next; 
 }papel;
 
-bool adiciona_papel( );
+bool adiciona_papel( void );
 bool salva_papeis( papel* );
 bool recupera_papeis( papel** );
-bool listar_papeis( papel** );
-bool retira_papel( );
+bool listar_papeis( void );
+bool retira_papel( void );
+void limpa_lista_de_papeis( papel** );
 
 bool adiciona_papel( ){
     papel *primeiro = NULL,
@@ -143,20 +144,22 @@ bool recupera_papeis( papel **head ){
             return true;}
     }return false;
 }
-bool listar_papeis( papel **head ){
-    papel *primeiro;
+bool listar_papeis( ){
+    papel *primeiro = NULL,
+          *head = NULL;
     int contador = 1;
     
-    if( recupera_papeis( head ) ){
-        primeiro = *head; 
+    if( recupera_papeis( &head ) ){
+        primeiro = head; 
         do{ printf( "%-*d%*s             %-*s\n\n",
             3, contador++, 14, primeiro->codigo, TAM_NOME_PREGAO, 
             primeiro->nomeDePregao );
             primeiro = primeiro->next;
         }while( primeiro != NULL );
-        
+        limpa_lista_de_papeis( &head );
         return true;
     }else{ 
+        limpa_lista_de_papeis( &head );
         return false; }
 }
 bool retira_papel(  ){
@@ -183,6 +186,7 @@ bool retira_papel(  ){
                     head = backup;
                     dados.quantidade_de_papel--;
                     if( salva_papeis( head ) ){
+                        limpa_lista_de_papeis( &head );
                         return true;
                     }else{ break; }
                 }else{
@@ -194,6 +198,7 @@ bool retira_papel(  ){
                             dados.quantidade_de_papel--;
                             free( atual );
                             if( salva_papeis( head ) ){
+                                limpa_lista_de_papeis( &head );
                                 return true;
                             }else{ break; }
                         }
@@ -205,7 +210,19 @@ bool retira_papel(  ){
             }
         }while( true );
     }
+    limpa_lista_de_papeis( &head );
     return false;
     putchar('\n');
+}
+void limpa_lista_de_papeis( papel **inicio ){
+    papel *atual = *inicio;
+
+    while( atual != NULL ){
+        papel *backup = atual->next;
+        free( atual );
+        atual = NULL;
+        atual = backup;
+    }
+    *inicio = atual;
 }
 #endif

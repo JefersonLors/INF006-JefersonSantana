@@ -9,7 +9,6 @@
 
 void formata_texto( char* );
 
-
 void formata_texto( char *texto ){
     for( int caracter = 0; texto[caracter] != '\0'; caracter++ ){
         texto[caracter] = toupper( texto[caracter] );

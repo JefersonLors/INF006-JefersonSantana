@@ -3,9 +3,9 @@
 
 unsigned MENU_PRINCIPAL( void );
 unsigned MENU_PAPEL( void );
-unsigned MENU_COTACOES( papel* );
+unsigned MENU_COTACOES( void );
 void CARTEIRA_INTERFACE( void );
-unsigned SUB_MENU_COTACOES(  );
+unsigned SUB_MENU_COTACOES( void );
 
 unsigned MENU_PRINCIPAL(  ){
     unsigned resposta;
@@ -72,14 +72,14 @@ void CARTEIRA_INTERFACE( ){
     printf( "\n\t\t\t\t\t\t\t\t[ENTER PARA SAIR]\n");
     getchar( );
 }
-unsigned MENU_COTACOES( papel *primeiroPapel ){
+unsigned MENU_COTACOES(  ){
     unsigned resposta;
     printf( "======================================================\n" 
             "\t\t\t\t\tESCOLHA A AÇÃO\n\n"
             "#\t\t   CODIGO\t\t\t  NOME DE PREGÃO\n\n"
             );
 
-    listar_papeis( &primeiroPapel );
+    listar_papeis( );
     printf( "[0] SAIR\n\n"
             "[ ] <- " 
           );

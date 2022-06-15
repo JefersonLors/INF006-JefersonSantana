@@ -30,7 +30,7 @@ int main( ){
             switch( resposta ){
                 case COTACOES:
                     if( primeiro ){
-                        do{ subResposta = MENU_COTACOES( primeiro );
+                        do{ subResposta = MENU_COTACOES( );
                             if( subResposta != SAIR ){
                                 printf( "==========================="
                                         "===========================\n" 
@@ -63,7 +63,7 @@ int main( ){
                         printf( "======================================================\n" 
                             "\t\t\t\t PAPEIS ATIVOS\n\n#%17s        %10s\t\t\n", 
                             "CÓDIGO", "NOME\n");
-                        if( !listar_papeis( &primeiro ) ){
+                        if( !listar_papeis(  ) ){
                             puts("\n\t  NÃO HÁ PAPEIS PARA NEGOCIAR!\n\n");}
                         
                         subResposta = MENU_PAPEL( );
