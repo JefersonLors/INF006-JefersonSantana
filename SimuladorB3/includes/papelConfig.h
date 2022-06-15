@@ -106,7 +106,7 @@ bool salvaPapeis( papel *head ){
                      TAM_NOME_PREGAO, atual->nomeDePregao );
             free( atual );
             atual = backup;}
-        fprintf( arquivoConfig, "%d", dados.quantidade_de_papel ); }
+        fprintf( arquivoConfig, "%d\n%d", dados.quantidade_de_papel, dados.quantidade_de_acoes ); }
     
     fclose( arquivoPapeis );
     fclose( arquivoConfig );

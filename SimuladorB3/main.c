@@ -3,6 +3,7 @@
 #include <stdbool.h>
 
 #include "includes/papelConfig.h"
+#include "includes/gerais.h"
 #include "includes/vendaConfig.h"
 #include "includes/compraConfig.h"
 #include "includes/carteiraConfig.h"
@@ -34,9 +35,11 @@ int main( ){
                                 printf( "==========================="
                                         "===========================\n" 
                                         "\t\t\t\t\t\tAÇÃO\n\n" );
+                                //printf( "%s\n", primeiraVenda->identificacao.nomeDePregao );delay
                                 visualizar_ofertas_acao( subResposta, primeiraVenda, primeiraCompra );
                                 if( SUB_MENU_COTACOES(  ) ){
-                                    atualiza_cotacoes( subResposta, &primeiraVenda, &primeiraCompra );   }
+                                    atualiza_cotacoes( subResposta, &primeiraVenda, &primeiraCompra );   
+                                }
                             }else{ break;}
                         }while( true );   
                     }else{

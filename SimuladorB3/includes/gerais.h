@@ -4,7 +4,11 @@
 #include <string.h>
 #include <ctype.h>
 
+#define teste puts("teste");
+#define delay getchar( );
+
 void formata_texto( char* );
+
 
 void formata_texto( char *texto ){
     for( int caracter = 0; texto[caracter] != '\0'; caracter++ ){
