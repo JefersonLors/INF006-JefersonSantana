@@ -29,23 +29,24 @@ int main( ){
         do{ resposta = MENU_PRINCIPAL( ); 
             switch( resposta ){
                 case COTACOES:
-                    if( primeiro ){
-                        do{ subResposta = MENU_COTACOES( );
-                            if( subResposta != SAIR ){
-                                printf( "==========================="
-                                        "===========================\n" 
-                                        "\t\t\t\t\t\tAÇÃO\n\n" );
-                                visualizar_ofertas_acao( subResposta );
+                    do{ subResposta = MENU_COTACOES( );
+                        if( subResposta != SAIR ){
+                            printf( "==========================="
+                                    "===========================\n" 
+                                    "\t\t\t\t\t\tAÇÃO\n\n" );
+                            if( visualizar_ofertas_acao( subResposta ) ){
                                 while( SUB_MENU_COTACOES(  ) ){
                                     atualiza_cotacoes( subResposta );
                                     printf( "==========================="
                                             "===========================\n" 
                                             "\t\t\t\t\t\tAÇÃO\n\n" );
-                                    visualizar_ofertas_acao( subResposta );}
-                            }else{ break;}
-                        }while( true );   
-                    }else{
-                        puts( "\t\t\tOPS! NÃO HÁ COTAÇÕES\n" );}
+                                    visualizar_ofertas_acao( subResposta );}  
+                            }else{
+                                puts("   OPS! NÃO HÁ COTAÇÕES.\n\n"); 
+                            }
+
+                        }else{ break;}
+                    }while( true );   
                     break;
         
                 case COMPRAR: 
@@ -73,8 +74,12 @@ int main( ){
                                 printf( "======================================================\n" 
                                         "\t\t\t ADICIONANDO PAPEIS\n\n" 
                                         "DIGITE [0 PARA SAIR]:\n\n");
-                                if( adiciona_papel( ) && gerador_de_cotacoes( )  ){
-                                    puts("\t\tPAPEIS ADICIONADOS COM SUCESSO!\n\n");
+                                if( adiciona_papel( ) ){
+                                    if( gerador_de_cotacoes( ) ){
+                                        puts("\t\tPAPEIS ADICIONADOS COM SUCESSO!\n\n");
+                                    }else{
+                                         puts("   OPS! AS COTAÇÕES NÃO FORAM GERADAS.\n\n");   
+                                    }
                                 }else{
                                     puts("   OPS! OS PAPEIS NÃO FORAM ADICIONADOS.\n\n");    
                                 }break;
@@ -99,7 +104,7 @@ bool inicializar( papel **headPapel, acao **headVenda, acao **headCompra  ){
         puts( "\tNÃO FOI POSSÍVEL CRIAR OS ARQUIVOS :(\n\n" );}
     if( recupera_papeis( headPapel ) ){
         if( !recupera_cotacoes( headVenda, headCompra) ){
-            gerador_de_cotacoes( );}
+            }
     }
     return true;
 }

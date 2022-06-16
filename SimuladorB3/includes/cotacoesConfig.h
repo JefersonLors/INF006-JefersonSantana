@@ -61,15 +61,15 @@ bool gerador_de_cotacoes(  ){
          *primeirasAcoesCompra = NULL,
          *ultimaAcaoVenda = NULL,
          *ultimaAcaoCompra = NULL;
-
+    
     if( recupera_cotacoes( &primeirasAcoesVenda, &primeirasAcoesCompra ) ){
+        dados.quantidade_de_acoes++;
         ultimaAcaoVenda = primeirasAcoesVenda;
         ultimaAcaoCompra = primeirasAcoesCompra;
         
-        dados.quantidade_de_acoes++;
         while( ultimaAcaoVenda->next != NULL && ultimaAcaoCompra->next != NULL ){
             ultimaAcaoVenda = ultimaAcaoVenda->next;
-            ultimaAcaoCompra= ultimaAcaoCompra->next;}
+            ultimaAcaoCompra = ultimaAcaoCompra->next;}
         ultimaAcaoVenda->next = novoVenda;
         ultimaAcaoCompra->next = novoCompra;
         
@@ -80,16 +80,11 @@ bool gerador_de_cotacoes(  ){
     }else{
         dados.quantidade_de_acoes++;
         if( salva_cotacoes( &novoVenda, &novoCompra ) ){
+            limpa_lista_de_acoes( &novoVenda );
+            limpa_lista_de_acoes( &novoCompra );
             return true;}}
    
     return false;
-}
-bool preenche_cotacoes( acao **acao ){
-    if( obtem_nome_e_codigo( *acao ) ){
-        if( gerador_de_quantidade_de_acoes( (*acao)->valor ) ){
-            if( gerador_de_valor( (*acao)->valor ) ){
-                    return true;}}}
-    return false; 
 }
 bool gerador_de_lista_de_oferta( qtd_valores **inicio, acao *acao ){
     unsigned quantidade = acao->quantidadeCotado = gerador_de_quantidade_de_oferta( );
@@ -114,6 +109,17 @@ bool gerador_de_lista_de_oferta( qtd_valores **inicio, acao *acao ){
         return true;
     else return false;
 }
+unsigned gerador_de_quantidade_de_oferta( ){
+    srand( time(NULL) );
+    return 1 + rand( ) % 5;
+}
+bool preenche_cotacoes( acao **acao ){
+    if( obtem_nome_e_codigo( *acao ) ){
+        if( gerador_de_quantidade_de_acoes( (*acao)->valor ) ){
+            if( gerador_de_valor( (*acao)->valor ) ){
+                    return true;}}}
+    return false; 
+}
 bool obtem_nome_e_codigo( acao *acao ){
     papel *papelAtual = NULL,
           *primeiroPapel = NULL;
@@ -126,13 +132,15 @@ bool obtem_nome_e_codigo( acao *acao ){
             papelAtual = papelAtual->next;}
         strcpy( acao->identificacao.nomeDePregao, papelAtual->nomeDePregao );
         strcpy( acao->identificacao.codigo, papelAtual->codigo );
+        limpa_lista_de_papeis( &primeiroPapel );
         return true;
-    }return false;
+    }
     limpa_lista_de_papeis( &primeiroPapel );
+    return false;
 }
 bool gerador_de_quantidade_de_acoes( qtd_valores *inicioLista ){
     qtd_valores *atual = inicioLista;
-    srand( time(NULL) );
+    srand( time( NULL) );
     
     while( atual != NULL ){
         atual->quantidade = 1 + rand( ) % 1000;
@@ -153,44 +161,42 @@ bool gerador_de_valor( qtd_valores *inicioLista ){
         atual = atual->next;}
     return true;
 }
-unsigned gerador_de_quantidade_de_oferta( ){
-    srand( time(NULL) );
-    return 1 + rand( ) % 5;
-}
 bool visualizar_ofertas_acao( unsigned posicao ){
     acao *atualVenda = NULL,
          *atualCompra = NULL,
          *inicioVenda = NULL,
          *inicioCompra = NULL;
 
-    recupera_cotacoes( &atualVenda, &atualCompra );
-    inicioVenda = atualVenda;
-    inicioCompra = atualCompra;
-    while( posicao > 1 ){
-        posicao--;
-        atualCompra = atualCompra->next;
-        atualVenda = atualVenda->next;}
-    
-    printf( "%s\n%s\n\n", atualVenda->identificacao.nomeDePregao, 
-            atualVenda->identificacao.codigo );
-    printf( "%30s\n\n", "OFERTAS" );
-    
-    qtd_valores *ofertaVendaAtual = atualVenda->valor,
-                *ofertaCompraAtual = atualCompra->valor;
-    
-    printf( "%10s%11s%21s%11s\n\n", "Quantidade", "Valor", "Quantidade", "Valor" );
-    while( ofertaVendaAtual != NULL ){
-        printf( "%10d%11.2f\t\t", ofertaVendaAtual->quantidade, ofertaVendaAtual->valor );
-                ofertaVendaAtual = ofertaVendaAtual->next;
-        while( ofertaCompraAtual != NULL ){
-            printf( "%14d%11.2f", ofertaCompraAtual->quantidade, ofertaCompraAtual->valor );
-            ofertaCompraAtual = ofertaCompraAtual->next;
-            break;}
-        puts( "\n" );}
-    
-    printf( "%15s%33s\n\n", "VENDA", "COMPRA" );
-    limpa_lista_de_acoes( &inicioVenda );
-    limpa_lista_de_acoes( &inicioCompra);
+    if( recupera_cotacoes( &atualVenda, &atualCompra ) ){
+        inicioVenda = atualVenda;
+        inicioCompra = atualCompra;
+        while( posicao > 1 ){
+            posicao--;
+            atualCompra = atualCompra->next;
+            atualVenda = atualVenda->next;}
+        
+        printf( "%s\n%s\n\n", atualVenda->identificacao.nomeDePregao, 
+                atualVenda->identificacao.codigo );
+        printf( "%30s\n\n", "OFERTAS" );
+        
+        qtd_valores *ofertaVendaAtual = atualVenda->valor,
+                    *ofertaCompraAtual = atualCompra->valor;
+        
+        printf( "%10s%11s%21s%11s\n\n", "Quantidade", "Valor", "Quantidade", "Valor" );
+        while( ofertaVendaAtual != NULL ){
+            printf( "%10d%11.2f\t\t", ofertaVendaAtual->quantidade, ofertaVendaAtual->valor );
+                    ofertaVendaAtual = ofertaVendaAtual->next;
+            while( ofertaCompraAtual != NULL ){
+                printf( "%14d%11.2f", ofertaCompraAtual->quantidade, ofertaCompraAtual->valor );
+                ofertaCompraAtual = ofertaCompraAtual->next;
+                break;}
+            puts( "\n" );}
+        
+        printf( "%15s%33s\n\n", "VENDA", "COMPRA" );
+        limpa_lista_de_acoes( &inicioVenda );
+        limpa_lista_de_acoes( &inicioCompra);
+        return true;
+    }else return false;
 }
 bool recupera_cotacoes( acao **inicioAcaoVenda, acao **inicioAcaoCompra ){
 acao *atualAcaoVenda = *inicioAcaoVenda,
@@ -225,7 +231,7 @@ acao *atualAcaoVenda = *inicioAcaoVenda,
                 fscanf( arquivoAcoesValorVenda, "%s%s%d", novoAcaoVenda->identificacao.nomeDePregao, 
                         novoAcaoVenda->identificacao.codigo, &novoAcaoVenda->quantidadeCotado );
 
-                recupera_lista_de_oferta( &novoAcaoVenda->valor, atualAcaoVenda->quantidadeCotado,
+                recupera_lista_de_oferta( &novoAcaoVenda->valor, novoAcaoVenda->quantidadeCotado,
                                           arquivoAcoesValorVenda );
                  
                 novoAcaoVenda->next = NULL;
@@ -293,69 +299,76 @@ bool retira_cotacoes( ){
     
     papel *atual = NULL,
           *primeiro = NULL;
-    
-    recupera_papeis( &primeiro );
-    atual = primeiro;
-    recupera_cotacoes( &inicioAcaoVenda, &inicioAcaoCompra );
-        
-    acao *atualVenda = inicioAcaoVenda,
-         *atualCompra = inicioAcaoCompra,
-         *atualVendaBackup = NULL,
-         *atualCompraBackup = NULL;
 
-    //retira o primeiro elemento da lista
-    if( strcmp( atual->codigo, atualVenda->identificacao.codigo ) != 0 ){
-        dados.quantidade_de_acoes--;
-        exclui_lista_de_oferta( &atualVenda->valor );
-        exclui_lista_de_oferta( &atualCompra->valor );
-        atualVendaBackup = atualVenda->next;
-        atualCompraBackup = atualCompra->next;
-        free( atualVenda );
-        free( atualCompra );
-        atualVenda = NULL;
-        atualCompra = NULL;
-        inicioAcaoVenda = atualVendaBackup;
-        inicioAcaoCompra = atualCompraBackup;
-    }else{
-        ///retira elementos centrais da lista
-        atualVendaBackup = atualVenda;
-        atualCompraBackup = atualCompra;
-        atualVenda = atualVenda->next;
-        atualCompra = atualCompra->next;
-        atual = atual->next;
-        
-        while( atual != NULL ){
-            if( strcmp( atual->codigo, atualVenda->identificacao.codigo ) != 0 ){
-                dados.quantidade_de_acoes--;
-                exclui_lista_de_oferta( &atualVenda->valor );
-                exclui_lista_de_oferta( &atualCompra->valor );
-                atualVendaBackup->next = atualVenda->next;
-                atualCompraBackup->next = atualCompra->next; 
-                free( atualVenda );
-                free( atualCompra );
-                atualVenda = NULL;
-                atualCompra = NULL;
-                break;}
-           
+    if( recupera_papeis( &primeiro ) ){
+        atual = primeiro;
+     
+        recupera_cotacoes( &inicioAcaoVenda, &inicioAcaoCompra );
+            
+        acao *atualVenda = inicioAcaoVenda,
+             *atualCompra = inicioAcaoCompra,
+             *atualVendaBackup = NULL,
+             *atualCompraBackup = NULL;
+    
+        //retira o primeiro elemento da lista
+        if( strcmp( atual->codigo, atualVenda->identificacao.codigo ) != 0 ){
+            dados.quantidade_de_acoes--;
+            exclui_lista_de_oferta( &atualVenda->valor );
+            exclui_lista_de_oferta( &atualCompra->valor );
+            atualVendaBackup = atualVenda->next;
+            atualCompraBackup = atualCompra->next;
+            free( atualVenda );
+            free( atualCompra );
+            atualVenda = NULL;
+            atualCompra = NULL;
+            inicioAcaoVenda = atualVendaBackup;
+            inicioAcaoCompra = atualCompraBackup;
+        }else{
+            ///retira elementos centrais da lista
             atualVendaBackup = atualVenda;
             atualCompraBackup = atualCompra;
             atualVenda = atualVenda->next;
             atualCompra = atualCompra->next;
             atual = atual->next;
+            
+            while( atual != NULL ){
+                if( strcmp( atual->codigo, atualVenda->identificacao.codigo ) != 0 ){
+                    dados.quantidade_de_acoes--;
+                    exclui_lista_de_oferta( &atualVenda->valor );
+                    exclui_lista_de_oferta( &atualCompra->valor );
+                    atualVendaBackup->next = atualVenda->next;
+                    atualCompraBackup->next = atualCompra->next; 
+                    free( atualVenda );
+                    free( atualCompra );
+                    atualVenda = NULL;
+                    atualCompra = NULL;
+                    break;}
+               
+                atualVendaBackup = atualVenda;
+                atualCompraBackup = atualCompra;
+                atualVenda = atualVenda->next;
+                atualCompra = atualCompra->next;
+                atual = atual->next;
+            }
+            ///retira o último elemento da lista
+            if( atual == NULL && atualCompra != NULL || atualVenda != NULL ){
+                dados.quantidade_de_acoes--;
+                exclui_lista_de_oferta( &atualVenda->valor );
+                exclui_lista_de_oferta( &atualCompra->valor );
+                free( atualVenda );
+                free( atualCompra );
+                atualVenda = NULL;
+                atualCompra = NULL;
+                atualVendaBackup->next = NULL; 
+                atualCompraBackup->next = NULL; 
+                }
         }
-        ///retira o último elemento da lista
-        if( atual == NULL && atualCompra != NULL || atualVenda != NULL ){
-            dados.quantidade_de_acoes--;
-            exclui_lista_de_oferta( &atualVenda->valor );
-            exclui_lista_de_oferta( &atualCompra->valor );
-            free( atualVenda );
-            free( atualCompra );
-            atualVenda = NULL;
-            atualCompra = NULL;}
-    }
+    }else{ dados.quantidade_de_acoes--; }
     if ( salva_cotacoes( &inicioAcaoVenda, &inicioAcaoCompra ) ){
         limpa_lista_de_papeis( &primeiro );
+        puts( "2" );delay
         limpa_lista_de_acoes( &inicioAcaoVenda );
+        puts( "3" );delay
         limpa_lista_de_acoes( &inicioAcaoCompra ); 
         return true;}
     return false;
@@ -382,7 +395,6 @@ bool salva_cotacoes( acao **inicioVenda, acao **inicioCompra ){
             while( atualV != NULL  ){
                 fprintf( arquivoAcoesValorVenda, "%-6d%-6.2f\n", atualV->quantidade, atualV->valor );
                 atualV = atualV->next; }
-            
             fprintf( arquivoAcoesValorCompra, "%s\n%s\n%d\n", 
                      atualCompra->identificacao.nomeDePregao, 
                      atualCompra->identificacao.codigo, atualCompra->quantidadeCotado );
@@ -431,6 +443,17 @@ bool atualiza_cotacoes( unsigned posicao ){
     limpa_lista_de_acoes( &inicioAcaoCompra );
     return false;
 }
+void limpa_lista_de_acoes( acao **inicio ){
+    acao *atual = *inicio; 
+    while( atual != NULL ){
+        acao *backup = atual->next;
+        exclui_lista_de_oferta( &atual->valor );
+        free( atual );
+        atual = NULL;
+        atual = backup;
+    }
+    *inicio = atual;
+}
 bool exclui_lista_de_oferta( qtd_valores **inicio ){      
     qtd_valores *atual = *inicio;
     
@@ -453,17 +476,5 @@ bool ordena_ofertas_de_venda( ){
 bool ordena_ofertas_de_compra( ){
 
     
-}
-void limpa_lista_de_acoes( acao **inicio ){
-    acao *atual = *inicio;
-        
-    while( atual != NULL ){
-        acao *backup = atual->next;
-        exclui_lista_de_oferta( &atual->valor );
-        free( atual );
-        atual = NULL;
-        atual = backup;
-    }
-    *inicio = atual;
 }
 #endif

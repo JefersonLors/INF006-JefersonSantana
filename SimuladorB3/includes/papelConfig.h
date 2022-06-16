@@ -44,7 +44,7 @@ bool adiciona_papel( ){
         if( primeiro->nomeDePregao[0] == '0' ){ 
             free(primeiro);
             primeiro = NULL;
-
+            return false;
         }else{
             printf( "CÓDIGO: " );
             fgets( primeiro->codigo, TAM_CODIGO, stdin );///validar
@@ -65,6 +65,7 @@ bool adiciona_papel( ){
         if( novo->nomeDePregao[0] == '0'){ 
             free(novo);
             novo = NULL;
+            return false;
         }else{          
             printf( "CÓDIGO: " );
             fgets( novo->codigo, TAM_CODIGO, stdin );///validar
@@ -75,7 +76,6 @@ bool adiciona_papel( ){
             putchar('\n');}}
     putchar('\n');
 
-    
     if( inicio != NULL ){
         inicioBackup = inicio;
         while( inicioBackup->next != NULL ){
@@ -159,7 +159,6 @@ bool listar_papeis( ){
         limpa_lista_de_papeis( &head );
         return true;
     }else{ 
-        limpa_lista_de_papeis( &head );
         return false; }
 }
 bool retira_papel(  ){
@@ -186,7 +185,6 @@ bool retira_papel(  ){
                     head = backup;
                     dados.quantidade_de_papel--;
                     if( salva_papeis( head ) ){
-                        limpa_lista_de_papeis( &head );
                         return true;
                     }else{ break; }
                 }else{
@@ -198,7 +196,6 @@ bool retira_papel(  ){
                             dados.quantidade_de_papel--;
                             free( atual );
                             if( salva_papeis( head ) ){
-                                limpa_lista_de_papeis( &head );
                                 return true;
                             }else{ break; }
                         }
@@ -210,14 +207,16 @@ bool retira_papel(  ){
             }
         }while( true );
     }
-    limpa_lista_de_papeis( &head );
-    return false;
     putchar('\n');
+    return false;
+    
 }
 void limpa_lista_de_papeis( papel **inicio ){
     papel *atual = *inicio;
-
+    
+    puts( "aqui" );
     while( atual != NULL ){
+        teste
         papel *backup = atual->next;
         free( atual );
         atual = NULL;
