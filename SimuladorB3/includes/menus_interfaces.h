@@ -1,10 +1,16 @@
 #ifndef menus_interfaces_h
 #define menus_interfaces_h
 
+#include "compraConfig.h"
+#include "ofertasConfig.h"
+#include "gerais.h"
+
 unsigned MENU_PRINCIPAL( void );
 unsigned MENU_PAPEL( void );
 int MENU_COTACOES( void );
 void CARTEIRA_INTERFACE( void );
+void VENDA_INTERFACE( );
+void COMPRA_INTERFACE( void );
 unsigned SUB_MENU_COTACOES( void );
 
 unsigned MENU_PRINCIPAL(  ){
@@ -113,8 +119,64 @@ unsigned SUB_MENU_COTACOES(  ){
         case 1: puts( "ATUALIZAR\n" ); break;}
     return resposta;
 }
-void INTERFACE_COMPRA( ){
+void COMPRA_INTERFACE( ){
+    int resposta;
+    printf( "======================================================\n" 
+            "\t\t\t\t\tOFERTA DE COMPRA\n\n" );
 
+    resposta = MENU_COTACOES( );    
     
+    if( resposta > 0 ){
+    
+        int respostaBackup = resposta,
+            quantidadeTemp = 0;
+        float valorTemp = 0.0; 
+        
+        papel *inicio = NULL;
+        
+        recupera_papeis( &inicio );
+
+        while( resposta > 1 ){ inicio = inicio->next; resposta--; }
+        
+        printf( "======================================================\n" 
+                "\t\t\t\t\tOFERTA DE COMPRA\n\n" );
+        
+        printf( "Acão: %s - %s\n", inicio->codigo, inicio->nomeDePregao );
+        printf( "\nPreço: " );
+        
+        scanf( "%f", &valorTemp );
+        if( valorTemp != 0 ){
+            while( valorTemp < 0 ){
+                puts( "\n\t\t\tvalor inválido!\n");
+                printf( "\nPreço: R$" );
+                scanf( "%f", &valorTemp );
+            }
+            printf( "\nQuantidade: " );
+            scanf("%d", &quantidadeTemp );
+            while( quantidadeTemp < 0 ){
+                puts( "\n\t\t\tquantidade inválida!\n");
+                printf( "\nQuantidade: " );
+                scanf( "%d", &quantidadeTemp );
+            }
+            acao *nova = (acao*)malloc( sizeof(acao) );
+         
+            strcpy( nova->identificacao.codigo, inicio->codigo );
+            strcpy( nova->identificacao.nomeDePregao, inicio->nomeDePregao );
+           
+            nova->quantidadeOfertado = 1;
+            (nova->valor) = (qtd_valores*)malloc( sizeof(qtd_valores) );
+            (nova->valor)->quantidade = quantidadeTemp;
+            (nova->valor)->valor = valorTemp;
+            nova->next = NULL;
+            nova->prev = NULL;
+            limpa_lista_de_papeis( &inicio );
+            if( incluir_oferta_de_compra( nova ) ){
+                puts( "\n\t\t\tOferta inlcuída com sucesso!\n\n");
+            }else{
+                puts( "\t\t\t\nOps! não foi possível inserir a oferta!\n\n");
+            }
+        }
+    }else if ( resposta == -1 ){
+        puts("\n\t\t\tNÃO HÁ PAPEIS PARA NEGOCIAR!\n\n");}
 }
 #endif

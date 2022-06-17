@@ -15,7 +15,7 @@ typedef struct qtd_valores{
 typedef struct acoes{
     papel identificacao;
     qtd_valores *valor;
-    unsigned quantidadeCotado;
+    unsigned quantidadeOfertado;
     struct acoes *prev;
     struct acoes *next;
 }acao;
@@ -97,7 +97,7 @@ bool gerador_de_ofertas(  ){
     return false;
 }
 bool gerador_de_lista_de_oferta( qtd_valores **inicio, acao *acao ){
-    unsigned quantidade = acao->quantidadeCotado = gerador_de_quantidade_de_oferta( );
+    unsigned quantidade = acao->quantidadeOfertado = gerador_de_quantidade_de_oferta( );
              
     qtd_valores *atual = *inicio,
                 *novo = NULL;
@@ -130,11 +130,11 @@ bool preenche_ofertas( acao **acao, bool sinal ){
         if( gerador_de_quantidade_de_acoes( (*acao)->valor ) ){
             if( sinal ){
                 if( gerador_de_valor_de_compra( (*acao)->valor ) ){
-                    ordena_ofertas_de_compra( (*acao)->valor, (*acao)->quantidadeCotado );
+                    ordena_ofertas_de_compra( (*acao)->valor, (*acao)->quantidadeOfertado );
                     return true;}
             }else{
                 if( gerador_de_valor_de_venda( (*acao)->valor ) ){
-                    ordena_ofertas_de_venda( (*acao)->valor, (*acao)->quantidadeCotado );
+                    ordena_ofertas_de_venda( (*acao)->valor, (*acao)->quantidadeOfertado );
                     return true;}}
         }    
     }
@@ -259,8 +259,8 @@ acao *atualAcaoVenda = *inicioAcaoVenda,
                 atualAcaoVenda = (acao*)(malloc(sizeof(acao) ) );
                 atualAcaoVenda->valor = NULL;
                 fscanf( arquivoAcoesValorVenda, "%s%s%d", atualAcaoVenda->identificacao.nomeDePregao, 
-                        atualAcaoVenda->identificacao.codigo, &atualAcaoVenda->quantidadeCotado );
-                recupera_lista_de_oferta( &atualAcaoVenda->valor, atualAcaoVenda->quantidadeCotado, 
+                        atualAcaoVenda->identificacao.codigo, &atualAcaoVenda->quantidadeOfertado );
+                recupera_lista_de_oferta( &atualAcaoVenda->valor, atualAcaoVenda->quantidadeOfertado, 
                                           arquivoAcoesValorVenda );
                 atualAcaoVenda->next = NULL;
                 *inicioAcaoVenda = atualAcaoVenda;
@@ -271,9 +271,9 @@ acao *atualAcaoVenda = *inicioAcaoVenda,
                 novoAcaoVenda = (acao*)(malloc(sizeof(acao) ) );
                 novoAcaoVenda->valor = NULL;
                 fscanf( arquivoAcoesValorVenda, "%s%s%d", novoAcaoVenda->identificacao.nomeDePregao, 
-                        novoAcaoVenda->identificacao.codigo, &novoAcaoVenda->quantidadeCotado );
+                        novoAcaoVenda->identificacao.codigo, &novoAcaoVenda->quantidadeOfertado );
 
-                recupera_lista_de_oferta( &novoAcaoVenda->valor, novoAcaoVenda->quantidadeCotado,
+                recupera_lista_de_oferta( &novoAcaoVenda->valor, novoAcaoVenda->quantidadeOfertado,
                                           arquivoAcoesValorVenda );
                  
                 novoAcaoVenda->next = NULL;
@@ -283,9 +283,9 @@ acao *atualAcaoVenda = *inicioAcaoVenda,
                 atualAcaoCompra = (acao*)(malloc(sizeof(acao) ) );
                 atualAcaoCompra->valor = NULL;
                 fscanf( arquivoAcoesValorCompra, "%s%s%d", atualAcaoCompra->identificacao.nomeDePregao, 
-                        atualAcaoCompra->identificacao.codigo, &atualAcaoCompra->quantidadeCotado );
+                        atualAcaoCompra->identificacao.codigo, &atualAcaoCompra->quantidadeOfertado );
                 
-                recupera_lista_de_oferta( &atualAcaoCompra->valor, atualAcaoCompra->quantidadeCotado,
+                recupera_lista_de_oferta( &atualAcaoCompra->valor, atualAcaoCompra->quantidadeOfertado,
                                           arquivoAcoesValorCompra );
                 atualAcaoCompra->next = NULL;
                 *inicioAcaoCompra = atualAcaoCompra;
@@ -295,8 +295,8 @@ acao *atualAcaoVenda = *inicioAcaoVenda,
                 novoAcaoCompra = (acao*)(malloc(sizeof(acao) ) );
                 novoAcaoCompra->valor = NULL;
                 fscanf( arquivoAcoesValorCompra, "%s%s%d", novoAcaoCompra->identificacao.nomeDePregao, 
-                        novoAcaoCompra->identificacao.codigo, &novoAcaoCompra->quantidadeCotado );
-                recupera_lista_de_oferta( &novoAcaoCompra->valor, novoAcaoCompra->quantidadeCotado,
+                        novoAcaoCompra->identificacao.codigo, &novoAcaoCompra->quantidadeOfertado );
+                recupera_lista_de_oferta( &novoAcaoCompra->valor, novoAcaoCompra->quantidadeOfertado,
                                           arquivoAcoesValorCompra );
                 novoAcaoCompra->next = NULL;
                 atualAcaoCompra->next = novoAcaoCompra;
@@ -430,14 +430,14 @@ bool salva_ofertas( acao **inicioVenda, acao **inicioCompra ){
             
             fprintf( arquivoAcoesValorVenda, "%s\n%s\n%d\n", 
                      atualVenda->identificacao.nomeDePregao, 
-                     atualVenda->identificacao.codigo, atualVenda->quantidadeCotado ); 
+                     atualVenda->identificacao.codigo, atualVenda->quantidadeOfertado ); 
             
             while( atualV != NULL  ){
                 fprintf( arquivoAcoesValorVenda, "%-6d%-6.2f\n", atualV->quantidade, atualV->valor );
                 atualV = atualV->next; }
             fprintf( arquivoAcoesValorCompra, "%s\n%s\n%d\n", 
                      atualCompra->identificacao.nomeDePregao, 
-                     atualCompra->identificacao.codigo, atualCompra->quantidadeCotado );
+                     atualCompra->identificacao.codigo, atualCompra->quantidadeOfertado );
             while( atualC != NULL ){
                 fprintf( arquivoAcoesValorCompra, "%-6d%-6.2f\n", atualC->quantidade, atualC->valor ); 
                 atualC = atualC->next;}
@@ -473,8 +473,10 @@ bool atualiza_ofertas( unsigned posicao ){
                 if( gerador_de_lista_de_oferta( &antigaAcaoCompra->valor, antigaAcaoCompra ) ){ 
                    if( gerador_de_quantidade_de_acoes( antigaAcaoVenda->valor ) ){ 
                         if( gerador_de_quantidade_de_acoes( antigaAcaoCompra->valor ) ){ 
-                            if( gerador_de_valor_de_venda( antigaAcaoVenda->valor ) ){ 
+                            if( gerador_de_valor_de_venda( antigaAcaoVenda->valor ) ){
+                                ordena_ofertas_de_venda( antigaAcaoVenda->valor, antigaAcaoVenda->quantidadeOfertado );
                                 if( gerador_de_valor_de_compra( antigaAcaoCompra->valor ) ){ 
+                                    ordena_ofertas_de_compra( antigaAcaoCompra->valor, antigaAcaoCompra->quantidadeOfertado);
                                     if( salva_ofertas( &inicioAcaoVenda, &inicioAcaoCompra ) ){ 
                                         limpa_lista_de_acoes( &inicioAcaoVenda );
                                         limpa_lista_de_acoes( &inicioAcaoCompra );

@@ -47,7 +47,8 @@ int main( ){
                     break;
         
                 case COMPRAR: 
-                break;
+                    COMPRA_INTERFACE( );
+                    break;
     
                 case VENDER:
                 break;
