@@ -10,13 +10,14 @@
 
 typedef struct papel{
     char nomeDePregao[TAM_NOME_PREGAO],
-         codigo[TAM_CODIGO];
+         codigo[TAM_CODIGO];   
     struct papel *next; 
 }papel;
 
 bool adiciona_papel( void );
 bool salva_papeis( papel* );
 bool recupera_papeis( papel** );
+
 bool listar_papeis( void );
 bool retira_papel( void );
 void limpa_lista_de_papeis( papel** );
@@ -136,8 +137,7 @@ bool recupera_papeis( papel **head ){
                 fscanf( arquivoPapeis, "%s%s",proximo->codigo, proximo->nomeDePregao);
                 atual->next = proximo;
                 proximo->next = NULL;
-                fila--; 
-            }
+                fila--;}
 
             fclose( arquivoConfig );
             fclose( arquivoPapeis );
@@ -197,31 +197,22 @@ bool retira_papel(  ){
                             free( atual );
                             if( salva_papeis( head ) ){
                                 return true;
-                            }else{ break; }
-                        }
+                            }else{ break; }}
                         backup = atual;
-                        atual = atual->next;
-                        }
-                    }
-                break;
-            }
-        }while( true );
-    }
+                        atual = atual->next;}}
+                break;}
+        }while( true );}
     putchar('\n');
-    return false;
-    
+    return false;   
 }
 void limpa_lista_de_papeis( papel **inicio ){
     papel *atual = *inicio;
     
-    puts( "aqui" );
     while( atual != NULL ){
-        teste
         papel *backup = atual->next;
         free( atual );
         atual = NULL;
-        atual = backup;
-    }
+        atual = backup;}
     *inicio = atual;
 }
 #endif

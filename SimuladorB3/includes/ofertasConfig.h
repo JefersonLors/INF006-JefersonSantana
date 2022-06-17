@@ -1,5 +1,5 @@
-#ifndef cotacoesConfig_h
-#define cotacoesConfig_h
+#ifndef ofertasConfig_h
+#define ofertasConfig_h
 
 #include <time.h>
 #include <string.h>
@@ -8,6 +8,7 @@
 typedef struct qtd_valores{
     int quantidade;
     float valor;
+    struct qtd_valores *prev;
     struct qtd_valores *next;
 }qtd_valores;
 
@@ -15,46 +16,53 @@ typedef struct acoes{
     papel identificacao;
     qtd_valores *valor;
     unsigned quantidadeCotado;
+    struct acoes *prev;
     struct acoes *next;
 }acao;
 
-bool gerador_de_cotacoes( void );
+bool gerador_de_ofertas( void );
 bool gerador_de_lista_de_oferta( qtd_valores**, acao* );
-bool ordena_ofertas_de_venda( void );
+bool gerador_de_quantidade_de_acoes( qtd_valores* );
+bool gerador_de_valor_de_venda( qtd_valores* );
+bool gerador_de_valor_de_compra( qtd_valores* );
+unsigned gerador_de_quantidade_de_oferta( void );
 
-bool ordena_ofertas_de_compra( void );
-bool preenche_cotacoes( acao** );
-bool retira_cotacoes( void );
+void ordena_ofertas_de_venda( qtd_valores*, unsigned );
+void ordena_ofertas_de_compra( qtd_valores*, unsigned );
+
+bool preenche_ofertas( acao**, bool );
 
 bool obtem_nome_e_codigo( acao* );
-bool gerador_de_quantidade_de_acoes( qtd_valores* );
-bool gerador_de_valor( qtd_valores* );
 
-unsigned gerador_de_quantidade_de_oferta( void );
-bool recupera_cotacoes( acao**, acao** );
+bool recupera_ofertas( acao**, acao** );
 bool recupera_lista_de_oferta( qtd_valores**, unsigned, FILE* );
 
-bool atualiza_cotacoes( unsigned );
+bool atualiza_ofertas( unsigned );
+bool retira_oferta( void );
 bool exclui_lista_de_oferta( qtd_valores** );
-bool salva_cotacoes( acao**, acao** );
+void limpa_lista_de_acoes( acao** );
+bool salva_ofertas( acao**, acao** );
 
 bool visualizar_ofertas_acao( unsigned );
-void limpa_lista_de_acoes( acao** );
 
-bool gerador_de_cotacoes(  ){
+///adicionar cotacao quando transacoes forem inseridas
+
+bool gerador_de_ofertas(  ){
     acao *novoVenda = NULL,
          *novoCompra = NULL;
     
     novoVenda = (acao*)(malloc(sizeof(acao) ) );
     novoVenda->valor = NULL;
     gerador_de_lista_de_oferta( &novoVenda->valor, novoVenda );
-    preenche_cotacoes( &novoVenda );
+    preenche_ofertas( &novoVenda, true );
+    novoVenda->prev = NULL;
     novoVenda->next = NULL;
     
     novoCompra = (acao*)(malloc(sizeof(acao) ) );
     novoCompra->valor = NULL;
     gerador_de_lista_de_oferta( &novoCompra->valor, novoCompra );
-    preenche_cotacoes( &novoCompra );
+    preenche_ofertas( &novoCompra, false );
+    novoCompra->prev = NULL;
     novoCompra->next = NULL;
 
     acao *primeirasAcoesVenda = NULL,
@@ -62,7 +70,7 @@ bool gerador_de_cotacoes(  ){
          *ultimaAcaoVenda = NULL,
          *ultimaAcaoCompra = NULL;
     
-    if( recupera_cotacoes( &primeirasAcoesVenda, &primeirasAcoesCompra ) ){
+    if( recupera_ofertas( &primeirasAcoesVenda, &primeirasAcoesCompra ) ){
         dados.quantidade_de_acoes++;
         ultimaAcaoVenda = primeirasAcoesVenda;
         ultimaAcaoCompra = primeirasAcoesCompra;
@@ -70,16 +78,18 @@ bool gerador_de_cotacoes(  ){
         while( ultimaAcaoVenda->next != NULL && ultimaAcaoCompra->next != NULL ){
             ultimaAcaoVenda = ultimaAcaoVenda->next;
             ultimaAcaoCompra = ultimaAcaoCompra->next;}
-        ultimaAcaoVenda->next = novoVenda;
+        ultimaAcaoVenda->next = novoVenda; 
+        novoVenda->prev = ultimaAcaoVenda;
         ultimaAcaoCompra->next = novoCompra;
+        novoCompra->prev = ultimaAcaoCompra;
         
-        if( salva_cotacoes( &primeirasAcoesVenda, &primeirasAcoesCompra ) ){
+        if( salva_ofertas( &primeirasAcoesVenda, &primeirasAcoesCompra ) ){
             limpa_lista_de_acoes( &primeirasAcoesVenda );
             limpa_lista_de_acoes( &primeirasAcoesCompra );
             return true; }
     }else{
         dados.quantidade_de_acoes++;
-        if( salva_cotacoes( &novoVenda, &novoCompra ) ){
+        if( salva_ofertas( &novoVenda, &novoCompra ) ){
             limpa_lista_de_acoes( &novoVenda );
             limpa_lista_de_acoes( &novoCompra );
             return true;}}
@@ -96,12 +106,14 @@ bool gerador_de_lista_de_oferta( qtd_valores **inicio, acao *acao ){
         if( atual == NULL ){
             atual = (qtd_valores*)( malloc( sizeof( qtd_valores) ) );
             atual->next = NULL;
+            atual->prev = NULL;
             *inicio = atual;
         }else{
             while( atual->next != NULL ){
                 atual = atual->next;}
             novo = (qtd_valores*)( malloc( sizeof( qtd_valores) ) );
             atual->next = novo;
+            novo->prev = atual;
             novo->next = NULL;}
         quantidade--;}
 
@@ -111,13 +123,21 @@ bool gerador_de_lista_de_oferta( qtd_valores **inicio, acao *acao ){
 }
 unsigned gerador_de_quantidade_de_oferta( ){
     srand( time(NULL) );
-    return 1 + rand( ) % 5;
+    return 2 + rand( ) % 6;
 }
-bool preenche_cotacoes( acao **acao ){
+bool preenche_ofertas( acao **acao, bool sinal ){
     if( obtem_nome_e_codigo( *acao ) ){
         if( gerador_de_quantidade_de_acoes( (*acao)->valor ) ){
-            if( gerador_de_valor( (*acao)->valor ) ){
-                    return true;}}}
+            if( sinal ){
+                if( gerador_de_valor_de_compra( (*acao)->valor ) ){
+                    ordena_ofertas_de_compra( (*acao)->valor, (*acao)->quantidadeCotado );
+                    return true;}
+            }else{
+                if( gerador_de_valor_de_venda( (*acao)->valor ) ){
+                    ordena_ofertas_de_venda( (*acao)->valor, (*acao)->quantidadeCotado );
+                    return true;}}
+        }    
+    }
     return false; 
 }
 bool obtem_nome_e_codigo( acao *acao ){
@@ -147,8 +167,9 @@ bool gerador_de_quantidade_de_acoes( qtd_valores *inicioLista ){
         atual = atual->next;}
     return true;
 }
-bool gerador_de_valor( qtd_valores *inicioLista ){
+bool gerador_de_valor_de_venda( qtd_valores *inicioLista ){
     qtd_valores *atual = inicioLista;
+    
     srand( time( NULL) );
 
     int inteiro;
@@ -156,9 +177,29 @@ bool gerador_de_valor( qtd_valores *inicioLista ){
     
     while( atual != NULL ){
         inteiro = 1 + rand( ) % 1000;
-        decimal = ( 0 + rand( ) % 99 ) * 0.1 ;
-        atual->valor = inteiro + decimal ;    
+        decimal = ( 0 + rand( ) % 99 ) * 0.1;
+        atual->valor = inteiro + decimal;  
         atual = atual->next;}
+    
+    return true;
+}
+bool gerador_de_valor_de_compra( qtd_valores *inicioLista ){
+    qtd_valores *atual = inicioLista;
+              
+    srand( time( NULL) );
+
+    int inteiro;
+    float decimal;
+    
+    while( atual != NULL ){
+        inteiro = 1 + rand( ) % 1000;
+        decimal = ( 0 + rand( ) % 99 ) * 0.1;
+        atual->valor = inteiro + decimal;  
+        atual = atual->next;}
+
+    //if( inicioLista->next ){
+        //ordena_ofertas_de_compra( inicioLista );}
+    
     return true;
 }
 bool visualizar_ofertas_acao( unsigned posicao ){
@@ -167,7 +208,8 @@ bool visualizar_ofertas_acao( unsigned posicao ){
          *inicioVenda = NULL,
          *inicioCompra = NULL;
 
-    if( recupera_cotacoes( &atualVenda, &atualCompra ) ){
+    if( recupera_ofertas( &atualVenda, &atualCompra ) ){
+ 
         inicioVenda = atualVenda;
         inicioCompra = atualCompra;
         while( posicao > 1 ){
@@ -198,7 +240,7 @@ bool visualizar_ofertas_acao( unsigned posicao ){
         return true;
     }else return false;
 }
-bool recupera_cotacoes( acao **inicioAcaoVenda, acao **inicioAcaoCompra ){
+bool recupera_ofertas( acao **inicioAcaoVenda, acao **inicioAcaoCompra ){
 acao *atualAcaoVenda = *inicioAcaoVenda,
          *atualAcaoCompra = *inicioAcaoCompra,
          *novoAcaoCompra = NULL,
@@ -293,7 +335,7 @@ bool recupera_lista_de_oferta( qtd_valores **inicio, unsigned quantidade,  FILE 
         return true;
     else return false;
 }
-bool retira_cotacoes( ){
+bool retira_oferta( ){
      acao *inicioAcaoVenda = NULL, 
           *inicioAcaoCompra = NULL;
     
@@ -303,7 +345,7 @@ bool retira_cotacoes( ){
     if( recupera_papeis( &primeiro ) ){
         atual = primeiro;
      
-        recupera_cotacoes( &inicioAcaoVenda, &inicioAcaoCompra );
+        recupera_ofertas( &inicioAcaoVenda, &inicioAcaoCompra );
             
         acao *atualVenda = inicioAcaoVenda,
              *atualCompra = inicioAcaoCompra,
@@ -364,16 +406,14 @@ bool retira_cotacoes( ){
                 }
         }
     }else{ dados.quantidade_de_acoes--; }
-    if ( salva_cotacoes( &inicioAcaoVenda, &inicioAcaoCompra ) ){
+    if ( salva_ofertas( &inicioAcaoVenda, &inicioAcaoCompra ) ){
         limpa_lista_de_papeis( &primeiro );
-        puts( "2" );delay
         limpa_lista_de_acoes( &inicioAcaoVenda );
-        puts( "3" );delay
         limpa_lista_de_acoes( &inicioAcaoCompra ); 
         return true;}
     return false;
 }
-bool salva_cotacoes( acao **inicioVenda, acao **inicioCompra ){
+bool salva_ofertas( acao **inicioVenda, acao **inicioCompra ){
     acao *atualVenda = *inicioVenda,
          *atualCompra = *inicioCompra;
 
@@ -411,13 +451,13 @@ bool salva_cotacoes( acao **inicioVenda, acao **inicioCompra ){
         return true;
     }else{ return false;} 
 }
-bool atualiza_cotacoes( unsigned posicao ){
+bool atualiza_ofertas( unsigned posicao ){
     acao *antigaAcaoVenda = NULL,
          *antigaAcaoCompra = NULL,
          *inicioAcaoVenda = NULL,
          *inicioAcaoCompra = NULL; 
 
-    recupera_cotacoes( &antigaAcaoVenda, &antigaAcaoCompra );
+    recupera_ofertas( &antigaAcaoVenda, &antigaAcaoCompra );
 
     inicioAcaoVenda = antigaAcaoVenda;
     inicioAcaoCompra = antigaAcaoCompra;
@@ -433,9 +473,9 @@ bool atualiza_cotacoes( unsigned posicao ){
                 if( gerador_de_lista_de_oferta( &antigaAcaoCompra->valor, antigaAcaoCompra ) ){ 
                    if( gerador_de_quantidade_de_acoes( antigaAcaoVenda->valor ) ){ 
                         if( gerador_de_quantidade_de_acoes( antigaAcaoCompra->valor ) ){ 
-                            if( gerador_de_valor( antigaAcaoVenda->valor ) ){ 
-                                if( gerador_de_valor( antigaAcaoCompra->valor ) ){ 
-                                    if( salva_cotacoes( &inicioAcaoVenda, &inicioAcaoCompra ) ){ 
+                            if( gerador_de_valor_de_venda( antigaAcaoVenda->valor ) ){ 
+                                if( gerador_de_valor_de_compra( antigaAcaoCompra->valor ) ){ 
+                                    if( salva_ofertas( &inicioAcaoVenda, &inicioAcaoCompra ) ){ 
                                         limpa_lista_de_acoes( &inicioAcaoVenda );
                                         limpa_lista_de_acoes( &inicioAcaoCompra );
                                         return true;}}}}}}}}}
@@ -469,12 +509,60 @@ bool exclui_lista_de_oferta( qtd_valores **inicio ){
         return true;
     }else return false;
 }
-bool ordena_ofertas_de_venda( ){
-
+void ordena_ofertas_de_venda( qtd_valores *inicio, unsigned tamanho ){
+    qtd_valores *atual = inicio;
+    int i = 0,
+        j = 0;
+        
+    float valorAtual;
+    float *listaTemp = (float*)malloc( tamanho*sizeof(float) );
     
+    while( atual != NULL ){
+        listaTemp[i++] = atual->valor;
+        atual = atual->next;}
+
+    for (int x = 1; x < tamanho; x++) {
+        valorAtual = listaTemp[x];
+        j = x - 1;
+        while (j >= 0 && listaTemp[j] < valorAtual) {
+            listaTemp[j + 1] = listaTemp[j];
+            j = j - 1;}
+        listaTemp[j + 1] = valorAtual;}
+
+    i = 0;
+    atual = inicio;
+
+    while( atual != NULL ){
+        atual->valor = listaTemp[i++];
+        atual = atual->next;}
+    free( listaTemp );
 }
-bool ordena_ofertas_de_compra( ){
-
+void ordena_ofertas_de_compra( qtd_valores *inicio, unsigned tamanho ){
+    qtd_valores *atual = inicio;
+    int i = 0,
+        j = 0;
+        
+    float valorAtual;
+    float *listaTemp = (float*)malloc( tamanho*sizeof(float) );
     
+    while( atual != NULL ){
+        listaTemp[i++] = atual->valor;
+        atual = atual->next;}
+
+    for (int x = 1; x < tamanho; x++) {
+        valorAtual = listaTemp[x];
+        j = x - 1;
+        while (j >= 0 && listaTemp[j] > valorAtual) {
+            listaTemp[j + 1] = listaTemp[j];
+            j = j - 1;}
+        listaTemp[j + 1] = valorAtual;}
+
+    i = 0;
+    atual = inicio;
+
+    while( atual != NULL ){
+        atual->valor = listaTemp[i++];
+        atual = atual->next;}
+    free( listaTemp );
 }
 #endif

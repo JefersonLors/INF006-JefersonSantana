@@ -20,6 +20,4 @@ void formata_texto( char *texto ){
             texto[caracter] = '_';
     }
 }
-
-
 #endif

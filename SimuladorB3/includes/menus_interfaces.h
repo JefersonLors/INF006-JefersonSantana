@@ -3,7 +3,7 @@
 
 unsigned MENU_PRINCIPAL( void );
 unsigned MENU_PAPEL( void );
-unsigned MENU_COTACOES( void );
+int MENU_COTACOES( void );
 void CARTEIRA_INTERFACE( void );
 unsigned SUB_MENU_COTACOES( void );
 
@@ -72,27 +72,28 @@ void CARTEIRA_INTERFACE( ){
     printf( "\n\t\t\t\t\t\t\t\t[ENTER PARA SAIR]\n");
     getchar( );
 }
-unsigned MENU_COTACOES(  ){
+int MENU_COTACOES(  ){
     unsigned resposta;
     printf( "======================================================\n" 
             "\t\t\t\t\tESCOLHA A AÇÃO\n\n"
             "#\t\t   CODIGO\t\t\t  NOME DE PREGÃO\n\n"
             );
 
-    listar_papeis( );
-    printf( "[0] SAIR\n\n"
-            "[ ] <- " 
-          );
-    scanf( "%d", &resposta ); getchar( ); 
-    while( resposta < 0 || resposta > dados.quantidade_de_papel ){
-        printf( "\t\t\tOPÇÃO INVÁLIDA!\n\n"
-              "[ ] <- " ); 
-        scanf( "%d", &resposta ); getchar( );}
-    printf("[%d] ", resposta );
-    switch( resposta ){
-        case 0: puts( "SAIR\n" ); break;
-        default: puts( "ESCOLHIDA\n" ); break;}
-    return resposta;
+    if( listar_papeis( ) ){
+        printf( "[0] SAIR\n\n"
+                "[ ] <- " 
+              );
+        scanf( "%d", &resposta ); getchar( ); 
+        while( resposta < 0 || resposta > dados.quantidade_de_papel ){
+            printf( "\t\t\tOPÇÃO INVÁLIDA!\n\n"
+                  "[ ] <- " ); 
+            scanf( "%d", &resposta ); getchar( );}
+        printf("[%d] ", resposta );
+        switch( resposta ){
+            case 0: puts( "SAIR\n" ); break;
+            default: puts( "ESCOLHIDA\n" ); break;}
+        return resposta;
+    }return -1;
 }
 unsigned SUB_MENU_COTACOES(  ){
     unsigned resposta;
@@ -111,5 +112,9 @@ unsigned SUB_MENU_COTACOES(  ){
         case 0: puts( "SAIR\n" ); break;
         case 1: puts( "ATUALIZAR\n" ); break;}
     return resposta;
+}
+void INTERFACE_COMPRA( ){
+
+    
 }
 #endif

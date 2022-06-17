@@ -7,7 +7,7 @@
 #include "includes/vendaConfig.h"
 #include "includes/compraConfig.h"
 #include "includes/carteiraConfig.h"
-#include "includes/cotacoesConfig.h"
+#include "includes/ofertasConfig.h"
 #include "includes/menus_interfaces.h"
 
 bool inicializar( papel**, acao**, acao** );
@@ -31,20 +31,17 @@ int main( ){
                 case COTACOES:
                     do{ subResposta = MENU_COTACOES( );
                         if( subResposta != SAIR ){
-                            printf( "==========================="
-                                    "===========================\n" 
-                                    "\t\t\t\t\t\tAÇÃO\n\n" );
-                            if( visualizar_ofertas_acao( subResposta ) ){
+                            if( subResposta != -1 ){
+                                visualizar_ofertas_acao( subResposta );
                                 while( SUB_MENU_COTACOES(  ) ){
-                                    atualiza_cotacoes( subResposta );
                                     printf( "==========================="
                                             "===========================\n" 
                                             "\t\t\t\t\t\tAÇÃO\n\n" );
+                                    atualiza_ofertas( subResposta );
                                     visualizar_ofertas_acao( subResposta );}  
                             }else{
-                                puts("   OPS! NÃO HÁ COTAÇÕES.\n\n"); 
-                            }
-
+                                puts("\t\t\t\tOPS! NÃO HÁ COTAÇÕES.\n\n");
+                                break;}
                         }else{ break;}
                     }while( true );   
                     break;
@@ -75,7 +72,7 @@ int main( ){
                                         "\t\t\t ADICIONANDO PAPEIS\n\n" 
                                         "DIGITE [0 PARA SAIR]:\n\n");
                                 if( adiciona_papel( ) ){
-                                    if( gerador_de_cotacoes( ) ){
+                                    if( gerador_de_ofertas( ) ){
                                         puts("\t\tPAPEIS ADICIONADOS COM SUCESSO!\n\n");
                                     }else{
                                          puts("   OPS! AS COTAÇÕES NÃO FORAM GERADAS.\n\n");   
@@ -87,7 +84,7 @@ int main( ){
                                 printf( "======================================================\n" 
                                         "\t\t\t\t  EXCLUINDO PAPEIS\n\n" 
                                         "DIGITE [0 PARA SAIR]:\n\n");
-                                if( retira_papel( ) && retira_cotacoes( ) ){
+                                if( retira_papel( ) && retira_oferta( ) ){
                                         puts("\t\tPAPEIS RETIRADOS COM SUCESSO!\n\n");
                                 }else {
                                     puts("   OPS! OS PAPEIS NÃO FORAM RETIRADOS.\n\n"); }     
@@ -101,10 +98,10 @@ int main( ){
 }
 bool inicializar( papel **headPapel, acao **headVenda, acao **headCompra  ){
     if( !cria_arquivos( ) ){
-        puts( "\tNÃO FOI POSSÍVEL CRIAR OS ARQUIVOS :(\n\n" );}
+        puts( "\tNÃO FOI POSSÍVEL CRIAR OS ARQUIVOS :(\n\n" );
+        return false;
+    }else return true;
     if( recupera_papeis( headPapel ) ){
-        if( !recupera_cotacoes( headVenda, headCompra) ){
-            }
-    }
-    return true;
+        if( recupera_ofertas( headVenda, headCompra) ){ }}
+
 }
