@@ -225,9 +225,13 @@ bool visualizar_ofertas_acao( unsigned posicao ){
                     *ofertaCompraAtual = atualCompra->valor;
         
         printf( "%10s%11s%21s%11s\n\n", "Quantidade", "Valor", "Quantidade", "Valor" );
-        while( ofertaVendaAtual != NULL ){
-            printf( "%10d%11.2f\t\t", ofertaVendaAtual->quantidade, ofertaVendaAtual->valor );
-                    ofertaVendaAtual = ofertaVendaAtual->next;
+
+        
+        while( ofertaVendaAtual != NULL || ofertaCompraAtual != NULL ){
+            if( ofertaVendaAtual != NULL ){
+                printf( "%10d%11.2f\t\t", ofertaVendaAtual->quantidade, ofertaVendaAtual->valor );
+                        ofertaVendaAtual = ofertaVendaAtual->next;
+            }else{printf( "%10s%13s\t\t", " ", " "); }
             while( ofertaCompraAtual != NULL ){
                 printf( "%14d%11.2f", ofertaCompraAtual->quantidade, ofertaCompraAtual->valor );
                 ofertaCompraAtual = ofertaCompraAtual->next;
@@ -526,7 +530,7 @@ void ordena_ofertas_de_venda( qtd_valores *inicio, unsigned tamanho ){
     for (int x = 1; x < tamanho; x++) {
         valorAtual = listaTemp[x];
         j = x - 1;
-        while (j >= 0 && listaTemp[j] < valorAtual) {
+        while (j >= 0 && listaTemp[j] > valorAtual) {
             listaTemp[j + 1] = listaTemp[j];
             j = j - 1;}
         listaTemp[j + 1] = valorAtual;}
@@ -542,29 +546,41 @@ void ordena_ofertas_de_venda( qtd_valores *inicio, unsigned tamanho ){
 void ordena_ofertas_de_compra( qtd_valores *inicio, unsigned tamanho ){
     qtd_valores *atual = inicio;
     int i = 0,
-        j = 0;
+        j = 0,
+        quantidadeAtual;
         
     float valorAtual;
-    float *listaTemp = (float*)malloc( tamanho*sizeof(float) );
+
+    float *listaValoresTemp = (float*)malloc( tamanho*sizeof(float) );
+    int *listaQuantidadesTemp = (int*)malloc( tamanho*sizeof(int) );
     
     while( atual != NULL ){
-        listaTemp[i++] = atual->valor;
+        listaValoresTemp[i] = atual->valor;
+        listaQuantidadesTemp[i++] = atual->quantidade;
         atual = atual->next;}
-
+  
     for (int x = 1; x < tamanho; x++) {
-        valorAtual = listaTemp[x];
+        valorAtual = listaValoresTemp[x];
+        quantidadeAtual = listaQuantidadesTemp[x];
         j = x - 1;
-        while (j >= 0 && listaTemp[j] > valorAtual) {
-            listaTemp[j + 1] = listaTemp[j];
+    
+        while (j >= 0 && listaValoresTemp[j] < valorAtual) {
+            listaValoresTemp[j + 1] = listaValoresTemp[j];
+            listaQuantidadesTemp[j + 1] = listaQuantidadesTemp[j];
             j = j - 1;}
-        listaTemp[j + 1] = valorAtual;}
-
+        listaValoresTemp[j + 1] = valorAtual;
+        listaQuantidadesTemp[j + 1] = quantidadeAtual;
+        }
+   
     i = 0;
     atual = inicio;
-
+  
     while( atual != NULL ){
-        atual->valor = listaTemp[i++];
+        atual->valor = listaValoresTemp[i];
+        atual->quantidade = listaQuantidadesTemp[i++];
         atual = atual->next;}
-    free( listaTemp );
+    
+    free( listaValoresTemp );
+    free( listaQuantidadesTemp );
 }
 #endif

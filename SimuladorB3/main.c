@@ -53,8 +53,7 @@ int main( ){
                 case VENDER:
                 break;
     
-                case CARTEIRA: 
-                    CARTEIRA_INTERFACE(  );
+                case CARTEIRA:
                     break;
     
                 case PAPEIS: 

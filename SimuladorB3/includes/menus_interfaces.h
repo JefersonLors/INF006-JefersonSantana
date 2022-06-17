@@ -8,7 +8,6 @@
 unsigned MENU_PRINCIPAL( void );
 unsigned MENU_PAPEL( void );
 int MENU_COTACOES( void );
-void CARTEIRA_INTERFACE( void );
 void VENDA_INTERFACE( );
 void COMPRA_INTERFACE( void );
 unsigned SUB_MENU_COTACOES( void );
@@ -60,24 +59,7 @@ unsigned MENU_PAPEL( ){
             case 2: puts( "RETIRAR\n" ); break;}    
     return resposta;
 }
-void CARTEIRA_INTERFACE( ){
-    
-    printf( "========================================="
-            "=========================================\n" 
-            "\t\t\t\t\t\t\t\t\tCARTEIRA" );
-    do{
-        printf( "\n\nATIVO\t\t\t\t\tDATA-COMPRA\t\t"
-                "HORA-COMPRA\t\tVALOR-COMPRA\t\tQTDE\n\n\n" ); 
-        
-        
-        printf( "VALOR-ATUAL\t\t\t\tTOTAL-COMPRA\t"
-                "TOTAL-ATUAL\t\tLUCRO/PREJUIZO\t\t  %%\n\n" );
-        printf( "========================================="
-                "=========================================\n\n");
-    }while( false );
-    printf( "\n\t\t\t\t\t\t\t\t[ENTER PARA SAIR]\n");
-    getchar( );
-}
+
 int MENU_COTACOES(  ){
     unsigned resposta;
     printf( "======================================================\n" 

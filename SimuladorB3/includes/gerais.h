@@ -6,7 +6,7 @@
 
 #define teste puts("teste");
 #define delay getchar( );
-
+#define aqui puts( "aqui" );
 void formata_texto( char* );
 
 void formata_texto( char *texto ){

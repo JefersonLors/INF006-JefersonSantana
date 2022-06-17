@@ -27,9 +27,11 @@ bool incluir_oferta_de_compra( acao *nova ){
 
     ultimaOferta->next = nova->valor;
     nova->valor->prev = ultimaOferta;
-     
+    nova->valor->next = NULL;
+    
+    ordena_ofertas_de_compra( ofertasCompraLista->valor, ofertasCompraLista->quantidadeOfertado );
+ 
     if( salva_ofertas( &ofertasVendaLista, &ofertasCompraLista  ) ){
-        visualizar_ofertas_acao( 1 );
         limpa_lista_de_acoes( &ofertasVendaLista );
         limpa_lista_de_acoes( &ofertasCompraLista );
         return true;
