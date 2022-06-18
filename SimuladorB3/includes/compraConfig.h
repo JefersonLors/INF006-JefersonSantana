@@ -22,14 +22,13 @@ bool incluir_oferta_de_compra( acao *nova ){
     qtd_valores *ultimaOferta = novaOfertaCompra->valor;
 
     while( ultimaOferta->next != NULL ){ 
-
         ultimaOferta = ultimaOferta->next; }    
 
     ultimaOferta->next = nova->valor;
     nova->valor->prev = ultimaOferta;
     nova->valor->next = NULL;
     
-    ordena_ofertas_de_compra( ofertasCompraLista->valor, ofertasCompraLista->quantidadeOfertado );
+    ordena_ofertas_de_compra( novaOfertaCompra->valor, novaOfertaCompra->quantidadeOfertado );
  
     if( salva_ofertas( &ofertasVendaLista, &ofertasCompraLista  ) ){
         limpa_lista_de_acoes( &ofertasVendaLista );

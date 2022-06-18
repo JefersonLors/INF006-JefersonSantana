@@ -129,12 +129,12 @@ bool preenche_ofertas( acao **acao, bool sinal ){
     if( obtem_nome_e_codigo( *acao ) ){
         if( gerador_de_quantidade_de_acoes( (*acao)->valor ) ){
             if( sinal ){
-                if( gerador_de_valor_de_compra( (*acao)->valor ) ){
-                    ordena_ofertas_de_compra( (*acao)->valor, (*acao)->quantidadeOfertado );
+                if( gerador_de_valor_de_venda( (*acao)->valor )  ){
+                    ordena_ofertas_de_venda( (*acao)->valor, (*acao)->quantidadeOfertado );
                     return true;}
             }else{
-                if( gerador_de_valor_de_venda( (*acao)->valor ) ){
-                    ordena_ofertas_de_venda( (*acao)->valor, (*acao)->quantidadeOfertado );
+                if(gerador_de_valor_de_compra( (*acao)->valor )  ){
+                    ordena_ofertas_de_compra( (*acao)->valor, (*acao)->quantidadeOfertado );
                     return true;}}
         }    
     }
@@ -516,32 +516,44 @@ bool exclui_lista_de_oferta( qtd_valores **inicio ){
     }else return false;
 }
 void ordena_ofertas_de_venda( qtd_valores *inicio, unsigned tamanho ){
-    qtd_valores *atual = inicio;
+qtd_valores *atual = inicio;
     int i = 0,
-        j = 0;
+        j = 0,
+        quantidadeAtual;
         
     float valorAtual;
-    float *listaTemp = (float*)malloc( tamanho*sizeof(float) );
+
+    float *listaValoresTemp = (float*)malloc( tamanho*sizeof(float) );
+    int *listaQuantidadesTemp = (int*)malloc( tamanho*sizeof(int) );
     
     while( atual != NULL ){
-        listaTemp[i++] = atual->valor;
+
+        listaValoresTemp[i] = atual->valor;
+        listaQuantidadesTemp[i++] = atual->quantidade;
         atual = atual->next;}
-
+  
     for (int x = 1; x < tamanho; x++) {
-        valorAtual = listaTemp[x];
+        valorAtual = listaValoresTemp[x];
+        quantidadeAtual = listaQuantidadesTemp[x];
         j = x - 1;
-        while (j >= 0 && listaTemp[j] > valorAtual) {
-            listaTemp[j + 1] = listaTemp[j];
+    
+        while (j >= 0 && listaValoresTemp[j] < valorAtual) {
+            listaValoresTemp[j + 1] = listaValoresTemp[j];
+            listaQuantidadesTemp[j + 1] = listaQuantidadesTemp[j];
             j = j - 1;}
-        listaTemp[j + 1] = valorAtual;}
-
+        listaValoresTemp[j + 1] = valorAtual;
+        listaQuantidadesTemp[j + 1] = quantidadeAtual;}
+   
     i = 0;
     atual = inicio;
-
+  
     while( atual != NULL ){
-        atual->valor = listaTemp[i++];
+        atual->valor = listaValoresTemp[i];
+        atual->quantidade = listaQuantidadesTemp[i++];
         atual = atual->next;}
-    free( listaTemp );
+    
+    free( listaValoresTemp );
+    free( listaQuantidadesTemp );
 }
 void ordena_ofertas_de_compra( qtd_valores *inicio, unsigned tamanho ){
     qtd_valores *atual = inicio;
@@ -564,7 +576,7 @@ void ordena_ofertas_de_compra( qtd_valores *inicio, unsigned tamanho ){
         quantidadeAtual = listaQuantidadesTemp[x];
         j = x - 1;
     
-        while (j >= 0 && listaValoresTemp[j] < valorAtual) {
+        while (j >= 0 && listaValoresTemp[j] > valorAtual) {
             listaValoresTemp[j + 1] = listaValoresTemp[j];
             listaQuantidadesTemp[j + 1] = listaQuantidadesTemp[j];
             j = j - 1;}
@@ -582,5 +594,6 @@ void ordena_ofertas_de_compra( qtd_valores *inicio, unsigned tamanho ){
     
     free( listaValoresTemp );
     free( listaQuantidadesTemp );
+    
 }
 #endif

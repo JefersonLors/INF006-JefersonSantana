@@ -151,6 +151,7 @@ void COMPRA_INTERFACE( ){
             (nova->valor)->valor = valorTemp;
             nova->next = NULL;
             nova->prev = NULL;
+            
             limpa_lista_de_papeis( &inicio );
             if( incluir_oferta_de_compra( nova ) ){
                 puts( "\n\t\t\tOferta inlcuída com sucesso!\n\n");
