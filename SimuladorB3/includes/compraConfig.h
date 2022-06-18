@@ -19,13 +19,14 @@ bool incluir_oferta_de_compra( acao *nova ){
     
     novaOfertaCompra->quantidadeOfertado += nova->quantidadeOfertado;
     
-    qtd_valores *ultimaOferta = novaOfertaCompra->valor;
+    oferta *ultimaOferta = novaOfertaCompra->valor;
 
     while( ultimaOferta->next != NULL ){ 
         ultimaOferta = ultimaOferta->next; }    
 
     ultimaOferta->next = nova->valor;
     nova->valor->prev = ultimaOferta;
+    nova->valor->user = true;
     nova->valor->next = NULL;
     
     ordena_ofertas_de_compra( novaOfertaCompra->valor, novaOfertaCompra->quantidadeOfertado );
@@ -39,4 +40,5 @@ bool incluir_oferta_de_compra( acao *nova ){
         limpa_lista_de_acoes( &ofertasCompraLista );
         return false;}
 }
+
 #endif

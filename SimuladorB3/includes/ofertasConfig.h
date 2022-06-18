@@ -5,41 +5,42 @@
 #include <string.h>
 #include "papelConfig.h"
 
-typedef struct qtd_valores{
+typedef struct oferta{
     int quantidade;
     float valor;
-    struct qtd_valores *prev;
-    struct qtd_valores *next;
-}qtd_valores;
+    bool user;
+    struct oferta*prev;
+    struct oferta*next;
+}oferta;
 
 typedef struct acoes{
     papel identificacao;
-    qtd_valores *valor;
+    oferta*valor;
     unsigned quantidadeOfertado;
     struct acoes *prev;
     struct acoes *next;
 }acao;
 
 bool gerador_de_ofertas( void );
-bool gerador_de_lista_de_oferta( qtd_valores**, acao* );
-bool gerador_de_quantidade_de_acoes( qtd_valores* );
-bool gerador_de_valor_de_venda( qtd_valores* );
-bool gerador_de_valor_de_compra( qtd_valores* );
+bool gerador_de_lista_de_oferta( oferta**, acao* );
+bool gerador_de_quantidade_de_acoes( oferta* );
+bool gerador_de_valor_de_venda( oferta* );
+bool gerador_de_valor_de_compra( oferta* );
 unsigned gerador_de_quantidade_de_oferta( void );
 
-void ordena_ofertas_de_venda( qtd_valores*, unsigned );
-void ordena_ofertas_de_compra( qtd_valores*, unsigned );
+void ordena_ofertas_de_venda( oferta*, unsigned );
+void ordena_ofertas_de_compra( oferta*, unsigned );
 
 bool preenche_ofertas( acao**, bool );
 
 bool obtem_nome_e_codigo( acao* );
 
 bool recupera_ofertas( acao**, acao** );
-bool recupera_lista_de_oferta( qtd_valores**, unsigned, FILE* );
+bool recupera_lista_de_oferta( oferta**, unsigned, FILE* );
 
 bool atualiza_ofertas( unsigned );
 bool retira_oferta( void );
-bool exclui_lista_de_oferta( qtd_valores** );
+bool exclui_lista_de_oferta( oferta** );
 void limpa_lista_de_acoes( acao** );
 bool salva_ofertas( acao**, acao** );
 
@@ -96,23 +97,26 @@ bool gerador_de_ofertas(  ){
    
     return false;
 }
-bool gerador_de_lista_de_oferta( qtd_valores **inicio, acao *acao ){
+bool gerador_de_lista_de_oferta( oferta **inicio, acao *acao ){
     unsigned quantidade = acao->quantidadeOfertado = gerador_de_quantidade_de_oferta( );
              
-    qtd_valores *atual = *inicio,
-                *novo = NULL;
+    oferta *atual = *inicio,
+            *novo = NULL;
    
     while( quantidade > 0){
         if( atual == NULL ){
-            atual = (qtd_valores*)( malloc( sizeof( qtd_valores) ) );
+            atual = (oferta*)( malloc( sizeof( oferta ) ) );
+            atual->user = false;
             atual->next = NULL;
             atual->prev = NULL;
             *inicio = atual;
         }else{
             while( atual->next != NULL ){
                 atual = atual->next;}
-            novo = (qtd_valores*)( malloc( sizeof( qtd_valores) ) );
+            novo = (oferta
+            *)( malloc( sizeof(oferta) ) );
             atual->next = novo;
+            novo->user = false;
             novo->prev = atual;
             novo->next = NULL;}
         quantidade--;}
@@ -158,8 +162,9 @@ bool obtem_nome_e_codigo( acao *acao ){
     limpa_lista_de_papeis( &primeiroPapel );
     return false;
 }
-bool gerador_de_quantidade_de_acoes( qtd_valores *inicioLista ){
-    qtd_valores *atual = inicioLista;
+bool gerador_de_quantidade_de_acoes( oferta*inicioLista ){
+    oferta
+*atual = inicioLista;
     srand( time( NULL) );
     
     while( atual != NULL ){
@@ -167,8 +172,9 @@ bool gerador_de_quantidade_de_acoes( qtd_valores *inicioLista ){
         atual = atual->next;}
     return true;
 }
-bool gerador_de_valor_de_venda( qtd_valores *inicioLista ){
-    qtd_valores *atual = inicioLista;
+bool gerador_de_valor_de_venda( oferta*inicioLista ){
+    oferta
+*atual = inicioLista;
     
     srand( time( NULL) );
 
@@ -183,8 +189,9 @@ bool gerador_de_valor_de_venda( qtd_valores *inicioLista ){
     
     return true;
 }
-bool gerador_de_valor_de_compra( qtd_valores *inicioLista ){
-    qtd_valores *atual = inicioLista;
+bool gerador_de_valor_de_compra( oferta*inicioLista ){
+    oferta
+*atual = inicioLista;
               
     srand( time( NULL) );
 
@@ -196,9 +203,6 @@ bool gerador_de_valor_de_compra( qtd_valores *inicioLista ){
         decimal = ( 0 + rand( ) % 99 ) * 0.1;
         atual->valor = inteiro + decimal;  
         atual = atual->next;}
-
-    //if( inicioLista->next ){
-        //ordena_ofertas_de_compra( inicioLista );}
     
     return true;
 }
@@ -221,7 +225,8 @@ bool visualizar_ofertas_acao( unsigned posicao ){
                 atualVenda->identificacao.codigo );
         printf( "%30s\n\n", "OFERTAS" );
         
-        qtd_valores *ofertaVendaAtual = atualVenda->valor,
+        oferta
+    *ofertaVendaAtual = atualVenda->valor,
                     *ofertaCompraAtual = atualCompra->valor;
         
         printf( "%10s%11s%21s%11s\n\n", "Quantidade", "Valor", "Quantidade", "Valor" );
@@ -317,21 +322,24 @@ acao *atualAcaoVenda = *inicioAcaoVenda,
     fclose( arquivoDadosConfig );
     return false; 
 }
-bool recupera_lista_de_oferta( qtd_valores **inicio, unsigned quantidade,  FILE *arquivoAcoesValor ){        
-    qtd_valores *atual = *inicio,
-                *novo = NULL;
-
+bool recupera_lista_de_oferta( oferta**inicio, unsigned quantidade,  FILE *arquivoAcoesValor ){        
+    oferta *atual = *inicio,
+           *novo = NULL;
+    unsigned user;
+    
     while( quantidade > 0){
         if( atual == NULL ){
-            atual = (qtd_valores*)( malloc( sizeof( qtd_valores) ) );
-            fscanf( arquivoAcoesValor , "%d%f", &atual->quantidade, &atual->valor  );
+            atual = (oferta*)( malloc( sizeof( oferta ) ) );
+            fscanf( arquivoAcoesValor , "%d%f%u", &atual->quantidade, &atual->valor, &user );
+            atual->user = user;
             atual->next = NULL;
             *inicio = atual;
         }else{
             while( atual->next != NULL ){
                 atual = atual->next;}
-            novo = (qtd_valores*)( malloc( sizeof( qtd_valores) ) );
-            fscanf( arquivoAcoesValor, "%d%f", &novo->quantidade, &novo->valor  );
+            novo = (oferta*)( malloc( sizeof( oferta) ) );
+            fscanf( arquivoAcoesValor, "%d%f%u", &novo->quantidade, &novo->valor, &user );
+            novo->user = user;
             atual->next = novo;
             novo->next = NULL;}
         quantidade--;}
@@ -420,30 +428,34 @@ bool retira_oferta( ){
 bool salva_ofertas( acao **inicioVenda, acao **inicioCompra ){
     acao *atualVenda = *inicioVenda,
          *atualCompra = *inicioCompra;
-
+    
     FILE *arquivoAcoesValorVenda = fopen( acoesValorVenda, "w" ),
          *arquivoAcoesValorCompra = fopen( acoesValorCompra, "w" ),
          *arquivoDadosConfig = fopen( dadosConfig, "w" );
 
+     unsigned user;
+    
     fprintf( arquivoDadosConfig, "%d\n%d", dados.quantidade_de_papel, dados.quantidade_de_acoes );
     
     if( arquivoAcoesValorVenda && arquivoAcoesValorVenda ){
         while( atualVenda != NULL ||  atualCompra != NULL ){
-            qtd_valores *atualV = atualVenda->valor,
-                        *atualC = atualCompra->valor;
+            oferta *atualV = atualVenda->valor,
+                   *atualC = atualCompra->valor;
             
             fprintf( arquivoAcoesValorVenda, "%s\n%s\n%d\n", 
                      atualVenda->identificacao.nomeDePregao, 
                      atualVenda->identificacao.codigo, atualVenda->quantidadeOfertado ); 
             
             while( atualV != NULL  ){
-                fprintf( arquivoAcoesValorVenda, "%-6d%-6.2f\n", atualV->quantidade, atualV->valor );
+                user = atualV->user;
+                fprintf( arquivoAcoesValorVenda, "%-6d%-6.2f%6u\n", atualV->quantidade, atualV->valor, user  );
                 atualV = atualV->next; }
             fprintf( arquivoAcoesValorCompra, "%s\n%s\n%d\n", 
                      atualCompra->identificacao.nomeDePregao, 
                      atualCompra->identificacao.codigo, atualCompra->quantidadeOfertado );
             while( atualC != NULL ){
-                fprintf( arquivoAcoesValorCompra, "%-6d%-6.2f\n", atualC->quantidade, atualC->valor ); 
+                user = atualC->user;
+                fprintf( arquivoAcoesValorCompra, "%-6d%-6.2f%6u\n", atualC->quantidade, atualC->valor, user ); 
                 atualC = atualC->next;}
             
             atualVenda = atualVenda->next;
@@ -461,6 +473,18 @@ bool atualiza_ofertas( unsigned posicao ){
          *inicioAcaoVenda = NULL,
          *inicioAcaoCompra = NULL; 
 
+    unsigned compraOfertaUser = 0,
+             vendaOfertaUser = 0;
+
+    oferta *userCompra = NULL,
+           *userVenda = NULL,
+           *inicioBackupUserCompra = NULL,
+           *inicioBackupUserVenda = NULL,
+           *backupUserCompra = NULL,
+           *backupUserVenda = NULL,
+           *novoUserCompra = NULL,
+           *novoUserVenda = NULL;
+    
     recupera_ofertas( &antigaAcaoVenda, &antigaAcaoCompra );
 
     inicioAcaoVenda = antigaAcaoVenda;
@@ -471,6 +495,56 @@ bool atualiza_ofertas( unsigned posicao ){
         antigaAcaoCompra = antigaAcaoCompra->next;
         posicao--;}
     
+    userCompra = antigaAcaoCompra->valor;
+    userVenda = antigaAcaoVenda->valor;
+    
+    while( userCompra != NULL ){
+        if( userCompra->user ){
+            compraOfertaUser++;
+            if( backupUserCompra == NULL ){
+                backupUserCompra = (oferta*)malloc( sizeof(oferta) );
+                backupUserCompra->valor = userCompra->valor;
+                backupUserCompra->quantidade = userCompra->quantidade;
+                backupUserCompra->next = NULL;
+                backupUserCompra->user = true;
+                backupUserCompra->prev = NULL;
+                inicioBackupUserCompra = backupUserCompra;
+            }else{
+                
+                while( backupUserCompra->next != NULL ){
+                    backupUserCompra = backupUserCompra->next;}
+                novoUserCompra = (oferta*)malloc( sizeof(oferta) );
+                backupUserCompra->next = novoUserCompra;
+                novoUserCompra->prev = backupUserCompra;
+                novoUserCompra->valor = userCompra->valor;
+                novoUserCompra->quantidade = userCompra->quantidade;
+                novoUserCompra->user = true;
+                novoUserCompra->next = NULL;}}
+        userCompra = userCompra->next;}
+
+    while( userVenda != NULL ){
+        if( userVenda->user ){
+            vendaOfertaUser++;
+            if( backupUserVenda == NULL ){
+                backupUserVenda = (oferta*)malloc( sizeof(oferta) );
+                backupUserVenda->valor = userCompra->valor;
+                backupUserVenda->quantidade = userCompra->quantidade;
+                backupUserVenda->user = true;
+                backupUserVenda->next = NULL;
+                backupUserVenda->prev = NULL;
+                inicioBackupUserVenda = backupUserVenda;
+            }else{
+                while( backupUserVenda->next != NULL ){
+                    backupUserVenda = backupUserVenda->next;}
+                novoUserVenda = (oferta*)malloc( sizeof(oferta) );
+                backupUserVenda->next = novoUserVenda;
+                novoUserVenda->prev = backupUserVenda;
+                novoUserVenda->valor = userVenda->valor;
+                novoUserVenda->quantidade = userVenda->quantidade;
+                novoUserVenda->user = true;
+                novoUserVenda->next = NULL;}}
+        userVenda = userVenda->next;}
+    
     if( exclui_lista_de_oferta( &antigaAcaoVenda->valor ) ){
         if( exclui_lista_de_oferta( &antigaAcaoCompra->valor ) ){ 
             if( gerador_de_lista_de_oferta( &antigaAcaoVenda->valor, antigaAcaoVenda ) ){ 
@@ -478,8 +552,22 @@ bool atualiza_ofertas( unsigned posicao ){
                    if( gerador_de_quantidade_de_acoes( antigaAcaoVenda->valor ) ){ 
                         if( gerador_de_quantidade_de_acoes( antigaAcaoCompra->valor ) ){ 
                             if( gerador_de_valor_de_venda( antigaAcaoVenda->valor ) ){
+                                if( vendaOfertaUser ){
+                                    antigaAcaoVenda->quantidadeOfertado += vendaOfertaUser;
+                                    userVenda = antigaAcaoVenda->valor;
+                                    while( userVenda->next != NULL ){ 
+                                        userVenda = userVenda->next;}
+                                    userVenda->next = inicioBackupUserVenda;
+                                    backupUserVenda->prev = userVenda;}
                                 ordena_ofertas_de_venda( antigaAcaoVenda->valor, antigaAcaoVenda->quantidadeOfertado );
                                 if( gerador_de_valor_de_compra( antigaAcaoCompra->valor ) ){ 
+                                    if( compraOfertaUser ){
+                                        antigaAcaoCompra->quantidadeOfertado += compraOfertaUser;
+                                        userCompra = antigaAcaoCompra->valor;
+                                        while( userCompra->next != NULL ){ 
+                                            userCompra = userCompra->next; }
+                                        userCompra->next = inicioBackupUserCompra;
+                                        backupUserCompra->prev = userCompra;}
                                     ordena_ofertas_de_compra( antigaAcaoCompra->valor, antigaAcaoCompra->quantidadeOfertado);
                                     if( salva_ofertas( &inicioAcaoVenda, &inicioAcaoCompra ) ){ 
                                         limpa_lista_de_acoes( &inicioAcaoVenda );
@@ -487,6 +575,8 @@ bool atualiza_ofertas( unsigned posicao ){
                                         return true;}}}}}}}}}
     limpa_lista_de_acoes( &inicioAcaoVenda );
     limpa_lista_de_acoes( &inicioAcaoCompra );
+    exclui_lista_de_oferta( &inicioBackupUserVenda );
+    exclui_lista_de_oferta( &inicioBackupUserCompra );
     return false;
 }
 void limpa_lista_de_acoes( acao **inicio ){
@@ -500,11 +590,13 @@ void limpa_lista_de_acoes( acao **inicio ){
     }
     *inicio = atual;
 }
-bool exclui_lista_de_oferta( qtd_valores **inicio ){      
-    qtd_valores *atual = *inicio;
+bool exclui_lista_de_oferta( oferta**inicio ){      
+    oferta
+*atual = *inicio;
     
     while( atual != NULL ){
-        qtd_valores *backup = atual->next;
+        oferta
+    *backup = atual->next;
         free( atual );
         atual = NULL;
         atual = backup;}
@@ -515,19 +607,22 @@ bool exclui_lista_de_oferta( qtd_valores **inicio ){
         return true;
     }else return false;
 }
-void ordena_ofertas_de_venda( qtd_valores *inicio, unsigned tamanho ){
-qtd_valores *atual = inicio;
+void ordena_ofertas_de_venda( oferta*inicio, unsigned tamanho ){
+    oferta *atual = inicio;
+    
     int i = 0,
-        j = 0,
-        quantidadeAtual;
-        
+        j = 0;
+    unsigned quantidadeAtual,    
+             sinalAtual;
+             
     float valorAtual;
 
     float *listaValoresTemp = (float*)malloc( tamanho*sizeof(float) );
-    int *listaQuantidadesTemp = (int*)malloc( tamanho*sizeof(int) );
+    unsigned *listaQuantidadesTemp = (unsigned*)malloc( tamanho*sizeof(unsigned) );
+    unsigned *listaSinalTemp = (unsigned*)malloc( tamanho*sizeof(unsigned) );
     
     while( atual != NULL ){
-
+        listaSinalTemp[i] = atual->user;
         listaValoresTemp[i] = atual->valor;
         listaQuantidadesTemp[i++] = atual->quantidade;
         atual = atual->next;}
@@ -535,38 +630,48 @@ qtd_valores *atual = inicio;
     for (int x = 1; x < tamanho; x++) {
         valorAtual = listaValoresTemp[x];
         quantidadeAtual = listaQuantidadesTemp[x];
+        sinalAtual = listaSinalTemp[x];
         j = x - 1;
     
         while (j >= 0 && listaValoresTemp[j] < valorAtual) {
             listaValoresTemp[j + 1] = listaValoresTemp[j];
             listaQuantidadesTemp[j + 1] = listaQuantidadesTemp[j];
+            listaSinalTemp[j + 1] = listaSinalTemp[j];
             j = j - 1;}
         listaValoresTemp[j + 1] = valorAtual;
-        listaQuantidadesTemp[j + 1] = quantidadeAtual;}
+        listaQuantidadesTemp[j + 1] = quantidadeAtual;
+        listaSinalTemp[j + 1] = sinalAtual;}
    
     i = 0;
     atual = inicio;
   
     while( atual != NULL ){
+        atual->user = listaSinalTemp[i];
         atual->valor = listaValoresTemp[i];
         atual->quantidade = listaQuantidadesTemp[i++];
         atual = atual->next;}
     
     free( listaValoresTemp );
     free( listaQuantidadesTemp );
+    free( listaSinalTemp );
 }
-void ordena_ofertas_de_compra( qtd_valores *inicio, unsigned tamanho ){
-    qtd_valores *atual = inicio;
+void ordena_ofertas_de_compra( oferta *inicio, unsigned tamanho ){
+    oferta *atual = inicio;
+    
     int i = 0,
-        j = 0,
-        quantidadeAtual;
-        
+        j = 0;
+    
+    unsigned quantidadeAtual,    
+             sinalAtual;
+             
     float valorAtual;
 
     float *listaValoresTemp = (float*)malloc( tamanho*sizeof(float) );
-    int *listaQuantidadesTemp = (int*)malloc( tamanho*sizeof(int) );
+    unsigned *listaQuantidadesTemp = (unsigned*)malloc( tamanho*sizeof(unsigned) );
+    unsigned *listaSinalTemp = (unsigned*)malloc( tamanho*sizeof(unsigned) );
     
     while( atual != NULL ){
+        listaSinalTemp[i] = atual->user;
         listaValoresTemp[i] = atual->valor;
         listaQuantidadesTemp[i++] = atual->quantidade;
         atual = atual->next;}
@@ -574,26 +679,29 @@ void ordena_ofertas_de_compra( qtd_valores *inicio, unsigned tamanho ){
     for (int x = 1; x < tamanho; x++) {
         valorAtual = listaValoresTemp[x];
         quantidadeAtual = listaQuantidadesTemp[x];
+        sinalAtual = listaSinalTemp[x];
         j = x - 1;
     
         while (j >= 0 && listaValoresTemp[j] > valorAtual) {
             listaValoresTemp[j + 1] = listaValoresTemp[j];
             listaQuantidadesTemp[j + 1] = listaQuantidadesTemp[j];
+            listaSinalTemp[j + 1] = listaSinalTemp[j];
             j = j - 1;}
         listaValoresTemp[j + 1] = valorAtual;
         listaQuantidadesTemp[j + 1] = quantidadeAtual;
-        }
+        listaSinalTemp[j + 1] = sinalAtual;}
    
     i = 0;
     atual = inicio;
   
     while( atual != NULL ){
+        atual->user = listaSinalTemp[i];
         atual->valor = listaValoresTemp[i];
         atual->quantidade = listaQuantidadesTemp[i++];
         atual = atual->next;}
     
     free( listaValoresTemp );
     free( listaQuantidadesTemp );
-    
+    free( listaSinalTemp );
 }
 #endif

@@ -16,7 +16,7 @@ unsigned MENU_PRINCIPAL(  ){
     unsigned resposta;
     printf( "======================================================\n"
             "\t\t\t\t\tSIMULADOR B3\n\n" 
-            "[1] COTAÇÕES\n"
+            "[1] OFERTAS\n"
             "[2] COMPRAR\n"
             "[3] VENDER\n"
             "[4] CARTEIRA\n"
@@ -32,7 +32,7 @@ unsigned MENU_PRINCIPAL(  ){
     printf("[%d] ", resposta );
     switch( resposta ){
         case 0: puts( "SAIR\n" ); break;
-        case 1: puts( "COTAÇÕES\n" ); break;
+        case 1: puts( "OFERTAS\n" ); break;
         case 2: puts( "COMPRAR\n" ); break;
         case 3: puts( "VENDER\n" ); break;
         case 4: puts( "CARTEIRA\n" ); break;
@@ -146,7 +146,7 @@ void COMPRA_INTERFACE( ){
             strcpy( nova->identificacao.nomeDePregao, inicio->nomeDePregao );
            
             nova->quantidadeOfertado = 1;
-            (nova->valor) = (qtd_valores*)malloc( sizeof(qtd_valores) );
+            (nova->valor) = (oferta*)malloc( sizeof(oferta) );
             (nova->valor)->quantidade = quantidadeTemp;
             (nova->valor)->valor = valorTemp;
             nova->next = NULL;
