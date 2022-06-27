@@ -20,7 +20,9 @@ bool transacao( unsigned posicaoPapel ){
     
     unsigned backupPosicaoPapel = posicaoPapel,
              backupQuantidadeOfertadasCompra = 0;
- 
+
+    unsigned contador = 0;
+    
     recupera_ofertas( &inicioAcaoVenda, &inicioAcaoCompra );
     acaoVendaAtual = inicioAcaoVenda;
     acaoCompraAtual = inicioAcaoCompra;
@@ -29,28 +31,32 @@ bool transacao( unsigned posicaoPapel ){
         acaoVendaAtual = acaoVendaAtual->next;
         acaoCompraAtual = acaoCompraAtual->next;
         posicaoPapel--;}
- 
+    
     if( acaoVendaAtual->valor != NULL ){
           ofertaVendaAtual = acaoVendaAtual->valor;}
    
     if( acaoCompraAtual->valor != NULL ){
          ofertaCompraAtual = acaoCompraAtual->valor;}
- 
+
     if( ofertaVendaAtual != NULL && ofertaCompraAtual != NULL ){
         while( ofertaCompraAtual != NULL ){
             ofertaVendaAtual = acaoVendaAtual->valor;
             while( ofertaVendaAtual != NULL ){
                 if( valida_transacao( ofertaVendaAtual, ofertaCompraAtual ) ){
                     if( realiza_transacao( ofertaVendaAtual, ofertaCompraAtual ) ){
+                        contador++;
                         break;} 
                 }ofertaVendaAtual = ofertaVendaAtual->next;
             }ofertaCompraAtual = ofertaCompraAtual->next;
         }
+        
         ajusta_lista_de_ofertas( &acaoVendaAtual->valor, &acaoCompraAtual->valor, acaoVendaAtual, acaoCompraAtual );
-        teste
-        if( salva_ofertas( &inicioAcaoVenda, &inicioAcaoCompra ) ){
-            limpa_lista_de_acoes( &inicioAcaoVenda );
-            limpa_lista_de_acoes( &inicioAcaoCompra );
+ 
+        salva_ofertas( &inicioAcaoVenda, &inicioAcaoCompra );
+        limpa_lista_de_acoes( &inicioAcaoVenda );
+        limpa_lista_de_acoes( &inicioAcaoCompra );
+        
+        if( contador ){
             return true;}   
     }
     
@@ -93,7 +99,7 @@ void ajusta_lista_de_ofertas( oferta **ofertaVendaAtual, oferta **ofertaCompraAt
         free( ofertaCompra );
         acaoCompraAtual->quantidadeOfertado--;
         ofertaCompra = (*ofertaCompraAtual);}
-          
+       
     if( acaoCompraAtual->quantidadeOfertado == 1 ){
         if( ofertaCompra->quantidade == 0 ){
             free( (*ofertaCompraAtual) );
@@ -104,6 +110,7 @@ void ajusta_lista_de_ofertas( oferta **ofertaVendaAtual, oferta **ofertaCompraAt
         ofertaCompra = ofertaCompra->next;
         
         while( ofertaCompra ){
+          
             if( ofertaCompra->quantidade == 0 ){
                 ofertaCompraBackup->next = ofertaCompra->next;
                 
@@ -112,14 +119,13 @@ void ajusta_lista_de_ofertas( oferta **ofertaVendaAtual, oferta **ofertaCompraAt
                 
                 free( ofertaCompra );
                 acaoCompraAtual->quantidadeOfertado--;
+                ofertaCompra = ofertaCompraBackup->next;
+            }else{
+                ofertaCompra = ofertaCompra->next;
             }
-           
-            ofertaCompra = ofertaCompraBackup->next;
-            
         }
     }
    
-     
     while( ofertaVenda->next && ofertaVenda->quantidade == 0 ){
         (*ofertaVendaAtual) = ofertaVenda->next;
         ofertaVenda->next->prev = NULL;
@@ -142,10 +148,11 @@ void ajusta_lista_de_ofertas( oferta **ofertaVendaAtual, oferta **ofertaCompraAt
                     ofertaVenda->next->prev = ofertaVendaBackup;
                 free( ofertaVenda );
                 acaoVendaAtual->quantidadeOfertado--;
+                ofertaVenda = ofertaVendaBackup->next;
+            }else{
+                ofertaVenda = ofertaVenda->next;
             }
-            ofertaVenda = ofertaVendaBackup->next;
         }
     }
-
 }
 #endif

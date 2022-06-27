@@ -113,8 +113,7 @@ bool gerador_de_lista_de_oferta( oferta **inicio, acao *acao ){
         }else{
             while( atual->next != NULL ){
                 atual = atual->next;}
-            novo = (oferta
-            *)( malloc( sizeof(oferta) ) );
+            novo = (oferta*)( malloc( sizeof(oferta) ) );
             atual->next = novo;
             novo->user = false;
             novo->prev = atual;
@@ -127,6 +126,7 @@ bool gerador_de_lista_de_oferta( oferta **inicio, acao *acao ){
 }
 unsigned gerador_de_quantidade_de_oferta( ){
     srand( time(NULL) );
+    DELAY( 1 );
     return 2 + rand( ) % 6;
 }
 bool preenche_ofertas( acao **acao, bool sinal ){
@@ -167,6 +167,7 @@ bool gerador_de_quantidade_de_acoes( oferta*inicioLista ){
     srand( time( NULL) );
     
     while( atual != NULL ){
+        DELAY( 1 );
         atual->quantidade = 1 + rand( ) % 1000;
         atual = atual->next;}
     return true;
@@ -180,7 +181,9 @@ bool gerador_de_valor_de_venda( oferta*inicioLista ){
     float decimal;
     
     while( atual != NULL ){
+        DELAY( 1 );
         inteiro = 1 + rand( ) % 1000;
+        DELAY( 1 );
         decimal = ( 0 + rand( ) % 99 ) * 0.1;
         atual->valor = inteiro + decimal;  
         atual = atual->next;}
@@ -196,7 +199,9 @@ bool gerador_de_valor_de_compra( oferta*inicioLista ){
     float decimal;
     
     while( atual != NULL ){
+        DELAY( 1 );
         inteiro = 1 + rand( ) % 1000;
+        DELAY( 1 );
         decimal = ( 0 + rand( ) % 99 ) * 0.1;
         atual->valor = inteiro + decimal;  
         atual = atual->next;}
@@ -266,7 +271,9 @@ bool visualizar_ofertas_acao( unsigned posicao ){
         printf( "%15s%33s\n\n", "VENDA", "COMPRA" );
         limpa_lista_de_acoes( &inicioVenda );
         limpa_lista_de_acoes( &inicioCompra);
+      
         return true;
+       
     }else return false;
 }
 bool recupera_ofertas( acao **inicioAcaoVenda, acao **inicioAcaoCompra ){

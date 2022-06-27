@@ -37,7 +37,7 @@ int main( ){
                                 if( transacao( subResposta ) ){
                                     puts( "\n\t\t\tTransacao realizada!\n\n" );
                                     visualizar_ofertas_acao( subResposta );}
-                                 
+                               
                                 while( SUB_MENU_COTACOES(  ) ){
                                     printf( "==========================="
                                             "===========================\n" 
@@ -45,7 +45,7 @@ int main( ){
                                     atualiza_ofertas( subResposta );
                                     visualizar_ofertas_acao( subResposta );
                                     if( transacao( subResposta ) ){
-                                        puts( "\n\t\t\tTransacao realizada!\n\n" );
+                                        puts( "\n\t\t\t\t\tTransacao realizada!\n\n" );
                                         visualizar_ofertas_acao( subResposta );}}  
                             }else{
                                 puts("\t\t\t\tOPS! NÃO HÁ OFERTAS.\n\n");

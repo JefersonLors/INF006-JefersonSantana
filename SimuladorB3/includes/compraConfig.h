@@ -5,6 +5,8 @@
 
 bool incluir_oferta_de_compra( acao* );
 
+///incluir subMenu para possibilitar tirar ofertas de compra do usuário
+
 bool incluir_oferta_de_compra( acao *nova ){
     acao *ofertasCompraLista = NULL,
          *ofertasVendaLista = NULL,

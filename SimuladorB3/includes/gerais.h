@@ -7,7 +7,9 @@
 #define teste puts("teste");
 #define delay getchar( );
 #define aqui puts( "aqui" );
+
 void formata_texto( char* );
+void DELAY( unsigned );
 
 void formata_texto( char *texto ){
     for( int caracter = 0; texto[caracter] != '\0'; caracter++ ){
@@ -20,4 +22,13 @@ void formata_texto( char *texto ){
             texto[caracter] = '_';
     }
 }
+void DELAY( unsigned seg ){
+    for ( int cronometro = 1; cronometro <= seg; cronometro++ ){      //estrutura de cronometro que conta até aproximadamente 15 segundos
+        for ( int timer = 0; timer <= 300000000 ; timer++ ){         //conta até cem bilhões em aproximadamente 1 s.
+            //if ( timer == 500000000 ){}                                  //A cada 1 s, aproximadamente, imprime um tracinho na tela
+    
+    }}
+   
+}
+
 #endif
