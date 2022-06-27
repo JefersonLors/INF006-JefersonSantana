@@ -151,6 +151,9 @@ void COMPRA_INTERFACE( ){
             (nova->valor)->valor = valorTemp;
             nova->next = NULL;
             nova->prev = NULL;
+             nova->valor->user = true;
+            (nova->valor)->next = NULL;
+            (nova->valor)->prev = NULL;
             
             limpa_lista_de_papeis( &inicio );
             if( incluir_oferta_de_compra( nova ) ){

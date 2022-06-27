@@ -3,7 +3,7 @@
 
 #include <time.h>
 #include <string.h>
-#include "papelConfig.h"
+#include "papeisConfig.h"
 
 typedef struct oferta{
     int quantidade;
@@ -163,8 +163,7 @@ bool obtem_nome_e_codigo( acao *acao ){
     return false;
 }
 bool gerador_de_quantidade_de_acoes( oferta*inicioLista ){
-    oferta
-*atual = inicioLista;
+    oferta *atual = inicioLista;
     srand( time( NULL) );
     
     while( atual != NULL ){
@@ -173,8 +172,7 @@ bool gerador_de_quantidade_de_acoes( oferta*inicioLista ){
     return true;
 }
 bool gerador_de_valor_de_venda( oferta*inicioLista ){
-    oferta
-*atual = inicioLista;
+    oferta *atual = inicioLista;
     
     srand( time( NULL) );
 
@@ -190,8 +188,7 @@ bool gerador_de_valor_de_venda( oferta*inicioLista ){
     return true;
 }
 bool gerador_de_valor_de_compra( oferta*inicioLista ){
-    oferta
-*atual = inicioLista;
+    oferta *atual = inicioLista;
               
     srand( time( NULL) );
 
@@ -212,22 +209,45 @@ bool visualizar_ofertas_acao( unsigned posicao ){
          *inicioVenda = NULL,
          *inicioCompra = NULL;
 
+    unsigned posicaoBackup = posicao;
+    
     if( recupera_ofertas( &atualVenda, &atualCompra ) ){
- 
+
+        papel *inicio;
+        
+        recupera_papeis( &inicio );
+        
         inicioVenda = atualVenda;
         inicioCompra = atualCompra;
+        
         while( posicao > 1 ){
             posicao--;
-            atualCompra = atualCompra->next;
+            inicio = inicio->next;}
+
+        posicao = posicaoBackup;
+        
+        while( posicao > 1 && atualVenda != NULL ){
+            posicao--;
             atualVenda = atualVenda->next;}
         
-        printf( "%s\n%s\n\n", atualVenda->identificacao.nomeDePregao, 
-                atualVenda->identificacao.codigo );
+        posicao = posicaoBackup;
+        
+        while( posicao > 1 &&  atualCompra != NULL ){
+            posicao--;
+            atualCompra = atualCompra->next;}
+
+      
+        printf( "%s\n%s\n\n", inicio->nomeDePregao, inicio->codigo );
         printf( "%30s\n\n", "OFERTAS" );
         
-        oferta
-    *ofertaVendaAtual = atualVenda->valor,
-                    *ofertaCompraAtual = atualCompra->valor;
+        oferta *ofertaVendaAtual = NULL,
+                *ofertaCompraAtual = NULL;
+
+        if( atualVenda != NULL ){
+            ofertaVendaAtual = atualVenda->valor;}
+        
+        if( atualCompra != NULL ){
+            ofertaCompraAtual = atualCompra->valor;}
         
         printf( "%10s%11s%21s%11s\n\n", "Quantidade", "Valor", "Quantidade", "Valor" );
 
@@ -332,6 +352,7 @@ bool recupera_lista_de_oferta( oferta**inicio, unsigned quantidade,  FILE *arqui
             atual = (oferta*)( malloc( sizeof( oferta ) ) );
             fscanf( arquivoAcoesValor , "%d%f%u", &atual->quantidade, &atual->valor, &user );
             atual->user = user;
+            atual->prev = NULL;
             atual->next = NULL;
             *inicio = atual;
         }else{
@@ -340,6 +361,7 @@ bool recupera_lista_de_oferta( oferta**inicio, unsigned quantidade,  FILE *arqui
             novo = (oferta*)( malloc( sizeof( oferta) ) );
             fscanf( arquivoAcoesValor, "%d%f%u", &novo->quantidade, &novo->valor, &user );
             novo->user = user;
+            novo->prev = atual;
             atual->next = novo;
             novo->next = NULL;}
         quantidade--;}
@@ -433,12 +455,12 @@ bool salva_ofertas( acao **inicioVenda, acao **inicioCompra ){
          *arquivoAcoesValorCompra = fopen( acoesValorCompra, "w" ),
          *arquivoDadosConfig = fopen( dadosConfig, "w" );
 
-     unsigned user;
+    unsigned user;
     
     fprintf( arquivoDadosConfig, "%d\n%d", dados.quantidade_de_papel, dados.quantidade_de_acoes );
     
     if( arquivoAcoesValorVenda && arquivoAcoesValorVenda ){
-        while( atualVenda != NULL ||  atualCompra != NULL ){
+        while( atualVenda != NULL && atualCompra != NULL ){
             oferta *atualV = atualVenda->valor,
                    *atualC = atualCompra->valor;
             
@@ -450,9 +472,11 @@ bool salva_ofertas( acao **inicioVenda, acao **inicioCompra ){
                 user = atualV->user;
                 fprintf( arquivoAcoesValorVenda, "%-6d%-6.2f%6u\n", atualV->quantidade, atualV->valor, user  );
                 atualV = atualV->next; }
+            
             fprintf( arquivoAcoesValorCompra, "%s\n%s\n%d\n", 
                      atualCompra->identificacao.nomeDePregao, 
                      atualCompra->identificacao.codigo, atualCompra->quantidadeOfertado );
+            
             while( atualC != NULL ){
                 user = atualC->user;
                 fprintf( arquivoAcoesValorCompra, "%-6d%-6.2f%6u\n", atualC->quantidade, atualC->valor, user ); 
@@ -495,9 +519,8 @@ bool atualiza_ofertas( unsigned posicao ){
         antigaAcaoCompra = antigaAcaoCompra->next;
         posicao--;}
     
-    userCompra = antigaAcaoCompra->valor;
-    userVenda = antigaAcaoVenda->valor;
     
+    userCompra = antigaAcaoCompra->valor;
     while( userCompra != NULL ){
         if( userCompra->user ){
             compraOfertaUser++;
@@ -521,7 +544,8 @@ bool atualiza_ofertas( unsigned posicao ){
                 novoUserCompra->user = true;
                 novoUserCompra->next = NULL;}}
         userCompra = userCompra->next;}
-
+    
+    userVenda = antigaAcaoVenda->valor;
     while( userVenda != NULL ){
         if( userVenda->user ){
             vendaOfertaUser++;
@@ -569,6 +593,7 @@ bool atualiza_ofertas( unsigned posicao ){
                                         userCompra->next = inicioBackupUserCompra;
                                         backupUserCompra->prev = userCompra;}
                                     ordena_ofertas_de_compra( antigaAcaoCompra->valor, antigaAcaoCompra->quantidadeOfertado);
+                                    
                                     if( salva_ofertas( &inicioAcaoVenda, &inicioAcaoCompra ) ){ 
                                         limpa_lista_de_acoes( &inicioAcaoVenda );
                                         limpa_lista_de_acoes( &inicioAcaoCompra );

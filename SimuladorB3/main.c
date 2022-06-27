@@ -2,18 +2,19 @@
 #include <stdio.h>
 #include <stdbool.h>
 
-#include "includes/papelConfig.h"
+#include "includes/papeisConfig.h"
 #include "includes/gerais.h"
 #include "includes/vendaConfig.h"
 #include "includes/compraConfig.h"
 #include "includes/carteiraConfig.h"
 #include "includes/ofertasConfig.h"
 #include "includes/menus_interfaces.h"
+#include "includes/transacoesConfig.h"
 
 bool inicializar( papel**, acao**, acao** );
 
 int main( ){
-    enum OPCOES{ SAIR = 0, COTACOES = 1, COMPRAR = 2, 
+    enum OPCOES{ SAIR = 0, OFERTAS = 1, COMPRAR = 2, 
                  VENDER = 3, CARTEIRA = 4, PAPEIS = 5 };
     enum MANUTENCAO_PAPEIS{ ADICIONAR = 1, RETIRAR = 2, LISTAR = 3 };
     
@@ -28,21 +29,28 @@ int main( ){
     if( inicializar( &primeiro, &primeiraVenda, &primeiraCompra ) ){
         do{ resposta = MENU_PRINCIPAL( ); 
             switch( resposta ){
-                case COTACOES:
+                case OFERTAS:
                     do{ subResposta = MENU_COTACOES( );
                         if( subResposta != SAIR ){
                             if( subResposta != -1 ){
                                 visualizar_ofertas_acao( subResposta );
+                                if( transacao( subResposta ) ){
+                                    puts( "\n\t\t\tTransacao realizada!\n\n" );
+                                    visualizar_ofertas_acao( subResposta );}
+                                 
                                 while( SUB_MENU_COTACOES(  ) ){
                                     printf( "==========================="
                                             "===========================\n" 
                                             "\t\t\t\t\t\tAÇÃO\n\n" );
                                     atualiza_ofertas( subResposta );
-                                    visualizar_ofertas_acao( subResposta );}  
+                                    visualizar_ofertas_acao( subResposta );
+                                    if( transacao( subResposta ) ){
+                                        puts( "\n\t\t\tTransacao realizada!\n\n" );
+                                        visualizar_ofertas_acao( subResposta );}}  
                             }else{
-                                puts("\t\t\t\tOPS! NÃO HÁ COTAÇÕES.\n\n");
-                                break;}
-                        }else{ break;}
+                                puts("\t\t\t\tOPS! NÃO HÁ OFERTAS.\n\n");
+                                break; }
+                        }else{ break; }
                     }while( true );   
                     break;
         
