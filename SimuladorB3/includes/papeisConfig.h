@@ -7,10 +7,12 @@
 
 #define TAM_NOME_PREGAO 20
 #define TAM_CODIGO 8
+#define TAM_COT 8
 
 typedef struct papel{
     char nomeDePregao[TAM_NOME_PREGAO],
          codigo[TAM_CODIGO];   
+    float cotacao;
     struct papel *next; 
 }papel;
 
@@ -103,8 +105,8 @@ bool salva_papeis( papel *head ){
         atual = head;
         while( atual != NULL ){
             backup = atual->next; 
-            fprintf( arquivoPapeis, "%-*s%-*s\n", TAM_CODIGO*2-1, atual->codigo, 
-                     TAM_NOME_PREGAO, atual->nomeDePregao );
+            fprintf( arquivoPapeis, "%-*s%-*s%-*.2f\n", TAM_CODIGO*2-1, atual->codigo, 
+                     TAM_NOME_PREGAO, atual->nomeDePregao, TAM_COT, atual->cotacao );
             free( atual );
             atual = backup;}
         fprintf( arquivoConfig, "%d\n%d", dados.quantidade_de_papel, dados.quantidade_de_acoes ); }
@@ -125,7 +127,7 @@ bool recupera_papeis( papel **head ){
         
         if( fila > 0 ){
             atual = (papel*)malloc( sizeof(papel) );
-            fscanf( arquivoPapeis, "%s%s", atual->codigo, atual->nomeDePregao);
+            fscanf( arquivoPapeis, "%s%s%f", atual->codigo, atual->nomeDePregao, &atual->cotacao );
             atual->next = NULL;
             *head = atual;
             fila--;
@@ -134,7 +136,7 @@ bool recupera_papeis( papel **head ){
                 proximo = (papel*)malloc( sizeof(papel) );
                 while( atual->next != NULL ){
                     atual = atual->next;}
-                fscanf( arquivoPapeis, "%s%s",proximo->codigo, proximo->nomeDePregao);
+                fscanf( arquivoPapeis, "%s%s%f",proximo->codigo, proximo->nomeDePregao, &proximo->cotacao );
                 atual->next = proximo;
                 proximo->next = NULL;
                 fila--;}
@@ -151,8 +153,10 @@ bool listar_papeis( ){
     
     if( recupera_papeis( &head ) ){
         primeiro = head; 
-        do{ printf( "%-*d%*s             %-*s\n\n",
-            3, contador++, 14, primeiro->codigo, TAM_NOME_PREGAO, 
+        printf( "#%17s        %10s        %11s\t\t\n", 
+                "COTAÇÃO", "CÓDIGO", "NOME\n" );
+        do{ printf( "%-*d%-*.2f%-*s%-*s\n\n",
+            9, contador++, TAM_COT+10, primeiro->cotacao, 20, primeiro->codigo, TAM_NOME_PREGAO, 
             primeiro->nomeDePregao );
             primeiro = primeiro->next;
         }while( primeiro != NULL );

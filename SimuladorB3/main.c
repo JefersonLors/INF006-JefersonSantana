@@ -13,6 +13,10 @@
 
 bool inicializar( papel**, acao**, acao** );
 
+///MELHORIAS
+    // - incrementar histórico de transacoes
+    // - inserir compra por media para valores diferentes
+
 int main( ){
     enum OPCOES{ SAIR = 0, OFERTAS = 1, COMPRAR = 2, 
                  VENDER = 3, CARTEIRA = 4, PAPEIS = 5 };
@@ -33,9 +37,11 @@ int main( ){
                     do{ subResposta = MENU_COTACOES( );
                         if( subResposta != SAIR ){
                             if( subResposta != -1 ){
+                                gerador_de_cotacao( subResposta );
                                 visualizar_ofertas_acao( subResposta );
                                 if( transacao( subResposta ) ){
                                     puts( "\n\t\t\tTransacao realizada!\n\n" );
+                                    gerador_de_cotacao( subResposta );
                                     visualizar_ofertas_acao( subResposta );}
                                
                                 while( SUB_MENU_COTACOES(  ) ){
@@ -43,9 +49,11 @@ int main( ){
                                             "===========================\n" 
                                             "\t\t\t\t\t\tAÇÃO\n\n" );
                                     atualiza_ofertas( subResposta );
+                                    gerador_de_cotacao( subResposta );
                                     visualizar_ofertas_acao( subResposta );
                                     if( transacao( subResposta ) ){
                                         puts( "\n\t\t\t\t\tTransacao realizada!\n\n" );
+                                        gerador_de_cotacao( subResposta );
                                         visualizar_ofertas_acao( subResposta );}}  
                             }else{
                                 puts("\t\t\t\tOPS! NÃO HÁ OFERTAS.\n\n");
@@ -67,8 +75,7 @@ int main( ){
                 case PAPEIS: 
                     do{ 
                         printf( "======================================================\n" 
-                            "\t\t\t\t PAPEIS ATIVOS\n\n#%17s        %10s\t\t\n", 
-                            "CÓDIGO", "NOME\n");
+                                "\t\t\t\t PAPEIS ATIVOS\n\n");
                         if( !listar_papeis(  ) ){
                             puts("\n\t  NÃO HÁ PAPEIS PARA NEGOCIAR!\n\n");}
                         
@@ -92,11 +99,13 @@ int main( ){
                                 printf( "======================================================\n" 
                                         "\t\t\t\t  EXCLUINDO PAPEIS\n\n" 
                                         "DIGITE [0 PARA SAIR]:\n\n");
-                                if( retira_papel( ) && retira_oferta( ) ){
+                                if( retira_papel( ) ){
+                                    if( retira_oferta( ) ){
                                         puts("\t\tPAPEIS RETIRADOS COM SUCESSO!\n\n");
-                                }else {
-                                    puts("   OPS! OS PAPEIS NÃO FORAM RETIRADOS.\n\n"); }     
-                                break;}
+                                    }else{
+                                    puts("   OPS! OS PAPEIS NÃO FORAM RETIRADOS.\n\n");}     
+                                    }
+                            break;}
                     }while( subResposta != SAIR );
             }
         }while( resposta != SAIR );

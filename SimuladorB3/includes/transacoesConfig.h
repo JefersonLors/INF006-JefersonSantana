@@ -4,7 +4,7 @@
 #include "ofertasConfig.h"
 
 bool transacao( unsigned );
-bool valida_transacao( oferta*, oferta* );
+bool valida_transacao( oferta*, oferta*, papel* );
 void ajusta_lista_de_ofertas( oferta**, oferta**, acao*, acao* );
 bool realiza_transacao( oferta*, oferta* );
 void historico_de_transacoes( oferta*, oferta*, float );
@@ -14,7 +14,10 @@ bool transacao( unsigned posicaoPapel ){
          *inicioAcaoCompra = NULL,
          *acaoVendaAtual = NULL,
          *acaoCompraAtual = NULL;
-    
+
+    papel *inicioPapel = NULL,
+          *papelAtual = NULL;
+        
     oferta *ofertaVendaAtual = NULL,
            *ofertaCompraAtual = NULL;
     
@@ -24,10 +27,14 @@ bool transacao( unsigned posicaoPapel ){
     unsigned contador = 0;
     
     recupera_ofertas( &inicioAcaoVenda, &inicioAcaoCompra );
+    recupera_papeis( &inicioPapel );
+    
     acaoVendaAtual = inicioAcaoVenda;
     acaoCompraAtual = inicioAcaoCompra;
+    papelAtual = inicioPapel;
     
     while( posicaoPapel > 1 ){
+        papelAtual = papelAtual->next;
         acaoVendaAtual = acaoVendaAtual->next;
         acaoCompraAtual = acaoCompraAtual->next;
         posicaoPapel--;}
@@ -42,29 +49,27 @@ bool transacao( unsigned posicaoPapel ){
         while( ofertaCompraAtual != NULL ){
             ofertaVendaAtual = acaoVendaAtual->valor;
             while( ofertaVendaAtual != NULL ){
-                if( valida_transacao( ofertaVendaAtual, ofertaCompraAtual ) ){
+                if( valida_transacao( ofertaVendaAtual, ofertaCompraAtual, papelAtual ) ){
                     if( realiza_transacao( ofertaVendaAtual, ofertaCompraAtual ) ){
                         contador++;
                         break;} 
                 }ofertaVendaAtual = ofertaVendaAtual->next;
-            }ofertaCompraAtual = ofertaCompraAtual->next;
-        }
+            }ofertaCompraAtual = ofertaCompraAtual->next;}
         
         ajusta_lista_de_ofertas( &acaoVendaAtual->valor, &acaoCompraAtual->valor, acaoVendaAtual, acaoCompraAtual );
- 
         salva_ofertas( &inicioAcaoVenda, &inicioAcaoCompra );
+        salva_papeis( inicioPapel );
         limpa_lista_de_acoes( &inicioAcaoVenda );
         limpa_lista_de_acoes( &inicioAcaoCompra );
         
-        if( contador ){
+        if( contador > 0 ){
             return true;}   
-    }
-    
-    return false;
+    }return false;
 }
 
-bool valida_transacao( oferta *venda, oferta *compra ){
+bool valida_transacao( oferta *venda, oferta *compra, papel *papelAtual ){
     if( venda->valor <= compra->valor ){
+        papelAtual->cotacao = venda->valor;
         return true;
     }else{
         return false;}
@@ -75,84 +80,76 @@ bool realiza_transacao( oferta *venda, oferta *compra ){
             venda->valor = compra->valor = 0;
             compra->quantidade = venda->quantidade = 0;
         }else if( venda->quantidade > compra->quantidade  ){
-            venda->quantidade -= compra->quantidade;}
-        return true;
+            venda->quantidade -= compra->quantidade;
+            compra->quantidade = 0;
+            compra->valor = 0;}
     }else if( venda->valor < compra->valor ){
         if( venda->quantidade == compra->quantidade ){
             compra->quantidade = venda->quantidade = 0;
             venda->valor = compra->valor = 0;
         }else if( venda->quantidade > compra->quantidade ){
-            venda->quantidade -= compra->quantidade;}
-        return true;}
-    return false;
+            venda->quantidade -= compra->quantidade;
+            compra->quantidade = 0;
+            compra->valor = 0;}
+    }else return false;
+    return true;
 }
-void ajusta_lista_de_ofertas( oferta **ofertaVendaAtual, oferta **ofertaCompraAtual, 
-                               acao *acaoVendaAtual, acao *acaoCompraAtual ){
+void ajusta_lista_de_ofertas( oferta **ofertaVendaAtual, oferta **ofertaCompraAtual, acao *acaoVendaAtual, acao *acaoCompraAtual ){
     oferta *ofertaVenda = *ofertaVendaAtual,
            *ofertaCompra = *ofertaCompraAtual,
            *ofertaVendaBackup = NULL,
            *ofertaCompraBackup = NULL;
 
-    while( ofertaCompra->next && ofertaCompra->quantidade == 0 ){
-        (*ofertaCompraAtual) = ofertaCompra->next;
-        ofertaCompra->next->prev = NULL;
-        free( ofertaCompra );
-        acaoCompraAtual->quantidadeOfertado--;
-        ofertaCompra = (*ofertaCompraAtual);}
-       
-    if( acaoCompraAtual->quantidadeOfertado == 1 ){
+    unsigned quantidadeDeOfertas = acaoCompraAtual->quantidadeOfertado;
+
+    while( quantidadeDeOfertas > 0 ){
+        ofertaCompra = *ofertaCompraAtual;
         if( ofertaCompra->quantidade == 0 ){
-            free( (*ofertaCompraAtual) );
-            (*ofertaCompraAtual) = NULL;}
-            acaoCompraAtual->quantidadeOfertado--;
-    }else{
-        ofertaCompraBackup = ofertaCompra;
-        ofertaCompra = ofertaCompra->next;
-        
-        while( ofertaCompra ){
-          
-            if( ofertaCompra->quantidade == 0 ){
-                ofertaCompraBackup->next = ofertaCompra->next;
-                
-                if( ofertaCompra->next )
-                    ofertaCompra->next->prev = ofertaCompraBackup;
-                
-                free( ofertaCompra );
-                acaoCompraAtual->quantidadeOfertado--;
-                ofertaCompra = ofertaCompraBackup->next;
-            }else{
-                ofertaCompra = ofertaCompra->next;
-            }
-        }
-    }
-   
-    while( ofertaVenda->next && ofertaVenda->quantidade == 0 ){
-        (*ofertaVendaAtual) = ofertaVenda->next;
-        ofertaVenda->next->prev = NULL;
-        free( ofertaVenda );
-        acaoVendaAtual->quantidadeOfertado--;
-        ofertaVenda = (*ofertaVendaAtual);
-    }
-    if( acaoVendaAtual->quantidadeOfertado == 1 ){
+            *ofertaCompraAtual = ofertaCompra->next; 
+            if( *ofertaCompraAtual ){
+                (*ofertaCompraAtual)->prev = NULL;}
+            free( ofertaCompra );
+            ofertaCompra = NULL;
+            quantidadeDeOfertas = acaoCompraAtual->quantidadeOfertado--;
+        }else{
+            ofertaCompraBackup = ofertaCompra;
+            ofertaCompra = ofertaCompra->next;
+            while( ofertaCompra ){
+                if( ofertaCompra->quantidade == 0 ){
+                    ofertaCompraBackup->next = ofertaCompra->next;
+                    if( ofertaCompra->next ){
+                        ofertaCompra->next->prev = ofertaCompraBackup;}
+                    free( ofertaCompra );
+                    quantidadeDeOfertas = acaoCompraAtual->quantidadeOfertado--;
+                    break;}
+                ofertaCompraBackup = ofertaCompra;
+                ofertaCompra = ofertaCompra->next;}
+        }quantidadeDeOfertas--;}
+
+    quantidadeDeOfertas = acaoVendaAtual->quantidadeOfertado;
+    
+    while( quantidadeDeOfertas > 0 ){
+        ofertaVenda = *ofertaVendaAtual;
         if( ofertaVenda->quantidade == 0 ){
-            free( (*ofertaVendaAtual) );
-            (*ofertaVendaAtual) = NULL;}
-            acaoVendaAtual->quantidadeOfertado--;
-    }else{
-        ofertaVendaBackup = ofertaVenda ;
-        ofertaVenda = ofertaVenda->next;
-        while( ofertaVenda ){
-            if( ofertaVenda->quantidade == 0 ){
-                ofertaVendaBackup->next = ofertaVenda->next;
-                if( ofertaVenda->next )
-                    ofertaVenda->next->prev = ofertaVendaBackup;
-                free( ofertaVenda );
-                acaoVendaAtual->quantidadeOfertado--;
-                ofertaVenda = ofertaVendaBackup->next;
-            }else{
-                ofertaVenda = ofertaVenda->next;
-            }
-        }
-    }
+            *ofertaVendaAtual = ofertaVenda->next;
+            if( *ofertaVendaAtual ){
+                (*ofertaVendaAtual)->prev = NULL;}
+            free( ofertaVenda );
+            ofertaVenda = NULL;
+            quantidadeDeOfertas = acaoVendaAtual->quantidadeOfertado--;
+        }else{
+            ofertaVendaBackup = ofertaVenda;
+            ofertaVenda = ofertaVenda->next;
+            while( ofertaVenda ){
+                if( ofertaVenda->quantidade == 0 ){
+                    ofertaVendaBackup->next = ofertaVenda->next;
+                    if( ofertaVenda->next ){
+                        ofertaVenda->next->prev = ofertaVendaBackup;}
+                    free( ofertaVenda );
+                    quantidadeDeOfertas = acaoVendaAtual->quantidadeOfertado--;
+                    break;}
+                ofertaVendaBackup = ofertaVenda;
+                ofertaVenda = ofertaVenda->next;}
+        }quantidadeDeOfertas--;}
 }
 #endif

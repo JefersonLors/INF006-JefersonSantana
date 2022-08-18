@@ -64,7 +64,6 @@ int MENU_COTACOES(  ){
     unsigned resposta;
     printf( "======================================================\n" 
             "\t\t\t\t\tESCOLHA A AÇÃO\n\n"
-            "#\t\t   CODIGO\t\t\t  NOME DE PREGÃO\n\n"
             );
 
     if( listar_papeis( ) ){
