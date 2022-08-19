@@ -1,2 +1,2 @@
-TEST1          TESTE1              616.40  
+TEST1          TESTE1              0.97    
 TEST2          TEST2               0.00    

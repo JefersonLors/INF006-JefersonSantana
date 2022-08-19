@@ -21,6 +21,8 @@ typedef struct acoes{
     struct acoes *next;
 }acao;
 
+
+
 bool gerador_de_ofertas( void );
 bool gerador_de_lista_de_oferta( oferta**, acao* );
 bool gerador_de_quantidade_de_acoes( oferta* );
@@ -620,12 +622,10 @@ void limpa_lista_de_acoes( acao **inicio ){
     *inicio = atual;
 }
 bool exclui_lista_de_oferta( oferta**inicio ){      
-    oferta
-*atual = *inicio;
+    oferta *atual = *inicio;
     
     while( atual != NULL ){
-        oferta
-    *backup = atual->next;
+        oferta *backup = atual->next;
         free( atual );
         atual = NULL;
         atual = backup;}
@@ -742,8 +742,8 @@ bool gerador_de_cotacao( unsigned posicao ){
           *papelAtual = NULL;
   
     oferta *ofertaCompraAtual = NULL;
-    unsigned posicaoBackup = posicao;
-    
+    unsigned posicaoBackup = posicao,
+             cociente = 0;
     recupera_papeis( &inicioPapel );
     papelAtual = inicioPapel;
     
@@ -757,13 +757,16 @@ bool gerador_de_cotacao( unsigned posicao ){
     
     ofertaCompraAtual = acaoCompraAtual->valor;
     
+    papelAtual->cotacao = 0;
+    
     while( ofertaCompraAtual ){
         papelAtual->cotacao += ofertaCompraAtual->valor; 
+        cociente += ofertaCompraAtual->quantidade;
         ofertaCompraAtual = ofertaCompraAtual->next;
     }
+    
+    papelAtual->cotacao /= cociente;
 
-    papelAtual->cotacao /= acaoCompraAtual->quantidadeOfertado;
-   
     salva_papeis( inicioPapel );
     limpa_lista_de_acoes( &inicioAcaoVenda );
     limpa_lista_de_acoes( &inicioAcaoCompra );
