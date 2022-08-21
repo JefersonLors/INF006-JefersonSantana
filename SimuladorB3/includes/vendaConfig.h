@@ -8,5 +8,4 @@ bool incluir_oferta_de_venda( acao* );
 bool incluir_oferta_de_venda( acao *nova ){
     
 }
-
 #endif

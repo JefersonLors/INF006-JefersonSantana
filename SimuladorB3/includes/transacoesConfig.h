@@ -2,12 +2,13 @@
 #define transacoesConfig_h
 
 #include "ofertasConfig.h"
+#include <time.h>
 
 bool transacao( unsigned );
 bool valida_transacao( oferta*, oferta* );
 void ajusta_lista_de_ofertas( oferta**, oferta**, acao*, acao* );
-bool realiza_transacao( oferta*, oferta* );
-void historico_de_transacoes( oferta*, oferta*, float );
+bool realiza_transacao( oferta*, oferta*, papel* );
+void registra_compra_usuario( float, float, int, char*, char* );
 
 bool transacao( unsigned posicaoPapel ){
     acao *inicioAcaoVenda = NULL,
@@ -50,7 +51,7 @@ bool transacao( unsigned posicaoPapel ){
             ofertaVendaAtual = acaoVendaAtual->valor;
             while( ofertaVendaAtual != NULL ){
                 if( valida_transacao( ofertaVendaAtual, ofertaCompraAtual ) ){
-                    if( realiza_transacao( ofertaVendaAtual, ofertaCompraAtual ) ){
+                    if( realiza_transacao( ofertaVendaAtual, ofertaCompraAtual, papelAtual ) ){
                         contador++;
                         break;} 
                 }ofertaVendaAtual = ofertaVendaAtual->next;
@@ -72,28 +73,72 @@ bool valida_transacao( oferta *venda, oferta *compra ){
     }else{
         return false;}
 }
-bool realiza_transacao( oferta *venda, oferta *compra ){
+bool realiza_transacao( oferta *venda, oferta *compra, papel *acaoAtual ){
     if( venda->valor == compra->valor ){
         if( venda->quantidade == compra->quantidade ){
+            if( compra->user ){
+                registra_compra_usuario( acaoAtual->cotacao, compra->valor, compra->quantidade, 
+                                         acaoAtual->nomeDePregao, acaoAtual->codigo );}
             venda->valor = compra->valor = 0;
             compra->quantidade = venda->quantidade = 0;
+
             return true;
         }else if( venda->quantidade > compra->quantidade  ){
+            if( compra->user ){
+                registra_compra_usuario( acaoAtual->cotacao, compra->valor, compra->quantidade, 
+                                         acaoAtual->nomeDePregao, acaoAtual->codigo );}
             venda->quantidade -= compra->quantidade;
             compra->quantidade = 0;
             compra->valor = 0;
             return true;}
     }else if( venda->valor < compra->valor ){
         if( venda->quantidade == compra->quantidade ){
+            if( compra->user ){
+                registra_compra_usuario( acaoAtual->cotacao, (compra->valor + venda->quantidade)/2, compra->quantidade, 
+                                         acaoAtual->nomeDePregao, acaoAtual->codigo );}
             compra->quantidade = venda->quantidade = 0;
             venda->valor = compra->valor = 0;
             return true;
         }else if( venda->quantidade > compra->quantidade ){
+            if( compra->user ){
+                registra_compra_usuario( acaoAtual->cotacao, (compra->valor + venda->quantidade)/2, compra->quantidade, 
+                                          acaoAtual->nomeDePregao, acaoAtual->codigo );}
             venda->quantidade -= compra->quantidade;
             compra->quantidade = 0;
             compra->valor = 0;
             return true;}
     }return false;
+}
+void registra_compra_usuario( float cotacaoAtual, float valor, int quantidade, char *nome, char *codigo ){
+    const unsigned tamanhoDataAtual = 30;  
+    time_t dataAtualEmSegundos; 
+    struct tm *horaDataAtualSemFormato = NULL;
+    char dataAtualFormatada[tamanhoDataAtual]; 
+    FILE *historicoDeCompra = fopen( carteiraConfig, "a+" ),
+         *dadosGerais = fopen( dadosConfig, "w" );
+
+    fscanf( dadosGerais, "%u%u%u", &dados.quantidade_de_papel, 
+            &dados.quantidade_de_acoes, &dados.quantidade_de_acoes_compradas );
+    
+    time( &dataAtualEmSegundos );
+    
+    horaDataAtualSemFormato = localtime( &dataAtualEmSegundos );
+
+    strftime( dataAtualFormatada, tamanhoDataAtual, "%c", horaDataAtualSemFormato );
+
+    if( historicoDeCompra ){
+        tira_espacos_vazios( dataAtualFormatada );
+        fprintf( historicoDeCompra, "%-*s\t%-*.2f\t%-*d\t%-*.2f\t%-*s\t%-*s\n", 
+                 tamanhoDataAtual, dataAtualFormatada, 4,cotacaoAtual, 4,
+                 quantidade, 4,valor, TAM_CODIGO, codigo, TAM_NOME_PREGAO, nome );
+    }
+    dados.quantidade_de_acoes_compradas++;
+    
+    fprintf( dadosGerais, "%u%u%u", dados.quantidade_de_papel, 
+            dados.quantidade_de_acoes, dados.quantidade_de_acoes_compradas );
+    
+    fclose( dadosGerais );
+    fclose( historicoDeCompra );
 }
 void ajusta_lista_de_ofertas( oferta **ofertaVendaAtual, oferta **ofertaCompraAtual, acao *acaoVendaAtual, acao *acaoCompraAtual ){
     oferta *ofertaVenda = *ofertaVendaAtual,

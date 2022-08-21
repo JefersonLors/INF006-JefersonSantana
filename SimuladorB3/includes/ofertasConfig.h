@@ -9,8 +9,8 @@ typedef struct oferta{
     int quantidade;
     float valor;
     bool user;
-    struct oferta*prev;
-    struct oferta*next;
+    struct oferta *prev;
+    struct oferta *next;
 }oferta;
 
 typedef struct acoes{
@@ -20,8 +20,6 @@ typedef struct acoes{
     struct acoes *prev;
     struct acoes *next;
 }acao;
-
-
 
 bool gerador_de_ofertas( void );
 bool gerador_de_lista_de_oferta( oferta**, acao* );
@@ -277,15 +275,16 @@ bool visualizar_ofertas_acao( unsigned posicao ){
 }
 bool recupera_ofertas( acao **inicioAcaoVenda, acao **inicioAcaoCompra ){
     acao *atualAcaoVenda = *inicioAcaoVenda,
-             *atualAcaoCompra = *inicioAcaoCompra,
-             *novoAcaoCompra = NULL,
-             *novoAcaoVenda = NULL;
+         *atualAcaoCompra = *inicioAcaoCompra,
+         *novoAcaoCompra = NULL,
+         *novoAcaoVenda = NULL;
 
     FILE *arquivoAcoesValorVenda = fopen( acoesValorVenda, "r" ),
          *arquivoAcoesValorCompra = fopen( acoesValorCompra, "r" ),
          *arquivoDadosConfig = fopen( dadosConfig, "r" );
 
-    fscanf( arquivoDadosConfig, "%d%d", &dados.quantidade_de_papel, &dados.quantidade_de_acoes);
+    fscanf( arquivoDadosConfig, "%d%d%d", &dados.quantidade_de_papel, 
+            &dados.quantidade_de_acoes, &dados.quantidade_de_acoes_compradas );
     unsigned quantidadeAcoes = dados.quantidade_de_acoes;
     
     if( dados.quantidade_de_acoes > 0 ){
@@ -463,7 +462,8 @@ bool salva_ofertas( acao **inicioVenda, acao **inicioCompra ){
 
     unsigned user;
     
-    fprintf( arquivoDadosConfig, "%d\n%d", dados.quantidade_de_papel, dados.quantidade_de_acoes );
+    fprintf( arquivoDadosConfig, "%d\n%d\n%d", dados.quantidade_de_papel, dados.quantidade_de_acoes, 
+             dados.quantidade_de_acoes_compradas );
     
     if( arquivoAcoesValorVenda && arquivoAcoesValorVenda ){
         while( atualVenda != NULL && atualCompra != NULL ){

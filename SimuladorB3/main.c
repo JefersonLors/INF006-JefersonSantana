@@ -70,6 +70,7 @@ int main( ){
                 break;
     
                 case CARTEIRA:
+                    listar_carteira( );
                     break;
     
                 case PAPEIS: 

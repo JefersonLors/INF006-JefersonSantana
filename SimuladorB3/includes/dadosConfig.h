@@ -11,7 +11,8 @@ char *acoesValorCompra = "arquivos/acoesValorCompra.txt";
 
 struct{
     unsigned quantidade_de_papel,
-             quantidade_de_acoes;
+             quantidade_de_acoes,
+             quantidade_de_acoes_compradas;
 }dados;
 
 bool cria_arquivos( );

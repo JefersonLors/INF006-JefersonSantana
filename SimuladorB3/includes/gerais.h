@@ -9,6 +9,7 @@
 #define aqui puts( "aqui" );
 
 void formata_texto( char* );
+void tira_espacos_vazios( char * );
 void DELAY( unsigned );
 
 void formata_texto( char *texto ){
@@ -20,6 +21,12 @@ void formata_texto( char *texto ){
             texto[caracter] = '_';
         if( ( isalnum( texto[caracter] ) ) == 0 && texto[caracter] != '\0' )
             texto[caracter] = '_';
+    }
+}
+void tira_espacos_vazios( char *data ){
+    for( int caracter = 0; data[caracter] != '\0'; caracter++ ){
+        if( data[caracter] == ' ' ) 
+            data[caracter] = '_';
     }
 }
 void DELAY( unsigned seg ){
