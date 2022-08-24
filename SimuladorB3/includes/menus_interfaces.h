@@ -2,6 +2,7 @@
 #define menus_interfaces_h
 
 #include "compraConfig.h"
+#include "carteiraConfig.h"
 #include "ofertasConfig.h"
 #include "gerais.h"
 
@@ -10,6 +11,7 @@ unsigned MENU_PAPEL( void );
 int MENU_COTACOES( void );
 void VENDA_INTERFACE( );
 void COMPRA_INTERFACE( void );
+void VENDA_INTERFACE( void );
 unsigned SUB_MENU_COTACOES( void );
 
 unsigned MENU_PRINCIPAL(  ){
@@ -108,7 +110,6 @@ void COMPRA_INTERFACE( ){
     resposta = MENU_COTACOES( );    
     
     if( resposta > 0 ){
-    
         int respostaBackup = resposta,
             quantidadeTemp = 0;
         float valorTemp = 0.0; 
@@ -123,7 +124,7 @@ void COMPRA_INTERFACE( ){
                 "\t\t\t\t\tOFERTA DE COMPRA\n\n" );
         
         printf( "Acão: %s - %s\n", inicio->codigo, inicio->nomeDePregao );
-        printf( "\nPreço: " );
+        printf( "\nPreço: R$" );
         
         scanf( "%f", &valorTemp );
         if( valorTemp != 0 ){
@@ -150,7 +151,7 @@ void COMPRA_INTERFACE( ){
             (nova->valor)->valor = valorTemp;
             nova->next = NULL;
             nova->prev = NULL;
-             nova->valor->user = true;
+            nova->valor->user = true;
             (nova->valor)->next = NULL;
             (nova->valor)->prev = NULL;
             
@@ -163,5 +164,72 @@ void COMPRA_INTERFACE( ){
         }
     }else if ( resposta == -1 ){
         puts("\n\t\t\tNÃO HÁ PAPEIS PARA NEGOCIAR!\n\n");}
+}
+void VENDA_INTERFACE( ){
+    /*
+    unsigned resposta;
+    printf( "============================================="
+            "=============================================\n" 
+            "\t\t\t\t\t\t\t\t\tOFERTA DE VENDA\n\n" );
+
+    resposta = MENU_CARTEIRA( );
+    
+    if( resposta > 0 ){
+        int respostaBackup = resposta,
+            quantidadeTemp = 0;
+        float valorTemp = 0.0; 
+        
+        carteira *inicio = NULL;
+        
+        recupera_carteira( &inicio );
+
+        while( resposta > 1 ){ inicio = inicio->next; resposta--; }
+        
+        printf( "======================================================\n" 
+                "\t\t\t\t\tOFERTA DE VENDA\n\n" );
+        
+        printf( "Acão: %s - %s\nComprada: %s\n", inicio->identificacao.codigo, 
+                inicio->identificacao.nomeDePregao, inicio->dataHoraCompra );
+        printf( "\nPreço: R$" );
+        
+        scanf( "%f", &valorTemp );
+        if( valorTemp != 0 ){
+            while( valorTemp < 0 ){
+                puts( "\n\t\t\tvalor inválido!\n");
+                printf( "\nPreço: R$" );
+                scanf( "%f", &valorTemp );
+            }
+            printf( "\nQuantidade: " );
+            scanf("%d", &quantidadeTemp );
+            while( quantidadeTemp < 0 || inicio->quantidade ){
+                puts( "\n\t\t\tquantidade inválida!\n");
+                printf( "\nQuantidade: " );
+                scanf( "%d", &quantidadeTemp );
+            }
+            acao *nova = (acao*)malloc( sizeof(acao) );
+         
+            strcpy( nova->identificacao.codigo, inicio->identificacao.codigo );
+            strcpy( nova->identificacao.nomeDePregao, inicio->identificacao.nomeDePregao );
+           
+            nova->quantidadeOfertado = 1;
+            (nova->valor) = (oferta*)malloc( sizeof(oferta) );
+            (nova->valor)->quantidade = quantidadeTemp;
+            (nova->valor)->valor = valorTemp;
+            nova->next = NULL;
+            nova->prev = NULL;
+            nova->valor->user = true;
+            (nova->valor)->next = NULL;
+            (nova->valor)->prev = NULL;
+            
+            limpar_lista_de_acoes_na_carteira( inicio );
+            if( incluir_oferta_de_venda( nova ) ){
+                puts( "\n\t\t\tOferta inlcuída com sucesso!\n\n");
+            }else{
+                puts( "\t\t\t\nOps! não foi possível inserir a oferta!\n\n");
+            }
+        }
+    }else if ( resposta == -1 ){
+        puts("\n\t\t\tNÃO HÁ AÇÕES NA CARTEIRA!\n\n");}
+    */
 }
 #endif

@@ -123,7 +123,8 @@ bool recupera_papeis( papel **head ){
          *arquivoConfig = fopen( dadosConfig, "r" );
     
     if( arquivoPapeis && arquivoConfig ){
-        fscanf( arquivoConfig, "%d", &dados.quantidade_de_papel );
+        fscanf( arquivoConfig, "%d%d%d", &dados.quantidade_de_papel,
+                &dados.quantidade_de_acoes, &dados.quantidade_de_acoes_compradas );
         int fila = dados.quantidade_de_papel;
         
         if( fila > 0 ){
@@ -156,8 +157,8 @@ bool listar_papeis( ){
         primeiro = head; 
         printf( "#%17s        %10s        %11s\t\t\n", 
                 "COTAÇÃO", "CÓDIGO", "NOME\n" );
-        do{ printf( "%-*d%-*.2f%-*s%-*s\n\n",
-            9, contador++, TAM_COT+10, primeiro->cotacao, 20, primeiro->codigo, TAM_NOME_PREGAO, 
+        do{ printf( "%-*dR$%-*.2f%-*s%-*s\n\n",
+            9, contador++, TAM_COT+8, primeiro->cotacao, 20, primeiro->codigo, TAM_NOME_PREGAO, 
             primeiro->nomeDePregao );
             primeiro = primeiro->next;
         }while( primeiro != NULL );

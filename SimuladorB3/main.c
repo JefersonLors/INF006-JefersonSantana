@@ -67,6 +67,7 @@ int main( ){
                     break;
     
                 case VENDER:
+                    VENDA_INTERFACE( );
                 break;
     
                 case CARTEIRA:

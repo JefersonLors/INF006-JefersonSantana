@@ -240,7 +240,7 @@ bool visualizar_ofertas_acao( unsigned posicao ){
             posicao--;
             atualCompra = atualCompra->next;}
 
-        printf( "NOME: %s\nCOD: %s\nCOT: %.2f\n\n", inicio->nomeDePregao, inicio->codigo, inicio->cotacao );
+        printf( "NOME: %s\nCOD: %s\nCOT: R$%.2f\n\n", inicio->nomeDePregao, inicio->codigo, inicio->cotacao );
         printf( "%30s\n\n", "OFERTAS" );
         
         oferta *ofertaVendaAtual = NULL,

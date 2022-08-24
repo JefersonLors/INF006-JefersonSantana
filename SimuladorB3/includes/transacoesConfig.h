@@ -1,4 +1,4 @@
-#ifndef transacoesConfig_h
+ #ifndef transacoesConfig_h
 #define transacoesConfig_h
 
 #include "ofertasConfig.h"
@@ -94,15 +94,15 @@ bool realiza_transacao( oferta *venda, oferta *compra, papel *acaoAtual ){
     }else if( venda->valor < compra->valor ){
         if( venda->quantidade == compra->quantidade ){
             if( compra->user ){
-                registra_compra_usuario( acaoAtual->cotacao, (compra->valor + venda->quantidade)/2, compra->quantidade, 
-                                         acaoAtual->nomeDePregao, acaoAtual->codigo );}
+                registra_compra_usuario( acaoAtual->cotacao, (compra->valor + venda->quantidade)/2,
+                                         compra->quantidade, acaoAtual->nomeDePregao, acaoAtual->codigo );}
             compra->quantidade = venda->quantidade = 0;
             venda->valor = compra->valor = 0;
             return true;
         }else if( venda->quantidade > compra->quantidade ){
             if( compra->user ){
-                registra_compra_usuario( acaoAtual->cotacao, (compra->valor + venda->quantidade)/2, compra->quantidade, 
-                                          acaoAtual->nomeDePregao, acaoAtual->codigo );}
+                registra_compra_usuario( acaoAtual->cotacao, (compra->valor + venda->quantidade)/2, 
+                                         compra->quantidade, acaoAtual->nomeDePregao, acaoAtual->codigo );}
             venda->quantidade -= compra->quantidade;
             compra->quantidade = 0;
             compra->valor = 0;
@@ -128,9 +128,9 @@ void registra_compra_usuario( float cotacaoAtual, float valor, int quantidade, c
 
     if( historicoDeCompra ){
         tira_espacos_vazios( dataAtualFormatada );
-        fprintf( historicoDeCompra, "%-*s\t%-*.2f\t%-*d\t%-*.2f\t%-*s\t%-*s\n", 
+        fprintf( historicoDeCompra, "%-*s\t%-*.2f\t%-*d\t%-*.2f\t%-*s\t%-*s\t+\n", 
                  tamanhoDataAtual, dataAtualFormatada, 4,cotacaoAtual, 4,
-                 quantidade, 4,valor, TAM_CODIGO, codigo, TAM_NOME_PREGAO, nome );
+                 quantidade, 4,valor, TAM_CODIGO, codigo, TAM_NOME_PREGAO, nome  );
     }
     dados.quantidade_de_acoes_compradas++;
     

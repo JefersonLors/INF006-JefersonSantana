@@ -2,6 +2,7 @@
 #define vendaConfig_h
 
 #include "ofertasConfig.h"
+#include "carteiraConfig.h"
 
 bool incluir_oferta_de_venda( acao* );
 
