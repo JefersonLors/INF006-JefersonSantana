@@ -8,8 +8,8 @@
 bool transacao( unsigned );
 bool valida_transacao( oferta*, oferta* );
 void ajusta_lista_de_ofertas( oferta**, oferta**, acao*, acao* );
-bool realiza_transacao( oferta*, oferta*, papel* );
-void registra_compra_usuario( float, float, int, char*, char* );
+bool realiza_transacao( oferta*, oferta*, papel*, bool );
+void registra_transacao_usuario( float, float, int, char*, char*, bool );
 
 bool transacao( unsigned posicaoPapel ){
     acao *inicioAcaoVenda = NULL,
@@ -53,14 +53,32 @@ bool transacao( unsigned posicaoPapel ){
             ofertaVendaAtual = acaoVendaAtual->valor;
             while( ofertaVendaAtual != NULL ){
                 if( valida_transacao( ofertaVendaAtual, ofertaCompraAtual ) ){
-                    if( realiza_transacao( ofertaVendaAtual, ofertaCompraAtual, papelAtual ) ){
+                    if( realiza_transacao( ofertaVendaAtual, ofertaCompraAtual, papelAtual, true ) ){
                         contador++;
                         break;} 
                 }ofertaVendaAtual = ofertaVendaAtual->next;
             }ofertaCompraAtual = ofertaCompraAtual->next;}
        
         ajusta_lista_de_ofertas( &acaoVendaAtual->valor, &acaoCompraAtual->valor, acaoVendaAtual, acaoCompraAtual );
+    
+        if( acaoVendaAtual->valor != NULL ){
+            ofertaVendaAtual = acaoVendaAtual->valor;}
+       
+        if( acaoCompraAtual->valor != NULL ){
+            ofertaCompraAtual = acaoCompraAtual->valor;}
             
+       
+        while( ofertaVendaAtual != NULL ){
+            ofertaCompraAtual = acaoCompraAtual->valor;
+            while( ofertaCompraAtual != NULL ){
+                if( valida_transacao( ofertaCompraAtual, ofertaVendaAtual ) ){
+                    if( realiza_transacao( ofertaCompraAtual, ofertaVendaAtual, papelAtual, false ) ){
+                        contador++;
+                        break;} 
+                }ofertaCompraAtual = ofertaCompraAtual->next;
+            }ofertaVendaAtual = ofertaVendaAtual->next;}
+           
+        ajusta_lista_de_ofertas( &acaoVendaAtual->valor, &acaoCompraAtual->valor, acaoVendaAtual, acaoCompraAtual );
         salva_ofertas( &inicioAcaoVenda, &inicioAcaoCompra );
         
         limpa_lista_de_acoes( &inicioAcaoVenda );
@@ -77,12 +95,15 @@ bool valida_transacao( oferta *venda, oferta *compra ){
     }else{
         return false;}
 }
-bool realiza_transacao( oferta *venda, oferta *compra, papel *acaoAtual ){
+bool realiza_transacao( oferta *venda, oferta *compra, papel *acaoAtual, bool sinalizador ){
+    ///colocar nomes melhores para as variaveis venda e compra, pois 
+    ///uma também pode lista corresponder a outra, isto é, a lista de
+    ///venda é passada como de compra e o contrário também.
     if( venda->valor == compra->valor ){
         if( venda->quantidade == compra->quantidade ){
             if( compra->user ){
-                registra_compra_usuario( acaoAtual->cotacao, compra->valor, compra->quantidade, 
-                                         acaoAtual->nomeDePregao, acaoAtual->codigo );
+                registra_transacao_usuario( acaoAtual->cotacao, compra->valor, compra->quantidade, 
+                                         acaoAtual->nomeDePregao, acaoAtual->codigo, sinalizador );
             }
             venda->valor = compra->valor = 0;
             compra->quantidade = venda->quantidade = 0;
@@ -90,8 +111,8 @@ bool realiza_transacao( oferta *venda, oferta *compra, papel *acaoAtual ){
             return true;
         }else if( venda->quantidade > compra->quantidade  ){
             if( compra->user ){
-                registra_compra_usuario( acaoAtual->cotacao, compra->valor, compra->quantidade, 
-                                         acaoAtual->nomeDePregao, acaoAtual->codigo );}
+                registra_transacao_usuario( acaoAtual->cotacao, compra->valor, compra->quantidade, 
+                                         acaoAtual->nomeDePregao, acaoAtual->codigo, sinalizador );}
             venda->quantidade -= compra->quantidade;
             compra->quantidade = 0;
             compra->valor = 0;
@@ -99,27 +120,28 @@ bool realiza_transacao( oferta *venda, oferta *compra, papel *acaoAtual ){
     }else if( venda->valor < compra->valor ){
         if( venda->quantidade == compra->quantidade ){
             if( compra->user ){
-                registra_compra_usuario( acaoAtual->cotacao, (compra->valor + venda->quantidade)/2,
-                                         compra->quantidade, acaoAtual->nomeDePregao, acaoAtual->codigo );}
+                registra_transacao_usuario( acaoAtual->cotacao, (compra->valor + venda->quantidade)/2,
+                                         compra->quantidade, acaoAtual->nomeDePregao, acaoAtual->codigo, sinalizador );}
             compra->quantidade = venda->quantidade = 0;
             venda->valor = compra->valor = 0;
             return true;
         }else if( venda->quantidade > compra->quantidade ){
             if( compra->user ){
-                registra_compra_usuario( acaoAtual->cotacao, (compra->valor + venda->quantidade)/2, 
-                                         compra->quantidade, acaoAtual->nomeDePregao, acaoAtual->codigo );}
+                registra_transacao_usuario( acaoAtual->cotacao, (compra->valor + venda->quantidade)/2, 
+                                         compra->quantidade, acaoAtual->nomeDePregao, acaoAtual->codigo, sinalizador );}
             venda->quantidade -= compra->quantidade;
             compra->quantidade = 0;
             compra->valor = 0;
             return true;}
     }return false;
 }
-void registra_compra_usuario( float cotacaoAtual, float valor, int quantidade, char *nome, char *codigo ){
+void registra_transacao_usuario( float cotacaoAtual, float valor, int quantidade, 
+                                 char *nome, char *codigo, bool sinalizador ){
     const unsigned tamanhoDataAtual = 30;  
     time_t dataAtualEmSegundos; 
     struct tm *horaDataAtualSemFormato = NULL;
     char dataAtualFormatada[tamanhoDataAtual]; 
-    FILE *historicoDeCompra = fopen( historicoTransacao, "a+" ),
+    FILE *TRANSACOES = fopen( historicoTransacao, "a+" ),
          *dadosGerais = fopen( dadosConfig, "r" );
 
     fscanf( dadosGerais, "%u%u%u%u", &dados.quantidade_de_papel, 
@@ -136,11 +158,11 @@ void registra_compra_usuario( float cotacaoAtual, float valor, int quantidade, c
 
     strftime( dataAtualFormatada, tamanhoDataAtual, "%c", horaDataAtualSemFormato );
 
-    if( historicoDeCompra ){
+    if( TRANSACOES ){
         tira_espacos_vazios( dataAtualFormatada );
-        fprintf( historicoDeCompra, "%-*s\t%-*.2f\t%-*d\t%-*.2f\t%-*s\t%-*s\t1\n", 
+        fprintf( TRANSACOES, "%-*s\t%-*.2f\t%-*d\t%-*.2f\t%-*s\t%-*s\t%u\n", 
                  tamanhoDataAtual, dataAtualFormatada, 4,cotacaoAtual, 4,
-                 quantidade, 4,valor, TAM_CODIGO, codigo, TAM_NOME_PREGAO, nome  );
+                 quantidade, 4,valor, TAM_CODIGO, codigo, TAM_NOME_PREGAO, nome, sinalizador  );
     }
     dados.quantidade_de_transacoes++;
 
@@ -149,7 +171,7 @@ void registra_compra_usuario( float cotacaoAtual, float valor, int quantidade, c
             dados.acoes_diferentes_na_carteira);
     
     fclose( dadosGerais );
-    fclose( historicoDeCompra );
+    fclose( TRANSACOES );
 }
 void ajusta_lista_de_ofertas( oferta **ofertaVendaAtual, oferta **ofertaCompraAtual, acao *acaoVendaAtual, acao *acaoCompraAtual ){
     oferta *ofertaVenda = *ofertaVendaAtual,

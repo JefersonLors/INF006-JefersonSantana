@@ -29,6 +29,7 @@ bool salva_carteira( carteira* );
 bool recupera_carteira( carteira** );
 void historico_de_transacao( char*, char* );
 bool recupera_historico_de_transacao( movimentacao** );
+void ajusta_carteira( carteira** );
 int MENU_CARTEIRA( void );
 
 int listar_carteira( bool seletor ){
@@ -72,8 +73,10 @@ int listar_carteira( bool seletor ){
                 }else{ break; }
             }else{break;} 
         }while( true );
+        limpa_lista_de_acoes_na_carteira( carteiraOrganizada );
         return escolhaBackup;
-    }else{ return -1; }
+    }else{ 
+        return -1; }
 
 }
 
@@ -159,15 +162,20 @@ bool cria_carteira( carteira **carteiraOrganizada ){
             while( acaoAtual ){
                 if( strcmp( inicioCarteiraOrganizada->identificacao.codigo,
                             acaoAtual->identificacao.codigo ) == 0 ){
-                    inicioCarteiraOrganizada->quantidade += acaoAtual->quantidade;}
+                        if( acaoAtual->operacao ){
+                            inicioCarteiraOrganizada->quantidade += acaoAtual->quantidade;
+                        }else{
+                            inicioCarteiraOrganizada->quantidade -= acaoAtual->quantidade;}}
                 acaoAtual = acaoAtual->next;}
             inicioCarteiraOrganizada = inicioCarteiraOrganizada->next;}
 
+        ajusta_carteira( carteiraOrganizada );
         limpa_lista_de_movimentacoes( listaDeTransacoes );
         salva_carteira( *carteiraOrganizada );
-        
-        return true;
-    }else return false;
+        if( *carteiraOrganizada ){
+            return true;}
+    }
+    return false;
 }
 
 void historico_de_transacao( char *codigo, char *nome ){
@@ -269,13 +277,15 @@ bool salva_carteira( carteira *carteiraInicio ){
     FILE *CARTEIRA = fopen( carteiraConfig, "w" ),
          *dadosGerais = fopen( dadosConfig, "w" );
 
-    if( acaoAtual && CARTEIRA ){
-        while( acaoAtual ){
-            fprintf( CARTEIRA, "%-*u\t%-*s\t%-*s\n", 
-                     8, acaoAtual->quantidade, 
-                     TAM_CODIGO*2-1,acaoAtual->identificacao.codigo, 
-                     TAM_NOME_PREGAO, acaoAtual->identificacao.nomeDePregao );
-            acaoAtual = acaoAtual->next;
+    if( CARTEIRA ){
+        if( acaoAtual ){
+            while( acaoAtual ){
+                fprintf( CARTEIRA, "%-*u\t%-*s\t%-*s\n", 
+                         8, acaoAtual->quantidade, 
+                         TAM_CODIGO*2-1,acaoAtual->identificacao.codigo, 
+                         TAM_NOME_PREGAO, acaoAtual->identificacao.nomeDePregao );
+                acaoAtual = acaoAtual->next;
+            }
         }
         fprintf( dadosGerais, "%u\n%u\n%u\n%u\n", dados.quantidade_de_papel, 
                  dados.quantidade_de_acoes, dados.quantidade_de_transacoes,
@@ -350,6 +360,42 @@ int MENU_CARTEIRA( ){
    
 }
 void limpa_lista_de_acoes_na_carteira( carteira *inicioCarteira ){
-    
+    while(inicioCarteira){
+        carteira *backup = inicioCarteira->next;
+        free( inicioCarteira );
+        inicioCarteira = NULL;
+        inicioCarteira = backup;
+    }
+    inicioCarteira = NULL;
+}
+void ajusta_carteira( carteira **inicioCarteira ){
+    carteira *acaoCarteira = *inicioCarteira,
+             *acaoCarteiraBackup = NULL;
+
+    unsigned acoesNaCarteira = dados.acoes_diferentes_na_carteira;
+
+    while( acoesNaCarteira > 0 ){
+        acaoCarteira = *inicioCarteira;
+        if( acaoCarteira->quantidade == 0 ){
+            *inicioCarteira = acaoCarteira->next; 
+            if( *inicioCarteira ){
+                (*inicioCarteira)->prev = NULL;}
+            free( acaoCarteira );
+            acaoCarteira = NULL;
+            acoesNaCarteira = dados.acoes_diferentes_na_carteira--;
+        }else{
+            acaoCarteiraBackup = acaoCarteira;
+            acaoCarteira = acaoCarteira->next;
+            while( acaoCarteira ){
+                if( acaoCarteira->quantidade == 0 ){
+                    acaoCarteiraBackup->next = acaoCarteira->next;
+                    if( acaoCarteira->next ){
+                        acaoCarteira->next->prev = acaoCarteiraBackup;}
+                    free( acaoCarteira );
+                    acoesNaCarteira = dados.acoes_diferentes_na_carteira--;
+                    break;}
+                acaoCarteiraBackup = acaoCarteira;
+                acaoCarteira = acaoCarteira->next;}
+        }acoesNaCarteira--;} 
 }
 #endif

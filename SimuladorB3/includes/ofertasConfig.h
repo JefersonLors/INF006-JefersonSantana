@@ -28,23 +28,17 @@ bool gerador_de_valor_de_venda( oferta* );
 bool gerador_de_valor_de_compra( oferta* );
 bool gerador_de_cotacao( unsigned );
 unsigned gerador_de_quantidade_de_oferta( void );
-
 void ordena_ofertas_de_venda( oferta*, unsigned );
 void ordena_ofertas_de_compra( oferta*, unsigned );
-
 bool preenche_ofertas( acao**, bool );
-
 bool obtem_nome_e_codigo( acao* );
-
 bool recupera_ofertas( acao**, acao** );
 bool recupera_lista_de_oferta( oferta**, unsigned, FILE* );
-
 bool atualiza_ofertas( unsigned );
 bool retira_oferta( void );
 bool exclui_lista_de_oferta( oferta** );
 void limpa_lista_de_acoes( acao** );
 bool salva_ofertas( acao**, acao** );
-
 bool visualizar_ofertas_acao( unsigned );
 
 bool gerador_de_ofertas(  ){
@@ -548,7 +542,6 @@ bool atualiza_ofertas( unsigned posicao ){
                 backupUserCompra->prev = NULL;
                 inicioBackupUserCompra = backupUserCompra;
             }else{
-                
                 while( backupUserCompra->next != NULL ){
                     backupUserCompra = backupUserCompra->next;}
                 novoUserCompra = (oferta*)malloc( sizeof(oferta) );

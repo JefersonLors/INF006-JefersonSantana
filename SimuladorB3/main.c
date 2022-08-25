@@ -13,10 +13,6 @@
 
 bool inicializar( papel**, acao**, acao** );
 
-///MELHORIAS
-    // - incrementar histórico de transacoes
-    // - inserir compra por media para valores diferentes
-
 int main( ){
     enum OPCOES{ SAIR = 0, OFERTAS = 1, COMPRAR = 2, 
                  VENDER = 3, CARTEIRA = 4, PAPEIS = 5 };
@@ -77,10 +73,11 @@ int main( ){
                 case CARTEIRA:
                      printf( "======================================================\n" 
                              "\t\t\t\t\t\tCARTEIRA\n\n");
-                    if( !listar_carteira( true ) ){
+                    if( listar_carteira( true ) < 0 ){
                         puts("\n\t\t\t\tNÃO HÁ AÇÕES COMPRADAS!\n\n");
-                    }break;
+                    }
                     printf( "======================================================\n"  );
+                    break;
                 case PAPEIS: 
                     do{ 
                         printf( "======================================================\n" 

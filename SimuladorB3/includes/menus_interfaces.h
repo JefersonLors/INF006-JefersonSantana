@@ -227,6 +227,7 @@ void VENDA_INTERFACE( ){
             }else{
                 puts( "\t\t\t\nOps! não foi possível inserir a oferta!\n\n");
             }
+            limpa_lista_de_acoes_na_carteira( inicio );
         }
     }else{
         puts("\n\t\t\tNÃO HÁ AÇÕES NA CARTEIRA!\n\n");}
