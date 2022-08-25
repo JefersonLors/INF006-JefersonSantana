@@ -39,12 +39,16 @@ int main( ){
                             if( subResposta != -1 ){
                                 gerador_de_cotacao( subResposta );
                                 visualizar_ofertas_acao( subResposta );
+                               
                                 if( transacao( subResposta ) ){
+                                  
                                     puts( "\n\t\t\tTransacao realizada!\n\n" );
                                     gerador_de_cotacao( subResposta );
+                                    
                                     visualizar_ofertas_acao( subResposta );}
-                               
+                                   
                                 while( SUB_MENU_COTACOES(  ) ){
+                                 
                                     printf( "==========================="
                                             "===========================\n" 
                                             "\t\t\t\t\t\tAÇÃO\n\n" );
@@ -71,9 +75,12 @@ int main( ){
                 break;
     
                 case CARTEIRA:
-                    listar_carteira( );
-                    break;
-    
+                     printf( "======================================================\n" 
+                             "\t\t\t\t\t\tCARTEIRA\n\n");
+                    if( !listar_carteira( true ) ){
+                        puts("\n\t\t\t\tNÃO HÁ AÇÕES COMPRADAS!\n\n");
+                    }break;
+                    printf( "======================================================\n"  );
                 case PAPEIS: 
                     do{ 
                         printf( "======================================================\n" 

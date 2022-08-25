@@ -35,7 +35,11 @@ bool adiciona_papel( ){
     ///impedir de colocar papal repetido
     FILE *quantidadePapel = fopen( papeis, "r" );
     
-    fscanf( quantidadePapel, "%d", &dados.quantidade_de_papel );
+    fscanf( quantidadePapel, "%d%d%d%d%d", &dados.quantidade_de_papel, 
+            &dados.quantidade_de_acoes, 
+            &dados.quantidade_de_transacoes,
+            &dados.acoes_diferentes_na_carteira,
+            &dados.acoes_diferentes_na_carteira);
     fclose( quantidadePapel );
     
     if( primeiro == NULL ){
@@ -103,17 +107,23 @@ bool salva_papeis( papel *head ){
         return false;
     }else{
         atual = head;
+        
         while( atual != NULL ){
             backup = atual->next; 
             fprintf( arquivoPapeis, "%-*s%-*s%-*.2f\n", TAM_CODIGO*2-1, atual->codigo, 
                      TAM_NOME_PREGAO, atual->nomeDePregao, TAM_COT, atual->cotacao );
             free( atual );
             atual = backup;}
-        fprintf( arquivoConfig, "%d\n%d\n%d", dados.quantidade_de_papel, dados.quantidade_de_acoes, 
-                 dados.quantidade_de_acoes_compradas ); }
-    
+        
+        fprintf( arquivoConfig, "%u\n%u\n%u\n%u", dados.quantidade_de_papel, dados.quantidade_de_acoes, 
+                 dados.quantidade_de_transacoes, dados.acoes_diferentes_na_carteira ); 
+        
+    }
+ 
     fclose( arquivoPapeis );
+   
     fclose( arquivoConfig );
+  
     return true;
 }
 bool recupera_papeis( papel **head ){
@@ -123,8 +133,9 @@ bool recupera_papeis( papel **head ){
          *arquivoConfig = fopen( dadosConfig, "r" );
     
     if( arquivoPapeis && arquivoConfig ){
-        fscanf( arquivoConfig, "%d%d%d", &dados.quantidade_de_papel,
-                &dados.quantidade_de_acoes, &dados.quantidade_de_acoes_compradas );
+        fscanf( arquivoConfig, "%d%d%d%d", &dados.quantidade_de_papel,
+                &dados.quantidade_de_acoes, &dados.quantidade_de_transacoes,
+                &dados.acoes_diferentes_na_carteira);
         int fila = dados.quantidade_de_papel;
         
         if( fila > 0 ){

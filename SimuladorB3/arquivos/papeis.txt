@@ -1,3 +1,1 @@
-TESTE1         TESTE1              1.29    
-TEST2          TESTE2              0.57    
-TESTE3         TESTE3              0.29    
+TEST1          TEST1               0.73    

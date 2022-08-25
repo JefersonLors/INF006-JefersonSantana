@@ -2,6 +2,7 @@
 #define transacoesConfig_h
 
 #include "ofertasConfig.h"
+#include "carteiraConfig.h"
 #include <time.h>
 
 bool transacao( unsigned );
@@ -26,10 +27,11 @@ bool transacao( unsigned posicaoPapel ){
              backupQuantidadeOfertadasCompra = 0;
 
     unsigned contador = 0;
-    
+
     recupera_ofertas( &inicioAcaoVenda, &inicioAcaoCompra );
+
     recupera_papeis( &inicioPapel );
-    
+   
     acaoVendaAtual = inicioAcaoVenda;
     acaoCompraAtual = inicioAcaoCompra;
     papelAtual = inicioPapel;
@@ -44,7 +46,7 @@ bool transacao( unsigned posicaoPapel ){
         ofertaVendaAtual = acaoVendaAtual->valor;}
    
     if( acaoCompraAtual->valor != NULL ){
-         ofertaCompraAtual = acaoCompraAtual->valor;}
+        ofertaCompraAtual = acaoCompraAtual->valor;}
 
     if( ofertaVendaAtual != NULL && ofertaCompraAtual != NULL ){
         while( ofertaCompraAtual != NULL ){
@@ -56,11 +58,13 @@ bool transacao( unsigned posicaoPapel ){
                         break;} 
                 }ofertaVendaAtual = ofertaVendaAtual->next;
             }ofertaCompraAtual = ofertaCompraAtual->next;}
+       
+        ajusta_lista_de_ofertas( &acaoVendaAtual->valor, &acaoCompraAtual->valor, acaoVendaAtual, acaoCompraAtual );
+            
+        salva_ofertas( &inicioAcaoVenda, &inicioAcaoCompra );
         
-            ajusta_lista_de_ofertas( &acaoVendaAtual->valor, &acaoCompraAtual->valor, acaoVendaAtual, acaoCompraAtual );
-            salva_ofertas( &inicioAcaoVenda, &inicioAcaoCompra );
-            limpa_lista_de_acoes( &inicioAcaoVenda );
-            limpa_lista_de_acoes( &inicioAcaoCompra );
+        limpa_lista_de_acoes( &inicioAcaoVenda );
+        limpa_lista_de_acoes( &inicioAcaoCompra );
         
         if( contador > 0 ){
             return true;}   
@@ -78,7 +82,8 @@ bool realiza_transacao( oferta *venda, oferta *compra, papel *acaoAtual ){
         if( venda->quantidade == compra->quantidade ){
             if( compra->user ){
                 registra_compra_usuario( acaoAtual->cotacao, compra->valor, compra->quantidade, 
-                                         acaoAtual->nomeDePregao, acaoAtual->codigo );}
+                                         acaoAtual->nomeDePregao, acaoAtual->codigo );
+            }
             venda->valor = compra->valor = 0;
             compra->quantidade = venda->quantidade = 0;
 
@@ -114,11 +119,16 @@ void registra_compra_usuario( float cotacaoAtual, float valor, int quantidade, c
     time_t dataAtualEmSegundos; 
     struct tm *horaDataAtualSemFormato = NULL;
     char dataAtualFormatada[tamanhoDataAtual]; 
-    FILE *historicoDeCompra = fopen( carteiraConfig, "a+" ),
-         *dadosGerais = fopen( dadosConfig, "w" );
+    FILE *historicoDeCompra = fopen( historicoTransacao, "a+" ),
+         *dadosGerais = fopen( dadosConfig, "r" );
 
-    fscanf( dadosGerais, "%u%u%u", &dados.quantidade_de_papel, 
-            &dados.quantidade_de_acoes, &dados.quantidade_de_acoes_compradas );
+    fscanf( dadosGerais, "%u%u%u%u", &dados.quantidade_de_papel, 
+            &dados.quantidade_de_acoes, &dados.quantidade_de_transacoes,
+            &dados.acoes_diferentes_na_carteira);
+    
+    fclose( dadosGerais );
+
+    dadosGerais = fopen( dadosConfig, "w" );
     
     time( &dataAtualEmSegundos );
     
@@ -128,14 +138,15 @@ void registra_compra_usuario( float cotacaoAtual, float valor, int quantidade, c
 
     if( historicoDeCompra ){
         tira_espacos_vazios( dataAtualFormatada );
-        fprintf( historicoDeCompra, "%-*s\t%-*.2f\t%-*d\t%-*.2f\t%-*s\t%-*s\t+\n", 
+        fprintf( historicoDeCompra, "%-*s\t%-*.2f\t%-*d\t%-*.2f\t%-*s\t%-*s\t1\n", 
                  tamanhoDataAtual, dataAtualFormatada, 4,cotacaoAtual, 4,
                  quantidade, 4,valor, TAM_CODIGO, codigo, TAM_NOME_PREGAO, nome  );
     }
-    dados.quantidade_de_acoes_compradas++;
-    
-    fprintf( dadosGerais, "%u%u%u", dados.quantidade_de_papel, 
-            dados.quantidade_de_acoes, dados.quantidade_de_acoes_compradas );
+    dados.quantidade_de_transacoes++;
+
+    fprintf( dadosGerais, "%u%u%u%u", dados.quantidade_de_papel, 
+            dados.quantidade_de_acoes, dados.quantidade_de_transacoes,
+            dados.acoes_diferentes_na_carteira);
     
     fclose( dadosGerais );
     fclose( historicoDeCompra );
@@ -198,4 +209,5 @@ void ajusta_lista_de_ofertas( oferta **ofertaVendaAtual, oferta **ofertaCompraAt
                 ofertaVenda = ofertaVenda->next;}
         }quantidadeDeOfertas--;}
 }
+
 #endif

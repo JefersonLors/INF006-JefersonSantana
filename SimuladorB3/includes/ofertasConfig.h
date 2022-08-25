@@ -283,12 +283,15 @@ bool recupera_ofertas( acao **inicioAcaoVenda, acao **inicioAcaoCompra ){
          *arquivoAcoesValorCompra = fopen( acoesValorCompra, "r" ),
          *arquivoDadosConfig = fopen( dadosConfig, "r" );
 
-    fscanf( arquivoDadosConfig, "%d%d%d", &dados.quantidade_de_papel, 
-            &dados.quantidade_de_acoes, &dados.quantidade_de_acoes_compradas );
+    fscanf( arquivoDadosConfig, "%d%d%d%d", &dados.quantidade_de_papel, 
+            &dados.quantidade_de_acoes, &dados.quantidade_de_transacoes,
+            &dados.acoes_diferentes_na_carteira );
+
     unsigned quantidadeAcoes = dados.quantidade_de_acoes;
     
     if( dados.quantidade_de_acoes > 0 ){
         while( quantidadeAcoes > 0 ){
+            
             if( atualAcaoVenda == NULL ){
                 atualAcaoVenda = (acao*)(malloc(sizeof(acao) ) );
                 atualAcaoVenda->valor = NULL;
@@ -296,6 +299,7 @@ bool recupera_ofertas( acao **inicioAcaoVenda, acao **inicioAcaoCompra ){
                         atualAcaoVenda->identificacao.codigo, &atualAcaoVenda->quantidadeOfertado );
                 recupera_lista_de_oferta( &atualAcaoVenda->valor, atualAcaoVenda->quantidadeOfertado, 
                                           arquivoAcoesValorVenda );
+                
                 atualAcaoVenda->next = NULL;
                 *inicioAcaoVenda = atualAcaoVenda;
             }else{
@@ -309,7 +313,7 @@ bool recupera_ofertas( acao **inicioAcaoVenda, acao **inicioAcaoCompra ){
 
                 recupera_lista_de_oferta( &novoAcaoVenda->valor, novoAcaoVenda->quantidadeOfertado,
                                           arquivoAcoesValorVenda );
-                 
+                
                 novoAcaoVenda->next = NULL;
                 atualAcaoVenda->next = novoAcaoVenda;
             }
@@ -324,18 +328,23 @@ bool recupera_ofertas( acao **inicioAcaoVenda, acao **inicioAcaoCompra ){
                 atualAcaoCompra->next = NULL;
                 *inicioAcaoCompra = atualAcaoCompra;
             }else{
+               
                 while( atualAcaoCompra->next != NULL ){
                     atualAcaoCompra = atualAcaoCompra->next;}
                 novoAcaoCompra = (acao*)(malloc(sizeof(acao) ) );
                 novoAcaoCompra->valor = NULL;
                 fscanf( arquivoAcoesValorCompra, "%s%s%d", novoAcaoCompra->identificacao.nomeDePregao, 
                         novoAcaoCompra->identificacao.codigo, &novoAcaoCompra->quantidadeOfertado );
+
                 recupera_lista_de_oferta( &novoAcaoCompra->valor, novoAcaoCompra->quantidadeOfertado,
                                           arquivoAcoesValorCompra );
+              
                 novoAcaoCompra->next = NULL;
                 atualAcaoCompra->next = novoAcaoCompra;
             }
+           
             quantidadeAcoes--;}
+        
             fclose( arquivoAcoesValorVenda );
             fclose( arquivoAcoesValorCompra );   
             fclose( arquivoDadosConfig );
@@ -370,9 +379,9 @@ bool recupera_lista_de_oferta( oferta**inicio, unsigned quantidade,  FILE *arqui
             atual->next = novo;
             novo->next = NULL;}
         quantidade--;}
-    if( quantidade == 0 )
+    if( quantidade == 0 ){
         return true;
-    else return false;
+    }else{ return false;}
 }
 bool retira_oferta( ){
      acao *inicioAcaoVenda = NULL, 
@@ -461,10 +470,10 @@ bool salva_ofertas( acao **inicioVenda, acao **inicioCompra ){
          *arquivoDadosConfig = fopen( dadosConfig, "w" );
 
     unsigned user;
-    
-    fprintf( arquivoDadosConfig, "%d\n%d\n%d", dados.quantidade_de_papel, dados.quantidade_de_acoes, 
-             dados.quantidade_de_acoes_compradas );
-    
+
+    fprintf( arquivoDadosConfig, "%d\n%d\n%d\n%d\n", dados.quantidade_de_papel, dados.quantidade_de_acoes, 
+             dados.quantidade_de_transacoes, dados.acoes_diferentes_na_carteira );
+
     if( arquivoAcoesValorVenda && arquivoAcoesValorVenda ){
         while( atualVenda != NULL && atualCompra != NULL ){
             oferta *atualV = atualVenda->valor,
@@ -516,7 +525,7 @@ bool atualiza_ofertas( unsigned posicao ){
            *novoUserVenda = NULL;
     
     recupera_ofertas( &antigaAcaoVenda, &antigaAcaoCompra );
-
+    
     inicioAcaoVenda = antigaAcaoVenda;
     inicioAcaoCompra = antigaAcaoCompra;
     
@@ -550,19 +559,20 @@ bool atualiza_ofertas( unsigned posicao ){
                 novoUserCompra->user = true;
                 novoUserCompra->next = NULL;}}
         userCompra = userCompra->next;}
-    
+  
     userVenda = antigaAcaoVenda->valor;
     while( userVenda != NULL ){
         if( userVenda->user ){
             vendaOfertaUser++;
             if( backupUserVenda == NULL ){
                 backupUserVenda = (oferta*)malloc( sizeof(oferta) );
-                backupUserVenda->valor = userCompra->valor;
-                backupUserVenda->quantidade = userCompra->quantidade;
+                backupUserVenda->valor = userVenda->valor;
+                backupUserVenda->quantidade = userVenda->quantidade;
                 backupUserVenda->user = true;
                 backupUserVenda->next = NULL;
                 backupUserVenda->prev = NULL;
                 inicioBackupUserVenda = backupUserVenda;
+               
             }else{
                 while( backupUserVenda->next != NULL ){
                     backupUserVenda = backupUserVenda->next;}
@@ -574,7 +584,7 @@ bool atualiza_ofertas( unsigned posicao ){
                 novoUserVenda->user = true;
                 novoUserVenda->next = NULL;}}
         userVenda = userVenda->next;}
-    
+
     if( exclui_lista_de_oferta( &antigaAcaoVenda->valor ) ){
         if( exclui_lista_de_oferta( &antigaAcaoCompra->valor ) ){ 
             if( gerador_de_lista_de_oferta( &antigaAcaoVenda->valor, antigaAcaoVenda ) ){ 
@@ -748,6 +758,7 @@ bool gerador_de_cotacao( unsigned posicao ){
     papelAtual = inicioPapel;
     
     recupera_ofertas( &inicioAcaoVenda, &inicioAcaoCompra );
+
     acaoCompraAtual = inicioAcaoCompra;
 
     while( posicao > 1 ){
@@ -766,8 +777,9 @@ bool gerador_de_cotacao( unsigned posicao ){
     }
     
     papelAtual->cotacao /= cociente;
-
+ 
     salva_papeis( inicioPapel );
+   
     limpa_lista_de_acoes( &inicioAcaoVenda );
     limpa_lista_de_acoes( &inicioAcaoCompra );
 }

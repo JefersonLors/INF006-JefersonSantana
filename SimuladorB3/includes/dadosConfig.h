@@ -5,14 +5,16 @@
 
 char *papeis = "arquivos/papeis.txt";
 char *dadosConfig = "arquivos/dadosConfig.txt"; 
-char *carteiraConfig = "arquivos/carteiraConfig.txt";
+char *historicoTransacao = "arquivos/historicoTransacao.txt";
 char *acoesValorVenda = "arquivos/acoesValorVenda.txt";
+char *carteiraConfig = "arquivos/carteiraConfig.txt";
 char *acoesValorCompra = "arquivos/acoesValorCompra.txt";
 
 struct{
     unsigned quantidade_de_papel,
              quantidade_de_acoes,
-             quantidade_de_acoes_compradas;
+             quantidade_de_transacoes,
+             acoes_diferentes_na_carteira;
 }dados;
 
 bool cria_arquivos( );
@@ -27,6 +29,10 @@ bool cria_arquivos( ){
     }fclose(arquivo);
     if( ( arquivo = fopen( dadosConfig, "r" ) ) == NULL ){
         if( ( arquivo = fopen( dadosConfig, "w" ) ) == NULL ){
+            return false;}
+    }fclose(arquivo);
+    if( ( arquivo = fopen( historicoTransacao, "r" ) ) == NULL ){
+        if( ( arquivo = fopen( historicoTransacao, "w" ) ) == NULL ){
             return false;}
     }fclose(arquivo);
     if( ( arquivo = fopen( carteiraConfig, "r" ) ) == NULL ){

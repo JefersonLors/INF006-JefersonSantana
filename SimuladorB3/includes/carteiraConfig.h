@@ -2,152 +2,107 @@
 #define carteiraConfig_h
 #include "gerais.h"
 #include "ofertasConfig.h"
+#include "transacoesConfig.h"
 
-typedef struct carteira{
+typedef struct movimentacao{
     papel identificacao;
     unsigned quantidade;
     float valor;
     char dataHoraCompra[30];
     bool operacao;
+    struct movimentacao *next;
+    struct movimentacao *prev;
+}movimentacao;
+
+typedef struct carteira{
+    papel identificacao;
+    unsigned quantidade;
     struct carteira *next;
     struct carteira *prev;
 }carteira;
 
-bool listar_carteira( void );
-void historico_de_compra( carteira*, char*, char* );
+int listar_carteira( bool );
+void limpa_lista_de_movimentacoes( movimentacao* ); 
+void limpa_lista_de_acoes_na_carteira( carteira* );
+bool cria_carteira( carteira** );
+bool salva_carteira( carteira* );
 bool recupera_carteira( carteira** );
-void limpar_lista_de_acoes_na_carteira( carteira* ); 
-void organizador_de_acoes( carteira*, carteira** );
-int MENU_CARTEIRA( unsigned );
+void historico_de_transacao( char*, char* );
+bool recupera_historico_de_transacao( movimentacao** );
+int MENU_CARTEIRA( void );
 
-bool listar_carteira( ){
-    carteira *carteiraInicio = NULL,
-             *carteiraAtual = NULL,
-             *carteiraOrganizada = NULL;
+int listar_carteira( bool seletor ){
+    carteira *carteiraOrganizada = NULL,
+             *acaoAtual = NULL;
     
     unsigned indice = 1;
-    int escolha = 1;
+    int escolha = 1,
+        escolhaBackup = escolha;
     
-    if( recupera_carteira( &carteiraInicio ) ){
+    if( cria_carteira( &carteiraOrganizada ) ){
         do{ indice = 1;
-            carteiraAtual = carteiraInicio;
     
-            organizador_de_acoes( carteiraInicio, &carteiraOrganizada );
+            acaoAtual = carteiraOrganizada;
             
-            carteiraAtual = carteiraOrganizada;
-            
-            printf( "==========================="
-                    "===========================\n" 
-                    "\t\t\t\t\t  CARTEIRA\n\n"
-                    );
             printf( "\n#\t\tQTDE\t\tCÓDIGO\t\tNOME\n\n" ); 
-            while( carteiraAtual ){
-                printf( "%-*d%-*u%-*s%-*s\n\n", 8, indice++,
-                        12, carteiraAtual->quantidade, 
-                        12, carteiraAtual->identificacao.codigo, 
-                        10, carteiraAtual->identificacao.nomeDePregao );
-                
-                carteiraAtual = carteiraAtual->next;}
-            printf( "==========================="
-                    "===========================\n\n" );
             
-            escolha = MENU_CARTEIRA( --indice );
+            while( acaoAtual){
+                printf( "%-*d%-*u%-*s%-*s\n\n", 8, indice++,
+                        12, acaoAtual->quantidade, 
+                        12, acaoAtual->identificacao.codigo, 
+                        10, acaoAtual->identificacao.nomeDePregao );
+                
+                acaoAtual = acaoAtual->next;}
+
+            escolhaBackup = escolha = MENU_CARTEIRA( );
             
             if( escolha ){
-                carteiraAtual = carteiraOrganizada;
+                acaoAtual = carteiraOrganizada;
 
                 while( escolha > 1 ){
-                    carteiraAtual = carteiraAtual->next;
+                    acaoAtual = acaoAtual->next;
                     escolha--;}
-                
-                historico_de_compra( carteiraInicio, carteiraAtual->identificacao.codigo,
-                                     carteiraAtual->identificacao.nomeDePregao );
-                
-                printf( "\t\t\t\t\t\t\t\t[ENTER PARA VOLTAR]\n" );
-                getchar( );
+
+                if( seletor ){
+                    historico_de_transacao( acaoAtual->identificacao.codigo,
+                                            acaoAtual->identificacao.nomeDePregao );
+                    
+                    printf( "\t\t\t\t\t\t\t\t[ENTER PARA VOLTAR]\n" );
+                    getchar( );
+                }else{ break; }
             }else{break;} 
         }while( true );
-        
-        limpar_lista_de_acoes_na_carteira( carteiraInicio );
-        return true;
-    }else return false;
+        return escolhaBackup;
+    }else{ return -1; }
 
 }
-bool recupera_carteira( carteira **carteiraInicio ){
-    carteira *primeiraAcaoCarteira = NULL,
-             *proximaAcaoCarteira = NULL;
-    
-    unsigned operacaoTemp;
-    
-    FILE *carteiraUsuario = fopen( carteiraConfig, "r" ),
-         *dadosGerais = fopen( dadosConfig, "r" );
 
-    fscanf( dadosGerais, "%u%u%u", &dados.quantidade_de_papel, 
-            &dados.quantidade_de_acoes,
-            &dados.quantidade_de_acoes_compradas );
-
-    unsigned quantidade_de_acoes_compradas = dados.quantidade_de_acoes_compradas;
-    
-    if( carteiraUsuario && dadosGerais ){
-        primeiraAcaoCarteira = (carteira*)malloc( sizeof(carteira) );
-       
-        fscanf( carteiraUsuario, "%s%f%u%f%s%s%u", 
-                primeiraAcaoCarteira->dataHoraCompra,
-                &(primeiraAcaoCarteira->identificacao.cotacao),
-                &(primeiraAcaoCarteira->quantidade), 
-                &(primeiraAcaoCarteira->valor), 
-                primeiraAcaoCarteira->identificacao.codigo,
-                primeiraAcaoCarteira->identificacao.nomeDePregao,
-                &operacaoTemp );
-        primeiraAcaoCarteira->operacao = operacaoTemp;
-        
-        *carteiraInicio = primeiraAcaoCarteira;
-        primeiraAcaoCarteira->next = NULL;
-        primeiraAcaoCarteira->prev = NULL;
-        quantidade_de_acoes_compradas--;
-        
-        while( quantidade_de_acoes_compradas > 0 ){
-            while( primeiraAcaoCarteira->next ){
-                primeiraAcaoCarteira = primeiraAcaoCarteira->next;}
-            
-            proximaAcaoCarteira = (carteira*)malloc( sizeof(carteira) );
-         
-            fscanf( carteiraUsuario, "%s%f%u%f%s%s%u", 
-                    proximaAcaoCarteira->dataHoraCompra,
-                    &(proximaAcaoCarteira->identificacao.cotacao), 
-                    &(proximaAcaoCarteira->quantidade),
-                    &(proximaAcaoCarteira->valor),
-                    proximaAcaoCarteira->identificacao.codigo, 
-                    proximaAcaoCarteira->identificacao.nomeDePregao,
-                    &operacaoTemp );
-            proximaAcaoCarteira->operacao = operacaoTemp;
-            
-            primeiraAcaoCarteira->next = proximaAcaoCarteira;
-            proximaAcaoCarteira->next = NULL;
-            proximaAcaoCarteira->prev = primeiraAcaoCarteira;
-            
-            quantidade_de_acoes_compradas--;
-        }
-        fclose( carteiraUsuario );
-        fclose( dadosGerais );
-        return true;
-    }else{
-        fclose( carteiraUsuario );
-        fclose( dadosGerais );
-        return false;
-    }
-}
-void limpar_lista_de_acoes_na_carteira( carteira *inicio ){
+void limpa_lista_de_movimentacoes( movimentacao *inicio ){
     while( inicio ){
-        carteira *backup = inicio->next;
+        movimentacao *backup = inicio->next;
         free( inicio );
         inicio = backup;}
 }
-void organizador_de_acoes( carteira *inicioCarteira, carteira **carteiraOrganizada ){
-    carteira *acaoAtual = inicioCarteira,
-             *inicioCarteiraOrganizada = NULL,
-             *proximaAcao = NULL;
+bool cria_carteira( carteira **carteiraOrganizada ){
+    FILE *dadosGerais = fopen( dadosConfig, "r" );
+    
+    movimentacao *listaDeTransacoes = NULL,
+                 *acaoAtual = NULL;
 
+    carteira *inicioCarteiraOrganizada = NULL,
+             *proximaAcao = NULL;
+    
+    recupera_historico_de_transacao( &listaDeTransacoes );
+    acaoAtual = listaDeTransacoes;
+    
+    fscanf( dadosGerais, "%u%u%u%u", &dados.quantidade_de_papel, 
+            &dados.quantidade_de_acoes, &dados.quantidade_de_transacoes,
+            &dados.acoes_diferentes_na_carteira );
+    
+    dados.acoes_diferentes_na_carteira = 0;
+    
+    fclose( dadosGerais );
+   
     if( acaoAtual ){
         inicioCarteiraOrganizada = (carteira*)malloc( sizeof(carteira) );
         
@@ -161,6 +116,7 @@ void organizador_de_acoes( carteira *inicioCarteira, carteira **carteiraOrganiza
         inicioCarteiraOrganizada->next = NULL;
         inicioCarteiraOrganizada->prev = NULL;
         *carteiraOrganizada = inicioCarteiraOrganizada;
+        dados.acoes_diferentes_na_carteira++;
         
         acaoAtual = acaoAtual->next;
         
@@ -188,6 +144,7 @@ void organizador_de_acoes( carteira *inicioCarteira, carteira **carteiraOrganiza
                 backup = backup->next;}
         
             if( proximaAcao != NULL ){
+                dados.acoes_diferentes_na_carteira++;
                 backup = inicioCarteiraOrganizada;
                 while( backup->next ){
                     backup = backup->next;}
@@ -195,43 +152,29 @@ void organizador_de_acoes( carteira *inicioCarteira, carteira **carteiraOrganiza
                 backup->next = proximaAcao;
                 proximaAcao->next = NULL;
                 proximaAcao->prev = backup;}
-            
-            acaoAtual = acaoAtual->next;
-        }
+            acaoAtual = acaoAtual->next;}
         
-        acaoAtual = inicioCarteira;
-
         while( inicioCarteiraOrganizada ){
-            acaoAtual = inicioCarteira;
+            acaoAtual = listaDeTransacoes;
             while( acaoAtual ){
                 if( strcmp( inicioCarteiraOrganizada->identificacao.codigo,
                             acaoAtual->identificacao.codigo ) == 0 ){
                     inicioCarteiraOrganizada->quantidade += acaoAtual->quantidade;}
                 acaoAtual = acaoAtual->next;}
             inicioCarteiraOrganizada = inicioCarteiraOrganizada->next;}
-    }
+
+        limpa_lista_de_movimentacoes( listaDeTransacoes );
+        salva_carteira( *carteiraOrganizada );
+        
+        return true;
+    }else return false;
 }
-int MENU_CARTEIRA( unsigned quantidadeDeOpcao ){
-    unsigned resposta;
-             
-    if( quantidadeDeOpcao ){
-        printf( "[0] SAIR\n\n"
-                "[ ] <- " 
-              );
-        scanf( "%d", &resposta ); getchar( ); 
-        while( resposta < 0 || resposta > quantidadeDeOpcao ){
-            printf( "\t\t\tOPÇÃO INVÁLIDA!\n\n"
-                  "[ ] <- " ); 
-            scanf( "%d", &resposta ); getchar( );}
-        printf("[%d] ", resposta );
-        switch( resposta ){
-            case 0: puts( "SAIR\n" ); break;
-            default: puts( "ESCOLHIDA\n" ); break;}
-        return resposta;
-    }return -1;
-}
-void historico_de_compra( carteira *historicoCompleto, char *codigo, char *nome ){
-    carteira *acaoAtual = historicoCompleto;
+
+void historico_de_transacao( char *codigo, char *nome ){
+    movimentacao *historicoCompleto = NULL,
+                 *acaoAtual = NULL;
+    recupera_historico_de_transacao( &historicoCompleto );
+    acaoAtual = historicoCompleto;
     printf( "======================================="
             "=======================================\n"
             "NOME: %s\nCÓDIGO: %s\n"
@@ -254,8 +197,159 @@ void historico_de_compra( carteira *historicoCompleto, char *codigo, char *nome 
 
     printf( "======================================="
             "=======================================\n\n" );
+}
+bool recupera_historico_de_transacao( movimentacao **carteiraInicio ){
+    movimentacao *primeiraAcaoCarteira = NULL,
+                 *proximaAcaoCarteira = NULL;
     
+    unsigned operacaoTemp;
+    
+    FILE *carteiraUsuario = fopen( historicoTransacao, "r" ),
+         *dadosGerais = fopen( dadosConfig, "r" );
+
+    fscanf( dadosGerais, "%u%u%u%u", &dados.quantidade_de_papel, 
+            &dados.quantidade_de_acoes,
+            &dados.quantidade_de_transacoes,
+            &dados.acoes_diferentes_na_carteira);
+
+    unsigned quantidade_de_transacoes = dados.quantidade_de_transacoes;
+    
+    if( carteiraUsuario && dadosGerais && quantidade_de_transacoes > 0 ){
+        primeiraAcaoCarteira = (movimentacao*)malloc( sizeof(movimentacao) );
+       
+        fscanf( carteiraUsuario, "%s%f%u%f%s%s%u", 
+                primeiraAcaoCarteira->dataHoraCompra,
+                &(primeiraAcaoCarteira->identificacao.cotacao),
+                &(primeiraAcaoCarteira->quantidade), 
+                &(primeiraAcaoCarteira->valor), 
+                primeiraAcaoCarteira->identificacao.codigo,
+                primeiraAcaoCarteira->identificacao.nomeDePregao,
+                &operacaoTemp );
+        primeiraAcaoCarteira->operacao = operacaoTemp;
+        
+        *carteiraInicio = primeiraAcaoCarteira;
+        primeiraAcaoCarteira->next = NULL;
+        primeiraAcaoCarteira->prev = NULL;
+        quantidade_de_transacoes--;
+        
+        while( quantidade_de_transacoes > 0 ){
+            while( primeiraAcaoCarteira->next ){
+                primeiraAcaoCarteira = primeiraAcaoCarteira->next;}
+            
+            proximaAcaoCarteira = (movimentacao*)malloc( sizeof(movimentacao) );
+         
+            fscanf( carteiraUsuario, "%s%f%u%f%s%s%u", 
+                    proximaAcaoCarteira->dataHoraCompra,
+                    &(proximaAcaoCarteira->identificacao.cotacao), 
+                    &(proximaAcaoCarteira->quantidade),
+                    &(proximaAcaoCarteira->valor),
+                    proximaAcaoCarteira->identificacao.codigo, 
+                    proximaAcaoCarteira->identificacao.nomeDePregao,
+                    &operacaoTemp );
+            proximaAcaoCarteira->operacao = operacaoTemp;
+            
+            primeiraAcaoCarteira->next = proximaAcaoCarteira;
+            proximaAcaoCarteira->next = NULL;
+            proximaAcaoCarteira->prev = primeiraAcaoCarteira;
+            
+            quantidade_de_transacoes--;
+        }
+        fclose( carteiraUsuario );
+        fclose( dadosGerais );
+        return true;
+    }else{
+        fclose( carteiraUsuario );
+        fclose( dadosGerais );
+        return false;
+    }
+}
+bool salva_carteira( carteira *carteiraInicio ){
+    carteira *acaoAtual = carteiraInicio;
+
+    FILE *CARTEIRA = fopen( carteiraConfig, "w" ),
+         *dadosGerais = fopen( dadosConfig, "w" );
+
+    if( acaoAtual && CARTEIRA ){
+        while( acaoAtual ){
+            fprintf( CARTEIRA, "%-*u\t%-*s\t%-*s\n", 
+                     8, acaoAtual->quantidade, 
+                     TAM_CODIGO*2-1,acaoAtual->identificacao.codigo, 
+                     TAM_NOME_PREGAO, acaoAtual->identificacao.nomeDePregao );
+            acaoAtual = acaoAtual->next;
+        }
+        fprintf( dadosGerais, "%u\n%u\n%u\n%u\n", dados.quantidade_de_papel, 
+                 dados.quantidade_de_acoes, dados.quantidade_de_transacoes,
+                 dados.acoes_diferentes_na_carteira );
+        fclose( CARTEIRA );
+        fclose( dadosGerais );
+        return true;
+    }else return false;
+}
+bool recupera_carteira( carteira **inicioCarteira ){         
+    carteira *primeiraAcao = NULL,
+             *proximaAcao = NULL;
+        
+    FILE *CARTEIRA = fopen( carteiraConfig, "r" ),
+         *dadosGerais = fopen( dadosConfig, "r" );
+
+    fscanf( dadosGerais, "%u%u%u%u", &dados.quantidade_de_papel, 
+            &dados.quantidade_de_acoes,
+            &dados.quantidade_de_transacoes,
+            &dados.acoes_diferentes_na_carteira );
+
+    unsigned fila = dados.acoes_diferentes_na_carteira;
+    
+    if( CARTEIRA && dadosGerais ){
+        primeiraAcao = (carteira*)malloc( sizeof(carteira) );
+        primeiraAcao->next = NULL;
+        primeiraAcao->prev = NULL;
+
+        fscanf( CARTEIRA, "%u%s%s", &primeiraAcao->quantidade,
+                primeiraAcao->identificacao.codigo, primeiraAcao->identificacao.nomeDePregao );
+       
+        *inicioCarteira = primeiraAcao;
+        
+        fila--;
+        while( fila > 0 ){
+            while( primeiraAcao->next ){
+                primeiraAcao = primeiraAcao->next;}
+            
+            proximaAcao = (carteira*)malloc( sizeof(carteira) );
+            fscanf( CARTEIRA, "%u%s%s", &proximaAcao->quantidade,
+                    proximaAcao->identificacao.codigo, proximaAcao->identificacao.nomeDePregao );
+            
+            primeiraAcao->next = proximaAcao;
+            proximaAcao->prev = primeiraAcao;
+
+            fila--;}
+        
+        fclose( CARTEIRA );
+        fclose( dadosGerais );
+        return true;
+    }else{
+        fclose( CARTEIRA );
+        fclose( dadosGerais );
+        return false;}
+}
+int MENU_CARTEIRA( ){
+    unsigned resposta;
+             
+    printf( "[0] SAIR\n\n"
+            "[ ] <- " 
+          );
+    scanf( "%d", &resposta ); getchar( ); 
+    while( resposta < 0 || resposta > dados.acoes_diferentes_na_carteira ){
+        printf( "\t\t\tOPÇÃO INVÁLIDA!\n\n"
+              "[ ] <- " ); 
+        scanf( "%d", &resposta ); getchar( );}
+    printf("[%d] ", resposta );
+    switch( resposta ){
+        case 0: puts( "SAIR\n" ); break;
+        default: puts( "ESCOLHIDA\n" ); break;}
+    return resposta;
+   
+}
+void limpa_lista_de_acoes_na_carteira( carteira *inicioCarteira ){
     
 }
-
 #endif

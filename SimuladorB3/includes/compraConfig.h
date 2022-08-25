@@ -33,20 +33,12 @@ bool incluir_oferta_de_compra( acao *nova ){
         
         ordena_ofertas_de_compra( novaOfertaCompra->valor, novaOfertaCompra->quantidadeOfertado );
     }else{
-        papel *inicio = NULL;
-        
-        recupera_papeis( &inicio );
-
-        while( strcmp( inicio->codigo, nova->identificacao.codigo) != 0 ){
-            inicio = inicio->next;}
-        
         novaOfertaCompra->quantidadeOfertado += nova->quantidadeOfertado;
         ofertasCompraLista->valor = nova->valor;
     }
     if( salva_ofertas( &ofertasVendaLista, &ofertasCompraLista  ) ){
         limpa_lista_de_acoes( &ofertasVendaLista );
         limpa_lista_de_acoes( &ofertasCompraLista );
-   
         return true;
     }else{
         limpa_lista_de_acoes( &ofertasVendaLista );
