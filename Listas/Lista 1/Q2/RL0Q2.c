@@ -11,7 +11,6 @@
   Matrícula: 20212160060
   Semestre: 2023.1
 */
-
 #include <stdlib.h>
 #include <stdio.h>
 #include <stdbool.h>
@@ -20,6 +19,7 @@
 #include <ctype.h>
 #include "RL0Q2.h"
 
+///ESTRUTURAS DE DADOS 
 struct String{
   char *value;
   struct String *next;
@@ -54,8 +54,9 @@ struct Item{
   struct Item *next;
 };
 
+///APP
 int main( ){
-  NODE *firstNode = get_items_from_file_and_returns_item_dynamic_typed_matrix(fileInPath);
+  NODE *firstNode = get_items_from_file_and_returns_dynamic_typed_item_matrix(fileInPath);
   NODE *actNode = firstNode;
 
   while( actNode ){
@@ -63,59 +64,18 @@ int main( ){
     write_node_on_file(actNode);
     actNode = actNode->next;
   }
-
-
   /*DESCOMENTE PARA DEBUGAR*/
-  // actNode = firstNode;
-  // while( actNode ){
-  //   INT *nodeInts = actNode->interger; 
-  //   INT *actInt = nodeInts;
-
-  //   FLOAT *nodeFloats = actNode->floating;
-  //   FLOAT *actFloat = nodeFloats;
-
-  //   STR *nodeStrs = actNode->string;
-  //   STR *actStr = nodeStrs;
-
-  //   POINT *nodePoints = actNode->point;
-  //   POINT *actPoint = nodePoints;
-
-  //   printf("\nSTART BLOCK");
-  //   printf("\n\tIntergers: ");
-  //   while( actInt ){
-  //     printf("%d\t", actInt->value);
-  //     actInt = actInt->next;
-  //   }
-  //   printf("\n\tFloatings: ");
-  //   while( actFloat ){
-  //     printf("%.2f\t", actFloat->value);
-  //     actFloat = actFloat->next;
-  //   }
-  //   printf("\n\tStrings: ");
-  //   while( actStr ){
-  //     printf( "%s\t", actStr->value );
-  //     actStr = actStr->next;
-  //   }
-  //   printf("\n\tPoints: ");
-  //   while( actPoint )
-  //   {
-  //     printf("[(%.2f, %.2f) d = %.2f]\t", actPoint->value[0], actPoint->value[1], actPoint->distanceFromOrigin );
-  //     actPoint = actPoint->next;
-  //   }
-  //   printf("\nEND BLOCK\n");
-  
-  //   actNode = actNode->next;
-  // }
+  // show_node_list_content(firstNode);
   return EXIT_SUCCESS;
 }
 ///RECUPERA OS ITENS DO ARQUIVO E OS COLOCA NUMA MATRIZ DINÂMICA, AGRUPADOS PODE TIPO
-NODE *get_items_from_file_and_returns_item_dynamic_typed_matrix( const char *fileName ){
+NODE *get_items_from_file_and_returns_dynamic_typed_item_matrix( const char *fileName ){
   NODE *firstNode = NULL; 
   NODE *newNode = NULL; 
   NODE *actNode = NULL; 
   NODE *lastNode = NULL;
 
-  ITEM *newListItem = create_dynamic_string_items_matrix(fileName);
+  ITEM *newListItem = create_dynamic_item_matrix(fileName);
   ITEM *actListItem = newListItem;
   
   if( newListItem == NULL ){
@@ -128,7 +88,6 @@ NODE *get_items_from_file_and_returns_item_dynamic_typed_matrix( const char *fil
     if( newNode == NULL ){
         return firstNode;
     }
-
     firstNode = newNode;
     lastNode = newNode;
     actListItem = actListItem->next; 
@@ -144,53 +103,12 @@ NODE *get_items_from_file_and_returns_item_dynamic_typed_matrix( const char *fil
       actListItem = actListItem->next; 
     }
   }
-  actNode = firstNode;
-
   /*DESCOMENTE PARA DEBUGAR*/
-  // while( actNode ){
-  //   INT *nodeInts = actNode->interger; 
-  //   INT *actInt = nodeInts;
-
-  //   FLOAT *nodeFloats = actNode->floating;
-  //   FLOAT *actFloat = nodeFloats;
-
-  //   STR *nodeStrs = actNode->string;
-  //   STR *actStr = nodeStrs;
-
-  //   POINT *nodePoints = actNode->point;
-  //   POINT *actPoint = nodePoints;
-
-  //   printf("\nSTART BLOCK");
-  //   printf("\n\tIntergers: ");
-  //   while( actInt ){
-  //     printf("%d\t", actInt->value);
-  //     actInt = actInt->next;
-  //   }
-  //   printf("\n\tFloatings: ");
-  //   while( actFloat ){
-  //     printf("%.2f\t", actFloat->value);
-  //     actFloat = actFloat->next;
-  //   }
-  //   printf("\n\tStrings: ");
-  //   while( actStr ){
-  //     printf( "%s\t", actStr->value );
-  //     actStr = actStr->next;
-  //   }
-  //   printf("\n\tPoints: ");
-  //   while( actPoint )
-  //   {
-  //     printf("[(%.2f, %.2f) d = %.2f]\t", actPoint->value[0], actPoint->value[1], actPoint->distanceFromOrigin );
-  //     actPoint = actPoint->next;
-  //   }
-  //   printf("\nEND BLOCK\n");
-  
-  //   actNode = actNode->next;
-  // }
-
+  // show_node_list_content( firstNode );
   return firstNode;
 }
 ///QUEBRA OS ITENS DE UMA LINHA EM STRINGS PARA UMA LISTA ENCADEADA
-STR *get_line_and_return_dynamic_items_list(char *line){
+STR *break_line_in_dynamic_str_list(char *line){
   STR *firstString = NULL;
   STR *lastString = NULL;
   STR *actString = NULL;
@@ -230,19 +148,11 @@ STR *get_line_and_return_dynamic_items_list(char *line){
     }
   }
   /*DESCOMENTE PARA DEBUGAR*/
-  // actString = firstString;
-
-  // printf("Lista de Strings: ");
-  // while( actString != NULL ){
-  //   printf("%s\t", actString->value );
-  //   actString = actString->next;
-  // }
-  // putchar('\n');
-
+  // show_str_list_content(firstString);
   return firstString;
 }
 ///CRIA RECUPERA ITENS DE UMA MESMA LINHA NUM ARQUIVO AINDA COMO STRINGS
-ITEM *create_dynamic_string_items_matrix(const char *fileName ){
+ITEM *create_dynamic_item_matrix(const char *fileName ){
   FILE *fileInPtr = fopen(fileName, "r");
   ITEM *firstItem = NULL;
   ITEM *lastItem = NULL;
@@ -260,7 +170,7 @@ ITEM *create_dynamic_string_items_matrix(const char *fileName ){
 
     if( line ){
       newItem = malloc(sizeof(ITEM));
-      newItem->list = get_line_and_return_dynamic_items_list(line);
+      newItem->list = break_line_in_dynamic_str_list(line);
       newItem->next = NULL;
       firstItem = newItem;
       lastItem = newItem;
@@ -268,7 +178,7 @@ ITEM *create_dynamic_string_items_matrix(const char *fileName ){
       while( fgets(line, MAX_SIZE_LINE, fileInPtr) != NULL ){
         line[strlen(line)-1] = '\0';
         newItem = malloc(sizeof(ITEM));
-        newItem->list = get_line_and_return_dynamic_items_list(line);
+        newItem->list = break_line_in_dynamic_str_list(line);
         newItem->next = NULL;
         actItem = lastItem;
         actItem->next = newItem;
@@ -276,21 +186,8 @@ ITEM *create_dynamic_string_items_matrix(const char *fileName ){
       }
     }
   }
-
   /*DESCOMENTE PARA DEBUGAR*/
-  // actItem = firstItem;
-
-  // while( actItem != NULL ){
-  //   STR *actString = actItem->list;
-
-  //   printf("\nList: ");
-  //   while(actString != NULL ){
-  //     printf("%s\t", actString->value);
-  //     actString = actString->next;
-  //   }
-  //   putchar('\n');
-  //   actItem = actItem->next;
-  // }
+  // show_item_list_content(firstItem);
   return firstItem;
 }
 ///TIPA OS ITENS DA LISTA 
@@ -398,32 +295,7 @@ NODE *type_items( STR *itemList ){
   node->next = NULL;
 
   /*DESCOMENTE PARA DEBUGAR*/
-  // printf("\nSTART BLOCK");
-  // actFloating = firstFloating;
-  // printf("\n\tFloatings: ");
-  // while( actFloating ){
-  //   printf("%.2f\t", actFloating->value);
-  //   actFloating = actFloating->next;
-  // }
-  // actInterger = firstInterger;
-  // printf("\n\tIntergers: ");
-  // while( actInterger ){
-  //   printf("%d\t", actInterger->value );
-  //   actInterger = actInterger->next;
-  // }
-  // actString = firstString;
-  // printf("\n\tStrings: ");
-  // while( actString ){
-  //   printf( "%s\t", actString->value );
-  //   actString = actString->next;
-  // }
-  // actPoint = firstPoint;
-  // printf("\n\tPoints: ");
-  // while( actPoint ){
-  //   printf("[(%.2f, %.2f) d = %.2f]\t", actPoint->value[0], actPoint->value[1], actPoint->distanceFromOrigin);
-  //   actPoint = actPoint->next;
-  // }
-  // printf("\nEND BLOCK\n\n");
+  // show_node_list_content( node );
   return node;
 }
 //VERIFICA SE O ITEM(STRING DA LISTA) É UMA STRING
@@ -496,38 +368,6 @@ bool is_number(char *string ){
   }
   return true;
 }
-//FUNÇÃO TESTE PARA AS VERIFICADORAS DE TIPO
-void test_data_type_funtions(void){
-  char string[] = "string,";
-  printf("\n[%s] is_string: %s\n", string, (is_string(string) ? "true" : "false" ));
-  printf("[%s] is_interger: %s\n", string, (is_interger(string) ? "true" : "false" ));
-  printf("[%s] is_floating: %s\n", string, (is_floating(string) ? "true" : "false" ));
-  printf("[%s] is_point: %s\n", string, (is_point(string) ? "true" : "false" ));
-
-  char point[] = "(2.1,-1)";
-  printf("\n[%s] is_string: %s\n", point, (is_string(point) ? "true" : "false" ));
-  printf("[%s] is_interger: %s\n", point, (is_interger(point) ? "true" : "false" ));
-  printf("[%s] is_floating: %s\n", point, (is_floating(point) ? "true" : "false" ));
-  printf("[%s] is_point: %s\n", point, (is_point(point) ? "true" : "false" ));
-  
-  char interger[] = "-1";
-  printf("\n[%s] is_string: %s\n", interger, (is_string(interger) ? "true" : "false" ));
-  printf("[%s] is_interger: %s\n", interger, (is_interger(interger) ? "true" : "false" ));
-  printf("[%s] is_floating: %s\n", interger, (is_floating(interger) ? "true" : "false" ));
-  printf("[%s] is_point: %s\n", interger, (is_point(interger) ? "true" : "false" ));
-
-  char floating[] = "-1.3";
-  printf("\n[%s] is_string: %s\n", floating, (is_string(floating) ? "true" : "false" ));
-  printf("[%s] is_interger: %s\n", floating, (is_interger(floating) ? "true" : "false" ));
-  printf("[%s] is_floating: %s\n", floating, (is_floating(floating) ? "true" : "false" ));
-  printf("[%s] is_point: %s\n", floating, (is_point(floating) ? "true" : "false" ));
-
-  char almostPoint[] ="(2.1,-1";
-  printf("\n[%s] is_string: %s\n", almostPoint, (is_string(almostPoint) ? "true" : "false" ));
-  printf("[%s] is_interger: %s\n", almostPoint, (is_interger(almostPoint) ? "true" : "false" ));
-  printf("[%s] is_floating: %s\n", almostPoint, (is_floating(almostPoint) ? "true" : "false" ));
-  printf("[%s] is_point: %s\n", almostPoint, (is_point(almostPoint) ? "true" : "false" ));
-}
 ///CONVERTE UM ITEM NUM ELEMENTO POINT DA LISTA ENCADEADA PRINCIPAL
 POINT *to_point( char *string ){
   POINT *node = malloc(sizeof(POINT));
@@ -558,17 +398,14 @@ STR *to_string( char *string ){
   return node;
 }
 ///EXTRAI A COORDENADAS DE UMA STRING DE PONTO
-float *extract_point_from_string( char *numericString ){
+float *extract_point_from_string( char *stringPoint ){
     char delimiterLeft = '(';
     char delimiterRight = ')';
     char delimiterCenter = ',';
-    char *slice = numericString;
+
+    char *slice = stringPoint;
     char *sliceBackUp = NULL;
     char *garbage = NULL;
-
-    /*DESCOMENTE PARA DEBUGAR*/
-    // printf("numericString: %s\n", numericString);
-    // getchar();
 
     float *coordenates = malloc(sizeof(float)*COORD_SIZE);
 
@@ -734,4 +571,106 @@ void write_node_on_file( NODE *node ){
   }
   fprintf(fileOutPtr, "\n");
   fclose(fileOutPtr);
+}
+///MOSTRA O CONTEÚDO DE UMA LISTA DE NODE
+void show_node_list_content( NODE *initNode ){
+  NODE *actNode = initNode;
+
+  while( actNode ){
+    INT *nodeInts = actNode->interger; 
+    INT *actInt = nodeInts;
+
+    FLOAT *nodeFloats = actNode->floating;
+    FLOAT *actFloat = nodeFloats;
+
+    STR *nodeStrs = actNode->string;
+    STR *actStr = nodeStrs;
+
+    POINT *nodePoints = actNode->point;
+    POINT *actPoint = nodePoints;
+
+    printf("\nSTART BLOCK");
+    printf("\n\tIntergers: ");
+    while( actInt ){
+      printf("%d\t", actInt->value);
+      actInt = actInt->next;
+    }
+    printf("\n\tFloatings: ");
+    while( actFloat ){
+      printf("%.2f\t", actFloat->value);
+      actFloat = actFloat->next;
+    }
+    printf("\n\tStrings: ");
+    while( actStr ){
+      printf( "%s\t", actStr->value );
+      actStr = actStr->next;
+    }
+    printf("\n\tPoints: ");
+    while( actPoint )
+    {
+      printf("[(%.2f, %.2f) d = %.2f]\t", actPoint->value[0], actPoint->value[1], actPoint->distanceFromOrigin );
+      actPoint = actPoint->next;
+    }
+    printf("\nEND BLOCK\n");
+  
+    actNode = actNode->next;
+  }
+}
+///MOSTRA CONTEÚDO DE UMA LISTA DE STRs
+void show_str_list_content( STR *initStr ){
+  STR *actString = initStr;
+
+  printf("Lista de Strings: ");
+  while( actString != NULL ){
+    printf("%s\t", actString->value );
+    actString = actString->next;
+  }
+}
+///MOSTRA O CONTEÚDO DE UMA LISTA DE ITEMs
+void show_item_list_content( ITEM *initItem ){
+  ITEM *actItem = initItem;
+
+  while( actItem != NULL ){
+    STR *actString = actItem->list;
+
+    printf("\nList: ");
+    while(actString != NULL ){
+      printf("%s\t", actString->value);
+      actString = actString->next;
+    }
+    putchar('\n');
+    actItem = actItem->next;
+  }
+}
+//FUNÇÃO TESTE PARA AS VERIFICADORAS DE TIPO
+void test_data_type_funtions(void){
+  char string[] = "string,";
+  printf("\n[%s] is_string: %s\n", string, (is_string(string) ? "true" : "false" ));
+  printf("[%s] is_interger: %s\n", string, (is_interger(string) ? "true" : "false" ));
+  printf("[%s] is_floating: %s\n", string, (is_floating(string) ? "true" : "false" ));
+  printf("[%s] is_point: %s\n", string, (is_point(string) ? "true" : "false" ));
+
+  char point[] = "(2.1,-1)";
+  printf("\n[%s] is_string: %s\n", point, (is_string(point) ? "true" : "false" ));
+  printf("[%s] is_interger: %s\n", point, (is_interger(point) ? "true" : "false" ));
+  printf("[%s] is_floating: %s\n", point, (is_floating(point) ? "true" : "false" ));
+  printf("[%s] is_point: %s\n", point, (is_point(point) ? "true" : "false" ));
+  
+  char interger[] = "-1";
+  printf("\n[%s] is_string: %s\n", interger, (is_string(interger) ? "true" : "false" ));
+  printf("[%s] is_interger: %s\n", interger, (is_interger(interger) ? "true" : "false" ));
+  printf("[%s] is_floating: %s\n", interger, (is_floating(interger) ? "true" : "false" ));
+  printf("[%s] is_point: %s\n", interger, (is_point(interger) ? "true" : "false" ));
+
+  char floating[] = "-1.3";
+  printf("\n[%s] is_string: %s\n", floating, (is_string(floating) ? "true" : "false" ));
+  printf("[%s] is_interger: %s\n", floating, (is_interger(floating) ? "true" : "false" ));
+  printf("[%s] is_floating: %s\n", floating, (is_floating(floating) ? "true" : "false" ));
+  printf("[%s] is_point: %s\n", floating, (is_point(floating) ? "true" : "false" ));
+
+  char almostPoint[] ="(2.1,-1";
+  printf("\n[%s] is_string: %s\n", almostPoint, (is_string(almostPoint) ? "true" : "false" ));
+  printf("[%s] is_interger: %s\n", almostPoint, (is_interger(almostPoint) ? "true" : "false" ));
+  printf("[%s] is_floating: %s\n", almostPoint, (is_floating(almostPoint) ? "true" : "false" ));
+  printf("[%s] is_point: %s\n", almostPoint, (is_point(almostPoint) ? "true" : "false" ));
 }
