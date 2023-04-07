@@ -163,7 +163,6 @@ STR *get_line_and_return_dynamic_items_list(char *line){
     firstString = newString;
     lastString = newString;
     
-
     word = strtok(NULL, delimiter);
 
     while( word ){
