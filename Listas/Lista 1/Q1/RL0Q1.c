@@ -14,7 +14,6 @@ Semestre: 2023.1
 
 #include <stdlib.h>
 #include <stdio.h>
-#include <stdbool.h>
 #include <string.h>
 #include <math.h>
 #include "RL0Q1.h"
@@ -44,31 +43,32 @@ struct String
 // APP
 int main()
 {
-  NODE *points = get_lists_from_file_and_returns_float_dynamic_matriz(fileInPath);
-  NODE *actList = points;
+  NODE *firstNode = get_lists_from_file_and_returns_node_dynamic_matrix(fileInPath);
+  NODE *actNode = firstNode;
 
-  while (actList != NULL)
+  while (actNode != NULL)
   {
-    actList->distance = calculate_distance_between_points(actList->list);
-    actList->shortCut = calculate_shortCut(actList->list);
-    calculate_distance_from_origin(actList->list);
-    sort_point_list(actList->list);
-    write_list_on_out_file(fileOutPath, actList->list, actList->distance, actList->shortCut);
-    actList = actList->next;
+    actNode->distance = calculate_distance_between_points(actNode->list);
+    actNode->shortCut = calculate_shortCut(actNode->list);
+    calculate_distance_from_origin(actNode->list);
+    sort_point_list(actNode->list);
+    write_list_on_out_file(fileOutPath, actNode->list, actNode->distance, actNode->shortCut);
+    actNode = actNode->next;
   }
 
   /*DESCOMENTE PARA DEGUBAR*/
-  // show_base_list_content(points);
+  // show_base_list_content(firstNode);
   return EXIT_SUCCESS;
 }
 // CARREGA PRA MEMÓRIA TODOS OS PONTOS DE CADA LINHA
-NODE *get_lists_from_file_and_returns_float_dynamic_matriz(const char *filesName)
+NODE *get_lists_from_file_and_returns_node_dynamic_matrix(const char *filesName)
 {
   FILE *fileInPtr = fopen(filesName, "r");
 
-  NODE *headBase = NULL;
-  NODE *actBase = NULL;
-  NODE *newBase = NULL;
+  NODE *firstNode = NULL;
+  NODE *lastNode = NULL;
+  NODE *actNode = NULL;
+  NODE *newNode = NULL;
 
   POINT *list = NULL;
 
@@ -76,74 +76,65 @@ NODE *get_lists_from_file_and_returns_float_dynamic_matriz(const char *filesName
 
   if (!fileInPtr)
   {
-    return headBase;
+    return firstNode;
   }
   else
   {
+    fgets(line, MAX_SIZE_LINE, fileInPtr);
+    line[strlen(line)] = '\0';
+    list = get_line_and_returns_point_dynamic_list(line);
+    newNode = malloc(sizeof(NODE));
+    newNode->list = list;
+    newNode->next = NULL;
+    firstNode = newNode;
+    lastNode = newNode;
+
     while (fgets(line, MAX_SIZE_LINE, fileInPtr) != NULL)
     {
       line[strlen(line)] = '\0';
-      list = get_line_and_returns_float_dynamic_list(line);
-
-      if (headBase == NULL)
-      {
-        newBase = malloc(sizeof(NODE));
-        newBase->list = list;
-        newBase->next = NULL;
-        headBase = newBase;
-      }
-      else
-      {
-        actBase = headBase;
-
-        while (actBase->next != NULL)
-        {
-          actBase = actBase->next;
-        }
-        newBase = malloc(sizeof(NODE));
-        newBase->list = list;
-        newBase->next = NULL;
-        actBase->next = newBase;
-      }
+      list = get_line_and_returns_point_dynamic_list(line);
+      newNode = malloc(sizeof(NODE));
+      newNode->list = list;
+      newNode->next = NULL;
+      actNode = lastNode;
+      actNode->next = newNode;
+      lastNode = newNode;
     }
   }
   fclose(fileInPtr);
 
   /*DESCOMENTE PARA DEBUGAR*/
-  // show_base_list_content(headBase);
-  return headBase;
+  // show_base_list_content(firstNode);
+  return firstNode;
 }
 // CRIA UMA LISTA DE FLOATS COM AS COORDENADAS DA LINHA
-POINT *get_line_and_returns_float_dynamic_list(char *line)
+POINT *get_line_and_returns_point_dynamic_list(char *line)
 {
-  STR *stringPointsList = get_string_line_and_returns_dynamic_string_list(line);
+  STR *stringPointsList = break_line_in_dynamic_str_list(line);
 
-  POINT *headPoint = NULL;
+  POINT *firstPoint = NULL;
+  POINT *lastPoint = NULL;
   POINT *newPoint = NULL;
   POINT *actPoint = NULL;
 
   if (stringPointsList != NULL)
   {
     newPoint = malloc(sizeof(POINT));
-    newPoint->coordinates = get_string_and_returns_float_array(stringPointsList->string);
+    newPoint->coordinates = get_string_point_and_returns_float_point_array(stringPointsList->string);
     newPoint->next = NULL;
-    headPoint = newPoint;
+    firstPoint = newPoint;
+    lastPoint = newPoint;
 
     stringPointsList = stringPointsList->next;
 
     while (stringPointsList != NULL)
     {
-      actPoint = headPoint;
-
-      while (actPoint->next != NULL)
-      {
-        actPoint = actPoint->next;
-      }
-
       newPoint = malloc(sizeof(POINT));
-      newPoint->coordinates = get_string_and_returns_float_array(stringPointsList->string);
+      newPoint->coordinates = get_string_point_and_returns_float_point_array(stringPointsList->string);
       newPoint->next = NULL;
+      actPoint = lastPoint;
       actPoint->next = newPoint;
+      lastPoint = newPoint;
       stringPointsList = stringPointsList->next;
     }
   }
@@ -152,21 +143,22 @@ POINT *get_line_and_returns_float_dynamic_list(char *line)
     return NULL;
   }
   /*DESCOMENTE PARA DEBUGAR*/
-  // show_list_content(headPoint);
+  // show_list_content(firstPoint);
 
-  return headPoint;
+  return firstPoint;
 }
 // CRIA UMA LISTA DE PONTOS AINDA EM STRINGS
-STR *get_string_line_and_returns_dynamic_string_list(char *line)
+STR *break_line_in_dynamic_str_list(char *line)
 {
   char *slice = NULL;
   char *sliceBackUp = NULL;
 
   float *points;
 
-  STR *actPoint = NULL;
-  STR *newPoint = NULL;
-  STR *headPoint = NULL;
+  STR *firstStr = NULL;
+  STR *lastStr = NULL;
+  STR *actStr = NULL;
+  STR *newStr = NULL;
 
   // QUEBRA O PRIMEIRO ELEMENTO "Points"
   slice = strtok(line, " ");
@@ -177,26 +169,21 @@ STR *get_string_line_and_returns_dynamic_string_list(char *line)
   // CRIA LISTA COM OS PONTOS AINDA COMO STRING
   if (slice != NULL)
   {
-    newPoint = malloc(sizeof(STR));
-    newPoint->string = slice;
-    newPoint->next = NULL;
-    headPoint = newPoint;
-
+    newStr = malloc(sizeof(STR));
+    newStr->string = slice;
+    newStr->next = NULL;
+    firstStr = newStr;
+    lastStr = newStr;
     slice = strtok(NULL, " ");
 
     while (slice != NULL)
     {
-      actPoint = headPoint;
-
-      while (actPoint->next != NULL)
-      {
-        actPoint = actPoint->next;
-      }
-
-      newPoint = malloc(sizeof(STR));
-      newPoint->string = slice;
-      newPoint->next = NULL;
-      actPoint->next = newPoint;
+      newStr = malloc(sizeof(STR));
+      newStr->string = slice;
+      newStr->next = NULL;
+      actStr = lastStr;
+      actStr->next = newStr;
+      lastStr = newStr;
       slice = strtok(NULL, " ");
     }
   }
@@ -206,21 +193,21 @@ STR *get_string_line_and_returns_dynamic_string_list(char *line)
   }
 
   /*DESCOMENTE PARA DEBUGAR*/
-  // show_str_list_content(headPoint);
-  return headPoint;
+  // show_str_list_content(firstPoint);
+  return firstStr;
 }
 // TRANSFORMA A STRING QUE REPRESENTA UM PONTO NUM VETOR DE FLOAT CONTENDO SUAS COORDENADAS
-float *get_string_and_returns_float_array(char *numericString)
+float *get_string_point_and_returns_float_point_array(char *stringPoint)
 {
   char delimiterLeft = '(';
   char delimiterRight = ')';
   char delimiterCenter = ',';
 
-  char *slice = numericString;
+  char *slice = stringPoint;
   char *sliceBackUp = NULL;
   char *garbage = NULL;
 
-  float *coordenates = malloc(sizeof(float) * TAM_COORD);
+  float *coordenates = malloc(sizeof(float) * SIZE_COORD);
 
   /// RETIRA CARACTERES ALFABETICOS DO ELEMENTO
   garbage = strchr(slice, delimiterLeft);
@@ -381,7 +368,7 @@ void show_list_content(POINT *list)
   }
   putchar('\n');
 }
-// MOSTRA CONTEÚDO DE LISTA DE STR NO TERMINAL 
+// MOSTRA CONTEÚDO DE LISTA DE STR NO TERMINAL
 void show_str_list_content(STR *strList)
 {
   STR *actPoint = strList;
