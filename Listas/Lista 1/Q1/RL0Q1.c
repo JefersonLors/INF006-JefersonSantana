@@ -52,12 +52,12 @@ int main()
     actNode->shortCut = calculate_shortCut(actNode->list);
     calculate_distance_from_origin(actNode->list);
     sort_point_list(actNode->list);
-    write_list_on_out_file(fileOutPath, actNode->list, actNode->distance, actNode->shortCut);
+    write_list_on_out_file(actNode->list, actNode->distance, actNode->shortCut);
     actNode = actNode->next;
   }
 
   /*DESCOMENTE PARA DEGUBAR*/
-  // show_base_list_content(firstNode);
+  // show_node_list_content(firstNode);
   return EXIT_SUCCESS;
 }
 // CARREGA PRA MEMÓRIA TODOS OS PONTOS DE CADA LINHA
@@ -104,7 +104,7 @@ NODE *get_lists_from_file_and_returns_node_dynamic_matrix(const char *filesName)
   fclose(fileInPtr);
 
   /*DESCOMENTE PARA DEBUGAR*/
-  // show_base_list_content(firstNode);
+  // show_node_list_content(firstNode);
   return firstNode;
 }
 // CRIA UMA LISTA DE FLOATS COM AS COORDENADAS DA LINHA
@@ -143,7 +143,7 @@ POINT *get_line_and_returns_point_dynamic_list(char *line)
     return NULL;
   }
   /*DESCOMENTE PARA DEBUGAR*/
-  // show_list_content(firstPoint);
+  // show_point_list_content(firstPoint);
 
   return firstPoint;
 }
@@ -193,7 +193,7 @@ STR *break_line_in_dynamic_str_list(char *line)
   }
 
   /*DESCOMENTE PARA DEBUGAR*/
-  // show_str_list_content(firstPoint);
+  // show_str_list_content(firstStr);
   return firstStr;
 }
 // TRANSFORMA A STRING QUE REPRESENTA UM PONTO NUM VETOR DE FLOAT CONTENDO SUAS COORDENADAS
@@ -323,9 +323,9 @@ void sort_point_list(POINT *list)
   }
 }
 // ESCREVE LISTAS ORDENADAS EM ARQUIVO
-void write_list_on_out_file(const char *filesName, POINT *list, float distance, float shortCut)
+void write_list_on_out_file(POINT *list, float distance, float shortCut)
 {
-  FILE *fileOutPtr = fopen(filesName, "a+");
+  FILE *fileOutPtr = fopen(fileOutPath, "a+");
 
   POINT *actPoint = list;
 
@@ -339,7 +339,7 @@ void write_list_on_out_file(const char *filesName, POINT *list, float distance, 
   fclose(fileOutPtr);
 }
 // MOSTRA CONTEÚDO DE LISTA DE NODE NO TERMINAL
-void show_base_list_content(NODE *base)
+void show_node_list_content(NODE *base)
 {
   NODE *actBase = base;
 
@@ -347,8 +347,8 @@ void show_base_list_content(NODE *base)
   {
     POINT *actList = actBase->list;
 
-    show_list_content(actList);
-    printf("\ndistance: %.2f\n", actBase->distance);
+    show_point_list_content(actList);
+    printf("distance: %.2f\n", actBase->distance);
     printf("shortCut: %.2f\n", actBase->shortCut);
     putchar('\n');
 
@@ -356,7 +356,7 @@ void show_base_list_content(NODE *base)
   }
 }
 // MOSTRA CONTEÚDO DE LISTA DE POINT NO TERMINAL
-void show_list_content(POINT *list)
+void show_point_list_content(POINT *list)
 {
   POINT *actPoint = list;
 

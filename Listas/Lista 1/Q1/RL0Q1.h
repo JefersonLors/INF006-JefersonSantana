@@ -47,11 +47,11 @@ float calculate_shortCut(POINT *list);
 void sort_point_list(POINT *list);
 
 /// FUNÇÕES DE ESCRITA EM ARQUIVO
-void write_list_on_out_file(const char *filesName, POINT *list, float distance, float shortCut);
+void write_list_on_out_file(POINT *list, float distance, float shortCut);
 
 /// FUNÇÕES DE DEPURAÇÃO NO TERMINAL
-void show_base_list_content(NODE *base);
-void show_list_content(POINT *list);
+void show_node_list_content(NODE *base);
+void show_point_list_content(POINT *list);
 void show_str_list_content(STR *strList);
 
 #endif
