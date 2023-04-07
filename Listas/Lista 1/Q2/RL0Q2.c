@@ -531,8 +531,8 @@ void floating_selection_sort( FLOAT *initList ){
     actFloat = actFloat->next;
   }
 }
-///ESCREVE A LISTA DE ELEMENTOS SEPARADAS POR TIPO E ORDENADAS 
-///CRESCENTEMENTE NO ARQUIVO DE SAÍDA
+///ESCREVE A LISTA DE ELEMENTOS SEPARADAS POR TIPO 
+///E ORDENADAS CRESCENTEMENTE NO ARQUIVO DE SAÍDA
 void write_node_on_file( NODE *node ){
   FILE *fileOutPtr = fopen( fileOutPath, "a+");
 
@@ -548,22 +548,22 @@ void write_node_on_file( NODE *node ){
   POINT *nodePoints = node->point;
   POINT *actPoint = nodePoints;
 
-  fprintf(fileOutPtr, "str:");
+  fprintf(fileOutPtr, "str: ");
   while( actStr ){
     fprintf(fileOutPtr, "%s ", actStr->value );
     actStr = actStr->next;
   }
-  fprintf(fileOutPtr, "int:");
+  fprintf(fileOutPtr, "int: ");
   while( actInt ){
     fprintf(fileOutPtr,"%d ", actInt->value);
     actInt = actInt->next;
   }
-  fprintf(fileOutPtr, "float:");
+  fprintf(fileOutPtr, "float: ");
   while( actFloat ){
     fprintf(fileOutPtr, "%.2f ", actFloat->value);
     actFloat = actFloat->next;
   }
-  fprintf(fileOutPtr, "point:");
+  fprintf(fileOutPtr, "point: ");
   while( actPoint )
   {
     fprintf(fileOutPtr, "(%.2f, %.2f) ", actPoint->value[0], actPoint->value[1] );
