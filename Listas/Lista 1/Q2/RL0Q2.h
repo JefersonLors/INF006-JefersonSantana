@@ -34,20 +34,31 @@ STR *get_line_and_return_dynamic_items_list( char *line );
 ITEM *create_dynamic_string_items_matrix( const char *fileName ); 
 NODE *type_items( STR *list );
 
+float *extract_point_from_string( char* );
+float calculate_distance_from_origin( float X, float Y );
+
 /// FUNÇÕES QUE FAZEM VERIFICAÇÃO DE TIPO
-void test_data_type_funtions(void);
 bool is_string( char *string );
 bool is_point( char *string );
 bool is_interger( char *string );
 bool is_floating( char *string );
 bool is_number(char *string );
-float *extract_point_from_string( char* );
-float calculate_distance_from_origin( float X, float Y );
+void test_data_type_funtions(void);
 
 /// FUNÇÕES DE CONVERSÃO
 POINT *to_point( char *string );
 INT *to_interger( char *string );
 FLOAT *to_floating( char *string );
 STR *to_string( char *string );
+
+///FUNÇÕES DE ORDENAÇÃO
+void sort_node( NODE *node );
+void point_selection_sort( POINT *initList );
+void string_selection_sort( STR *initList );
+void interger_selection_sort( INT *initList );
+void floating_selection_sort( FLOAT *initList );
+
+///FUNÇÕES DE ESCRITA EM ARQUIVO
+void write_node_on_file( NODE *node );
 
 #endif 

@@ -350,10 +350,8 @@ void sort_point_list( LIST *list ){
             }
             tempPoint = tempPoint->next;
         }
-
         actPoint = actPoint->next;
     }
-
 }
 
 //ESCREVE LISTAS ORDENADAS EM ARQUIVO

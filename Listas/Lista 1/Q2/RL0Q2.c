@@ -55,12 +55,60 @@ struct Item{
 };
 
 int main( ){
-  NODE *first = get_items_from_file_and_returns_item_dynamic_typed_matrix(fileInPath);
+  NODE *firstNode = get_items_from_file_and_returns_item_dynamic_typed_matrix(fileInPath);
+  NODE *actNode = firstNode;
 
-  puts("FIM");
+  while( actNode ){
+    sort_node(actNode);
+    write_node_on_file(actNode);
+    actNode = actNode->next;
+  }
+
+
+  /*DESCOMENTE PARA DEBUGAR*/
+  // actNode = firstNode;
+  // while( actNode ){
+  //   INT *nodeInts = actNode->interger; 
+  //   INT *actInt = nodeInts;
+
+  //   FLOAT *nodeFloats = actNode->floating;
+  //   FLOAT *actFloat = nodeFloats;
+
+  //   STR *nodeStrs = actNode->string;
+  //   STR *actStr = nodeStrs;
+
+  //   POINT *nodePoints = actNode->point;
+  //   POINT *actPoint = nodePoints;
+
+  //   printf("\nSTART BLOCK");
+  //   printf("\n\tIntergers: ");
+  //   while( actInt ){
+  //     printf("%d\t", actInt->value);
+  //     actInt = actInt->next;
+  //   }
+  //   printf("\n\tFloatings: ");
+  //   while( actFloat ){
+  //     printf("%.2f\t", actFloat->value);
+  //     actFloat = actFloat->next;
+  //   }
+  //   printf("\n\tStrings: ");
+  //   while( actStr ){
+  //     printf( "%s\t", actStr->value );
+  //     actStr = actStr->next;
+  //   }
+  //   printf("\n\tPoints: ");
+  //   while( actPoint )
+  //   {
+  //     printf("[(%.2f, %.2f) d = %.2f]\t", actPoint->value[0], actPoint->value[1], actPoint->distanceFromOrigin );
+  //     actPoint = actPoint->next;
+  //   }
+  //   printf("\nEND BLOCK\n");
+  
+  //   actNode = actNode->next;
+  // }
   return EXIT_SUCCESS;
 }
-
+///RECUPERA OS ITENS DO ARQUIVO E OS COLOCA NUMA MATRIZ DINÂMICA, AGRUPADOS PODE TIPO
 NODE *get_items_from_file_and_returns_item_dynamic_typed_matrix( const char *fileName ){
   NODE *firstNode = NULL; 
   NODE *newNode = NULL; 
@@ -99,48 +147,49 @@ NODE *get_items_from_file_and_returns_item_dynamic_typed_matrix( const char *fil
   actNode = firstNode;
 
   /*DESCOMENTE PARA DEBUGAR*/
-  while( actNode ){
-    INT *nodeInts = actNode->interger; 
-    INT *actInt = nodeInts;
+  // while( actNode ){
+  //   INT *nodeInts = actNode->interger; 
+  //   INT *actInt = nodeInts;
 
-    FLOAT *nodeFloats = actNode->floating;
-    FLOAT *actFloat = nodeFloats;
+  //   FLOAT *nodeFloats = actNode->floating;
+  //   FLOAT *actFloat = nodeFloats;
 
-    STR *nodeStrs = actNode->string;
-    STR *actStr = nodeStrs;
+  //   STR *nodeStrs = actNode->string;
+  //   STR *actStr = nodeStrs;
 
-    POINT *nodePoints = actNode->point;
-    POINT *actPoint = nodePoints;
+  //   POINT *nodePoints = actNode->point;
+  //   POINT *actPoint = nodePoints;
 
-    printf("\nSTART BLOCK");
-    printf("\n\tIntergers: ");
-    while( actInt ){
-      printf("%d\t", actInt->value);
-      actInt = actInt->next;
-    }
-    printf("\n\tFloatings: ");
-    while( actFloat ){
-      printf("%.2f\t", actFloat->value);
-      actFloat = actFloat->next;
-    }
-    printf("\n\tStrings: ");
-    while( actStr ){
-      printf( "%s\t", actStr->value );
-      actStr = actStr->next;
-    }
-    printf("\n\tPoints: ");
-    while( actPoint )
-    {
-      printf("[(%.2f, %.2f) d = %.2f]\t", actPoint->value[0], actPoint->value[1], actPoint->distanceFromOrigin );
-      actPoint = actPoint->next;
-    }
-    printf("\nEND BLOCK\n");
-    
-    actNode = actNode->next;
-  }
+  //   printf("\nSTART BLOCK");
+  //   printf("\n\tIntergers: ");
+  //   while( actInt ){
+  //     printf("%d\t", actInt->value);
+  //     actInt = actInt->next;
+  //   }
+  //   printf("\n\tFloatings: ");
+  //   while( actFloat ){
+  //     printf("%.2f\t", actFloat->value);
+  //     actFloat = actFloat->next;
+  //   }
+  //   printf("\n\tStrings: ");
+  //   while( actStr ){
+  //     printf( "%s\t", actStr->value );
+  //     actStr = actStr->next;
+  //   }
+  //   printf("\n\tPoints: ");
+  //   while( actPoint )
+  //   {
+  //     printf("[(%.2f, %.2f) d = %.2f]\t", actPoint->value[0], actPoint->value[1], actPoint->distanceFromOrigin );
+  //     actPoint = actPoint->next;
+  //   }
+  //   printf("\nEND BLOCK\n");
+  
+  //   actNode = actNode->next;
+  // }
 
   return firstNode;
 }
+///QUEBRA OS ITENS DE UMA LINHA EM STRINGS PARA UMA LISTA ENCADEADA
 STR *get_line_and_return_dynamic_items_list(char *line){
   STR *firstString = NULL;
   STR *lastString = NULL;
@@ -192,6 +241,7 @@ STR *get_line_and_return_dynamic_items_list(char *line){
 
   return firstString;
 }
+///CRIA RECUPERA ITENS DE UMA MESMA LINHA NUM ARQUIVO AINDA COMO STRINGS
 ITEM *create_dynamic_string_items_matrix(const char *fileName ){
   FILE *fileInPtr = fopen(fileName, "r");
   ITEM *firstItem = NULL;
@@ -243,6 +293,7 @@ ITEM *create_dynamic_string_items_matrix(const char *fileName ){
   // }
   return firstItem;
 }
+///TIPA OS ITENS DA LISTA 
 NODE *type_items( STR *itemList ){
   NODE *node = NULL;
   STR *actItem = NULL;
@@ -477,6 +528,7 @@ void test_data_type_funtions(void){
   printf("[%s] is_floating: %s\n", almostPoint, (is_floating(almostPoint) ? "true" : "false" ));
   printf("[%s] is_point: %s\n", almostPoint, (is_point(almostPoint) ? "true" : "false" ));
 }
+///CONVERTE UM ITEM NUM ELEMENTO POINT DA LISTA ENCADEADA PRINCIPAL
 POINT *to_point( char *string ){
   POINT *node = malloc(sizeof(POINT));
   node->value = extract_point_from_string(string);
@@ -484,24 +536,28 @@ POINT *to_point( char *string ){
   node->next = NULL;
   return node;
 }
+///CONVERTE UM ITEM NUM ELEMENTO INT DA LISTA ENCADEADA PRINCIPAL
 INT *to_interger( char *string ){
   INT *node = malloc(sizeof(INT));
   node->value = atoi(string);
   node->next = NULL;
   return node;
 }
+///CONVERTE UM ITEM NUM ELEMENTO FLOAT DA LISTA ENCADEADA PRINCIPAL
 FLOAT *to_floating( char *string ){
   FLOAT *node = malloc(sizeof(FLOAT));
   node->value = atof(string);
   node->next = NULL;
   return node;
 }
+///CONVERTE STRING NUM ELEMENTO STR DA LISTA ENCADEADA PRINCIPAL
 STR *to_string( char *string ){
   STR *node = malloc(sizeof(STR));
   node->value = string;
   node->next = NULL;
   return node;
 }
+///EXTRAI A COORDENADAS DE UMA STRING DE PONTO
 float *extract_point_from_string( char *numericString ){
     char delimiterLeft = '(';
     char delimiterRight = ')';
@@ -536,7 +592,146 @@ float *extract_point_from_string( char *numericString ){
 
     return coordenates;
 }
+///CALCULA A DISTÂNCIA ENTRA UM PONTO E A ORIGEM
 float calculate_distance_from_origin( float X, float Y ){
     float distance = sqrt( pow((X - 0), 2) + pow((Y - 0), 2) );
     return distance;
+}
+///ORDENA OS ITENS CONTIDOS NO NODE
+void sort_node( NODE *node ){
+  point_selection_sort(node->point);
+  string_selection_sort(node->string);
+  interger_selection_sort(node->interger);
+  floating_selection_sort(node->floating);
+}
+///ORDENA LISTA DE PONTOS
+void point_selection_sort( POINT *initList ){
+  POINT *actPoint = initList;
+  POINT *nextPoint = NULL; 
+
+  float *coordenatesTemp = NULL;
+  float distFromOriginTemp = .0;
+
+  while( actPoint->next ){
+    nextPoint = actPoint->next;
+
+    while( nextPoint ){
+      if( actPoint->distanceFromOrigin > nextPoint->distanceFromOrigin ){
+        coordenatesTemp = nextPoint->value;
+        distFromOriginTemp = nextPoint->distanceFromOrigin;
+
+        nextPoint->value = actPoint->value;
+        nextPoint->distanceFromOrigin = actPoint->distanceFromOrigin;
+
+        actPoint->value = coordenatesTemp;
+        actPoint->distanceFromOrigin = distFromOriginTemp;
+      }
+      nextPoint = nextPoint->next;
+    }
+    actPoint = actPoint->next;
+  }
+}
+///ORDENA LISTA DE STRINGS
+void string_selection_sort( STR *initList ){
+  STR *actStr = initList;
+  STR *nextStr = NULL;
+
+  char *strTemp = NULL;
+
+  while( actStr->next ){
+    nextStr = actStr->next;
+
+    while( nextStr ){
+      if( strcmp( actStr->value, nextStr->value ) > 0 ){
+        strTemp = nextStr->value;
+        nextStr->value = actStr->value;
+        actStr->value = strTemp;
+      }
+      nextStr = nextStr->next;
+    }
+    actStr = actStr->next;
+  }
+}
+///ORDENA LISTA DE INTEIROS
+void interger_selection_sort( INT *initList ){
+  INT *actInt = initList;
+  INT *nextInt = NULL;
+
+  int intTemp = 0;
+
+  while( actInt->next ){
+    nextInt = actInt->next;
+
+    while( nextInt ){
+      if( actInt->value > nextInt->value ){
+        intTemp = nextInt->value;
+        nextInt->value = actInt->value;
+        actInt->value = intTemp;
+      }
+      nextInt = nextInt->next;
+    }
+    actInt = actInt->next;
+  }
+}
+///ORDENA LISTA DE FLOATS
+void floating_selection_sort( FLOAT *initList ){
+  FLOAT *actFloat = initList;
+  FLOAT *nextFloat = NULL;
+
+  int floatTemp = 0;
+
+  while( actFloat->next ){
+    nextFloat = actFloat->next;
+
+    while( nextFloat ){
+      if( actFloat->value > nextFloat->value ){
+        floatTemp = nextFloat->value;
+        nextFloat->value = actFloat->value;
+        actFloat->value = floatTemp;
+      }
+      nextFloat = nextFloat->next;
+    }
+    actFloat = actFloat->next;
+  }
+}
+///ESCREVE A LISTA DE ELEMENTOS SEPARADAS POR TIPO E ORDENADAS 
+///CRESCENTEMENTE NO ARQUIVO DE SAÍDA
+void write_node_on_file( NODE *node ){
+  FILE *fileOutPtr = fopen( fileOutPath, "a+");
+
+  INT *nodeInts = node->interger; 
+  INT *actInt = nodeInts;
+
+  FLOAT *nodeFloats = node->floating;
+  FLOAT *actFloat = nodeFloats;
+
+  STR *nodeStrs = node->string;
+  STR *actStr = nodeStrs;
+
+  POINT *nodePoints = node->point;
+  POINT *actPoint = nodePoints;
+
+  fprintf(fileOutPtr, "str:");
+  while( actStr ){
+    fprintf(fileOutPtr, "%s ", actStr->value );
+    actStr = actStr->next;
+  }
+  fprintf(fileOutPtr, "int:");
+  while( actInt ){
+    fprintf(fileOutPtr,"%d ", actInt->value);
+    actInt = actInt->next;
+  }
+  fprintf(fileOutPtr, "float:");
+  while( actFloat ){
+    fprintf(fileOutPtr, "%.2f ", actFloat->value);
+    actFloat = actFloat->next;
+  }
+  fprintf(fileOutPtr, "point:");
+  while( actPoint )
+  {
+    fprintf(fileOutPtr, "(%.2f, %.2f) ", actPoint->value[0], actPoint->value[1] );
+    actPoint = actPoint->next;
+  }
+  fprintf(fileOutPtr, "\n");
+  fclose(fileOutPtr);
 }
