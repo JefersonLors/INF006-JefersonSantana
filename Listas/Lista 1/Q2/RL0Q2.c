@@ -74,9 +74,7 @@ NODE *get_items_from_file_and_returns_item_dynamic_typed_matrix( const char *fil
     return firstNode;
   }else{
     newNode = malloc(sizeof(NODE));
-    puts("aqui");
     newNode = type_items(newListItem->list);
-    puts("aqui");
     newNode->next = NULL;
 
     if( newNode == NULL ){
@@ -98,10 +96,48 @@ NODE *get_items_from_file_and_returns_item_dynamic_typed_matrix( const char *fil
       actListItem = actListItem->next; 
     }
   }
-
-
+  actNode = firstNode;
 
   /*DESCOMENTE PARA DEBUGAR*/
+  while( actNode ){
+    INT *nodeInts = actNode->interger; 
+    INT *actInt = nodeInts;
+
+    FLOAT *nodeFloats = actNode->floating;
+    FLOAT *actFloat = nodeFloats;
+
+    STR *nodeStrs = actNode->string;
+    STR *actStr = nodeStrs;
+
+    POINT *nodePoints = actNode->point;
+    POINT *actPoint = nodePoints;
+
+    printf("\nSTART BLOCK");
+    printf("\n\tIntergers: ");
+    while( actInt ){
+      printf("%d\t", actInt->value);
+      actInt = actInt->next;
+    }
+    printf("\n\tFloatings: ");
+    while( actFloat ){
+      printf("%.2f\t", actFloat->value);
+      actFloat = actFloat->next;
+    }
+    printf("\n\tStrings: ");
+    while( actStr ){
+      printf( "%s\t", actStr->value );
+      actStr = actStr->next;
+    }
+    printf("\n\tPoints: ");
+    while( actPoint )
+    {
+      printf("[(%.2f, %.2f) d = %.2f]\t", actPoint->value[0], actPoint->value[1], actPoint->distanceFromOrigin );
+      actPoint = actPoint->next;
+    }
+    printf("\nEND BLOCK\n");
+    
+    actNode = actNode->next;
+  }
 
   return firstNode;
 }
@@ -130,7 +166,7 @@ STR *get_line_and_return_dynamic_items_list(char *line){
 
     word = strtok(NULL, delimiter);
 
-    while( word != NULL ){
+    while( word ){
       newWord = NULL;
       newWord = malloc(sizeof(char)*20);
       strcpy(newWord, word);
@@ -173,7 +209,7 @@ ITEM *create_dynamic_string_items_matrix(const char *fileName ){
     fgets(line, MAX_SIZE_LINE, fileInPtr);
     line[strlen(line)-1] = '\0';
 
-    if( line != NULL ){
+    if( line ){
       newItem = malloc(sizeof(ITEM));
       newItem->list = get_line_and_return_dynamic_items_list(line);
       newItem->next = NULL;
@@ -240,7 +276,7 @@ NODE *type_items( STR *itemList ){
     while( actItem != NULL ){
       if( is_string(actItem->value)){
         newString =  malloc(sizeof(STR));
-        newString->value = to_string(actItem->value);
+        newString = to_string(actItem->value);
         newString->next = NULL;
 
         if( firstString == NULL ){
@@ -251,12 +287,13 @@ NODE *type_items( STR *itemList ){
           actString->next = newString;
           lastString = newString;
         }
+        actItem = actItem->next;
         continue;
       }
       if( is_interger(actItem->value) ){
         newInterger = malloc(sizeof(INT));
-        newInterger->value = to_interger(actItem->value);
-        newInterger = NULL;
+        newInterger = to_interger(actItem->value);
+        newInterger->next = NULL;
 
         if( firstInterger == NULL ){
           firstInterger = newInterger;
@@ -266,13 +303,14 @@ NODE *type_items( STR *itemList ){
           actInterger->next = newInterger;
           lastInterger = newInterger;
         }
+        actItem = actItem->next;
         continue;
       }
       if( is_floating(actItem->value)){
         newFloating = malloc(sizeof(FLOAT));
         newFloating = to_floating(actItem->value);
-        newFloating = NULL;
-
+        newFloating->next = NULL;
+  	    
         if( firstFloating == NULL ){
           firstFloating = newFloating;
           lastFloating = newFloating;
@@ -281,6 +319,7 @@ NODE *type_items( STR *itemList ){
           actFloating->next = newFloating;
           lastFloating = newFloating;
         }
+        actItem = actItem->next;
         continue;
       }
       if( is_point(actItem->value) ){
@@ -296,6 +335,7 @@ NODE *type_items( STR *itemList ){
           actPoint->next = newPoint;
           lastPoint = newPoint;
         }
+        actItem = actItem->next;
         continue;
       }
       actItem = actItem->next;
@@ -307,6 +347,33 @@ NODE *type_items( STR *itemList ){
   node->string = firstString;
   node->next = NULL;
 
+  /*DESCOMENTE PARA DEBUGAR*/
+  // printf("\nSTART BLOCK");
+  // actFloating = firstFloating;
+  // printf("\n\tFloatings: ");
+  // while( actFloating ){
+  //   printf("%.2f\t", actFloating->value);
+  //   actFloating = actFloating->next;
+  // }
+  // actInterger = firstInterger;
+  // printf("\n\tIntergers: ");
+  // while( actInterger ){
+  //   printf("%d\t", actInterger->value );
+  //   actInterger = actInterger->next;
+  // }
+  // actString = firstString;
+  // printf("\n\tStrings: ");
+  // while( actString ){
+  //   printf( "%s\t", actString->value );
+  //   actString = actString->next;
+  // }
+  // actPoint = firstPoint;
+  // printf("\n\tPoints: ");
+  // while( actPoint ){
+  //   printf("[(%.2f, %.2f) d = %.2f]\t", actPoint->value[0], actPoint->value[1], actPoint->distanceFromOrigin);
+  //   actPoint = actPoint->next;
+  // }
+  // printf("\nEND BLOCK\n\n");
   return node;
 }
 //VERIFICA SE O ITEM(STRING DA LISTA) É UMA STRING
