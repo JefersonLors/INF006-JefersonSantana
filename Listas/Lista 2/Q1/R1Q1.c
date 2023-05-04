@@ -10,6 +10,7 @@ int main()
   str *firstLine = get_lines_from_file();
 
   while( firstLine ){
+    puts(firstLine->line);
     firstLine = firstLine->next;
   }
   puts("fim");
@@ -32,16 +33,17 @@ str *get_lines_from_file()
     if( fgets(line, MAX_SIZE_LINE, fileInPtr ) ){
       line[strlen(line)-1] = '\0';
       newStr = (str*)malloc(sizeof(str));
-      newStr->line = line;
+      newStr->line = (char*)malloc(sizeof(char)*MAX_SIZE_LINE);
+      strcpy(newStr->line, line);
       newStr->next = NULL;
-
       firstStr = newStr;
       lastStr = newStr;
       
       while( fgets(line, MAX_SIZE_LINE, fileInPtr ) ){
         line[strlen(line)-1] = '\0';
         newStr = (str*)malloc(sizeof(str));
-        newStr->line = line;
+        newStr->line = (char*)malloc(sizeof(char)*MAX_SIZE_LINE);
+        strcpy(newStr->line, line);
         newStr->next = NULL;
         actStr = lastStr;
         actStr->next = newStr;
