@@ -100,7 +100,7 @@ char *create_line(int qty)
   }
   if (qty)
   {
-    strcat(line, "\n");
+    line[strlen(line)-1] = '\n';
   }
   return line;
 }
@@ -119,6 +119,5 @@ char *generate_naturals_number_list()
     strcat(line, sNumber);
     quanty--;
   }
-
   return line;
 }
