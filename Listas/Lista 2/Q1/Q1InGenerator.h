@@ -8,7 +8,7 @@
 #define _MAX_SIZE_LINE 255
 #define MAX_QTY_LIST 10
 #define MAX_QTY_LINE 60000
-#define MIN_QTY_LINE 1000
+#define MIN_QTY_LINE 10000
 
 typedef struct _string{
   char *line;
