@@ -21,91 +21,26 @@ int main()
   }
 
   natBase *actNatBase = firstNatBase;
-  int i = 1;
+
   while (actNatBase)
   {
     ordernate_vector(actNatBase);
-    printf("linha[%d]\n", i);
     ordenate_line(actNatBase);
     actNatBase = actNatBase->next;
-    i++;
+  }
+  write_result_in_file(firstNatBase);
+
+  actNatBase = firstNatBase;
+
+  while (actNatBase)
+  {
+    free_nat_memory_allocated(&actNatBase->content);
+    actNatBase = actNatBase->next;
   }
 
-  // actNatBase = firstNatBase;
-
-  // int i = 0;
-  // actNatBase = firstNatBase;
-
-  // while( actNatBase ){
-  //   nat *actNatList = actNatBase->content;
-
-  //   printf("linha[%d]: ", i);
-  //   while( actNatList ){
-  //     printf("{%d} ", actNatList->length);
-  //     int j = 0;
-  //     printf("[ " );
-  //     while( j < actNatList->length  ){
-  //       printf("%d ", actNatList->values[j]);
-  //       j++;
-  //     }
-  //     printf("]\t" );
-  //     actNatList = actNatList->next;
-  //   }
-  //   putchar('\n');
-  //   i++;
-  //   actNatBase = actNatBase->next;
-  // }
-
-  // strBase *actStrBase = firstStrBase;
-  // int i = 0;
-  // while( actStrBase ){
-  //   str *content = actStrBase->content;
-  //   printf("lista[%d]: ", i);
-  //   while( content ){
-  //     printf("%s\t", content->line );
-  //     content = content->next;
-  //   }
-  //   putchar('\n');
-  //   i++;
-  //   actStrBase = actStrBase->next;
-  // }
-
+  // show_all_content(firstNatBase);
   puts("fim");
   return EXIT_SUCCESS;
-}
-void ordenate_line(natBase *start)
-{
-  if( !start->content )
-    return;
-    
-  nat *firstList = start->content;
-
-  while (firstList->next)
-  {
-    // nat *actList = firstList;
-    
-    // while (actList->next)
-    // {
-    //   if (actList->sum > actList->next->sum)
-    //   {
-    //     // puts("\t=> antes swap");
-    //     // swap_list_content(actList, actList->next);
-    //     // puts("\t<= depois swap");
-    //   }
-    //   actList = actList->next;
-    // }
-    firstList = firstList->next;
-  }
-}
-void ordernate_vector(natBase *start)
-{
-  nat *actNatList = start->content;
-
-  while (actNatList)
-  {
-    insertio_sort(actNatList->values, actNatList->length);
-    actNatList = actNatList->next;
-  }
 }
 natBase *create_nat_matrix(strBase *firstStrBase)
 {
@@ -141,28 +76,6 @@ natBase *create_nat_matrix(strBase *firstStrBase)
       ;
     }
   }
-  // int i = 0;
-  // actNatBase = firstNatBase;
-
-  // while( actNatBase ){
-  //   nat *actNatList = actNatBase->content;
-
-  //   printf("linha[%d]:", i);
-  //   while( actNatList ){
-  //     int j = 0;
-  //     printf("[ " );
-  //     while( j < actNatList->length ){
-  //       printf("%d ", actNatList->values[j]);
-  //       j++;
-  //     }
-  //     printf("]\t" );
-  //     actNatList = actNatList->next;
-  //   }
-  //   putchar('\n');
-  //   i++;
-  //   actNatBase = actNatBase->next;
-  // }
-
   return firstNatBase;
 }
 strBase *create_str_matrix(str *firstLine)
@@ -262,13 +175,6 @@ str *break_lines_in_str_list(str *line)
       }
     }
   }
-
-  // actStrList = firstStrList;
-  // while (actStrList)
-  // {
-  //   puts(actStrList->line);
-  //   actStrList = actStrList->next;
-  // }
   return firstStrList;
 }
 str *get_lines_from_file()
@@ -345,23 +251,9 @@ nat *create_nat_list(str *stringList)
       actStringList = actStringList->next;
     }
   }
-  // actNat = firstNat;
-
-  // while( actNat ){
-  //   printf("[ " );
-  //   int i = 0;
-
-  //   while( actNat->values[i] != END_VECTOR){
-  //     printf("%d ", actNat->values[i]);
-  //     i++;
-  //   }
-
-  //   printf("]\t" );
-  //   actNat = actNat->next;
-  // }
-  // putchar('\n');
   return firstNat;
 }
+
 int create_nat_int_list(char *stringList, int **vectorInt)
 {
   str *firstInt = NULL;
@@ -415,7 +307,7 @@ int create_nat_int_list(char *stringList, int **vectorInt)
   free_str_memory_allocated(&firstInt);
   return vectorSize;
 }
-void *free_str_memory_allocated(str **first)
+void free_str_memory_allocated(str **first)
 {
   str *act = *first;
   str *prev = NULL;
@@ -428,6 +320,19 @@ void *free_str_memory_allocated(str **first)
     prev = NULL;
   }
 
+  *first = NULL;
+}
+void free_nat_memory_allocated(nat **first)
+{
+  nat *actNat = *first;
+  nat *prevNat = NULL;
+
+  while( actNat ){
+    prevNat = actNat;
+    actNat = actNat->next;
+    free(prevNat);
+    prevNat = NULL;
+  }
   *first = NULL;
 }
 void show_lines_as_strings(str *first)
@@ -445,7 +350,7 @@ void show_lines_as_strings(str *first)
 bool isEmpty(char *string)
 {
   int i = 0;
-  // printf("string : %s\n", string);
+
   if (string)
   {
     while (string[i] != '\0')
@@ -486,10 +391,45 @@ int calculate_list_sum(int *natList, int size)
   }
   return sum;
 }
+void ordenate_line(natBase *start)
+{
+  if (!start->content)
+    return;
+
+  nat *firstList = start->content;
+
+  while (firstList)
+  {
+
+    nat *actList = firstList->next;
+
+    while (actList)
+    {
+
+      if (firstList->sum > actList->sum)
+      {
+        swap_list_content(firstList, actList);
+      }
+      actList = actList->next;
+    }
+    firstList = firstList->next;
+  }
+}
+void ordernate_vector(natBase *start)
+{
+  nat *actNatList = start->content;
+
+  while (actNatList)
+  {
+    insertio_sort(actNatList->values, actNatList->length);
+    actNatList = actNatList->next;
+  }
+}
 void swap_list_content(nat *listA, nat *listB)
 {
   int auxSum = listB->sum;
   int auxLength = listB->length;
+
   int *auxValues = malloc(sizeof(int) * auxLength);
 
   int i = 0;
@@ -529,5 +469,70 @@ void swap_list_content(nat *listA, nat *listB)
   {
     listA->values[i] = auxValues[i];
     i++;
+  }
+}
+void show_all_content(natBase *start)
+{
+  natBase *actNatBase = start;
+  int i = 0;
+
+  while (actNatBase)
+  {
+    nat *actNatList = actNatBase->content;
+
+    printf("linha[%d]: ", i);
+    while (actNatList)
+    {
+      printf("{%d} ", actNatList->length);
+      int j = 0;
+      printf("[ ");
+      while (j < actNatList->length)
+      {
+        printf("%d ", actNatList->values[j]);
+        j++;
+      }
+      printf("]\t");
+      actNatList = actNatList->next;
+    }
+    putchar('\n');
+    i++;
+    actNatBase = actNatBase->next;
+  }
+}
+void write_result_in_file(natBase *firstLine)
+{
+  FILE *fileOutPtr = fopen(R1Q1_file_out_path, "w");
+
+  natBase *actLine = firstLine;
+
+  if (!fileOutPtr)
+  {
+    printf("\ncreate file issues! :[\n");
+    return;
+  }
+  if (!actLine)
+  {
+    printf("\nempty content! :[\n");
+    return;
+  }
+
+  while (actLine)
+  {
+    nat *line = actLine->content;
+
+    while (line)
+    {
+      int i = 0;
+      fprintf(fileOutPtr, "%s", "start");
+      while (i < line->length)
+      {
+        fprintf(fileOutPtr, " %d", line->values[i]);
+        i++;
+      }
+      fprintf(fileOutPtr, "%c", (line->next ? ' ' : '\n'));
+      line = line->next;
+    }
+
+    actLine = actLine->next;
   }
 }

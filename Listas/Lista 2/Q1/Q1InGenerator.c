@@ -64,7 +64,7 @@ _str *create_line_list()
 
   if (quantyLine > 0)
   {
-    quantyList = 0 + rand() % MAX_QTY_LIST;
+    quantyList = 1 + rand() % MAX_QTY_LIST;
     new = malloc(sizeof(_str));
     new->line = create_line(quantyList);
     new->next = NULL;
@@ -74,7 +74,7 @@ _str *create_line_list()
     quantyLine--;
     while (quantyLine > 0)
     {
-      quantyList = 0 + rand() % MAX_QTY_LIST;
+      quantyList = 1 + rand() % MAX_QTY_LIST;
       new = malloc(sizeof(_str));
       new->line = create_line(quantyList);
       new->next = NULL;
@@ -109,8 +109,7 @@ char *generate_naturals_number_list()
   int number = 0;
   char sNumber[5];
   char *line = malloc(sizeof(char) * 50);
-  int quanty = 0 + rand() % 7;
-
+  int quanty =  1 + rand() % 7;
   strcpy(line, "start ");
   while (quanty > 0)
   {
