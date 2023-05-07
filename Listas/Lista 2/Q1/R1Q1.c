@@ -53,7 +53,7 @@ natBase *create_nat_matrix(strBase *firstStrBase)
 
   if (actStrBase)
   {
-    newNatBase = malloc(sizeof(natBase));
+    newNatBase = (natBase*)malloc(sizeof(natBase));
     newNatBase->content = create_nat_list(actStrBase->content);
     newNatBase->next = NULL;
 
@@ -64,7 +64,7 @@ natBase *create_nat_matrix(strBase *firstStrBase)
 
     while (actStrBase)
     {
-      newNatBase = malloc(sizeof(natBase));
+      newNatBase = (natBase*)malloc(sizeof(natBase));
       newNatBase->content = create_nat_list(actStrBase->content);
       newNatBase->next = NULL;
 
@@ -89,7 +89,7 @@ strBase *create_str_matrix(str *firstLine)
 
   if (firstStrList)
   {
-    newStrBase = malloc(sizeof(strBase));
+    newStrBase = (strBase*)malloc(sizeof(strBase));
     newStrBase->content = break_lines_in_str_list(firstStrList);
     newStrBase->next = NULL;
 
@@ -99,7 +99,7 @@ strBase *create_str_matrix(str *firstLine)
     firstStrList = firstStrList->next;
     while (firstStrList)
     {
-      newStrBase = malloc(sizeof(strBase));
+      newStrBase = (strBase*)malloc(sizeof(strBase));
       newStrBase->content = break_lines_in_str_list(firstStrList);
       newStrBase->next = NULL;
 
@@ -127,8 +127,8 @@ str *break_lines_in_str_list(str *line)
   {
     if (!isEmpty(strList))
     {
-      newStrList = malloc(sizeof(str));
-      newStrList->line = malloc(sizeof(char) * strlen(strList));
+      newStrList = (str*)malloc(sizeof(str));
+      newStrList->line = (char*)malloc(sizeof(char) * strlen(strList));
       strcpy(newStrList->line, strList);
       newStrList->next = NULL;
 
@@ -144,8 +144,8 @@ str *break_lines_in_str_list(str *line)
       }
       if (strList)
       {
-        newStrList = malloc(sizeof(str));
-        newStrList->line = malloc(sizeof(char) * strlen(strList));
+        newStrList = (str*)malloc(sizeof(str));
+        newStrList->line = (char*)malloc(sizeof(char) * strlen(strList));
         strcpy(newStrList->line, strList);
         newStrList->next = NULL;
 
@@ -161,8 +161,8 @@ str *break_lines_in_str_list(str *line)
       {
         if (!isEmpty(strList))
         {
-          newStrList = malloc(sizeof(str));
-          newStrList->line = malloc(sizeof(char) * strlen(strList));
+          newStrList = (str*)malloc(sizeof(str));
+          newStrList->line = (char*)malloc(sizeof(char) * strlen(strList));
 
           strcpy(newStrList->line, strList);
 
@@ -228,7 +228,7 @@ nat *create_nat_list(str *stringList)
 
   if (actStringList)
   {
-    newNat = malloc(sizeof(nat));
+    newNat = (nat*)malloc(sizeof(nat));
     newNat->length = create_nat_int_list(actStringList->line, &newNat->values);
     newNat->sum = calculate_list_sum(newNat->values, newNat->length);
     newNat->next = NULL;
@@ -240,7 +240,7 @@ nat *create_nat_list(str *stringList)
 
     while (actStringList)
     {
-      newNat = malloc(sizeof(nat));
+      newNat = (nat*)malloc(sizeof(nat));
       newNat->length = create_nat_int_list(actStringList->line, &newNat->values);
       newNat->sum = calculate_list_sum(newNat->values, newNat->length);
       newNat->next = NULL;
@@ -267,8 +267,8 @@ int create_nat_int_list(char *stringList, int **vectorInt)
 
   if (number)
   {
-    newInt = malloc(sizeof(str));
-    newInt->line = malloc(sizeof(char) * strlen(number));
+    newInt = (str*)malloc(sizeof(str));
+    newInt->line = (char*)malloc(sizeof(char) * strlen(number));
     strcpy(newInt->line, number);
     newInt->next = NULL;
     vectorSize++;
@@ -278,8 +278,8 @@ int create_nat_int_list(char *stringList, int **vectorInt)
     number = strtok(NULL, " ");
     while (number)
     {
-      newInt = malloc(sizeof(str));
-      newInt->line = malloc(sizeof(char) * strlen(number));
+      newInt = (str*)malloc(sizeof(str));
+      newInt->line = (char*)malloc(sizeof(char) * strlen(number));
       strcpy(newInt->line, number);
       newInt->next = NULL;
 
@@ -292,7 +292,7 @@ int create_nat_int_list(char *stringList, int **vectorInt)
     }
   }
 
-  *vectorInt = malloc(sizeof(int) * vectorSize);
+  *vectorInt = (int*)malloc(sizeof(int) * vectorSize);
 
   actInt = firstInt;
 
@@ -430,7 +430,7 @@ void swap_list_content(nat *listA, nat *listB)
   int auxSum = listB->sum;
   int auxLength = listB->length;
 
-  int *auxValues = malloc(sizeof(int) * auxLength);
+  int *auxValues = (int*)malloc(sizeof(int) * auxLength);
 
   int i = 0;
 
@@ -447,7 +447,7 @@ void swap_list_content(nat *listA, nat *listB)
 
   i = 0;
 
-  listB->values = malloc(sizeof(int) * listA->length);
+  listB->values = (int*)malloc(sizeof(int) * listA->length);
 
   while (i < listA->length)
   {
@@ -463,7 +463,7 @@ void swap_list_content(nat *listA, nat *listB)
   free(listA->values);
   listA->values = NULL;
 
-  listA->values = malloc(sizeof(int) * auxLength);
+  listA->values = (int*)malloc(sizeof(int) * auxLength);
 
   while (i < auxLength)
   {
