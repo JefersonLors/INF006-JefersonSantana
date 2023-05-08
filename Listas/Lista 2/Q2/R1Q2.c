@@ -5,14 +5,100 @@
 #include "R1Q2.h"
 #include "Q2InGenerator.h"
 
-int main( ){
+int main()
+{
   // L1Q2_in_generator();
-  str *firstStr = get_lines_from_file();
-  strBase *firstStrBase = create_str_matrix(firstStr);
+  str *firstLine = get_lines_from_file();
+  strBase *firstStrBase = create_str_matrix(firstLine);
+  nameBase *firstNameBase = create_name_matrix(firstStrBase);
 
+  free_str_memory_allocated(&firstLine);
+
+  while (firstStrBase)
+  {
+    free_str_memory_allocated(&firstStrBase->content);
+    firstStrBase = firstStrBase->next;
+  }
+  show_all_name_list(firstNameBase);
 
   puts("fim");
   return EXIT_SUCCESS;
+}
+nameBase *create_name_matrix(strBase *firstStrBase)
+{
+  strBase *actStrBase = firstStrBase;
+
+  nameBase *firstNameBase = NULL;
+  nameBase *actNameBase = NULL;
+  nameBase *newNameBase = NULL;
+  nameBase *lastNameBase = NULL;
+
+  if (actStrBase)
+  {
+    newNameBase = (nameBase *)malloc(sizeof(nameBase));
+    newNameBase->list = create_name_list(actStrBase->content);
+    newNameBase->next = NULL;
+    firstNameBase = newNameBase;
+    lastNameBase = newNameBase;
+
+    actStrBase = actStrBase->next;
+
+    while (actStrBase)
+    {
+      newNameBase = (nameBase *)malloc(sizeof(nameBase));
+      newNameBase->list = create_name_list(actStrBase->content);
+      newNameBase->next = NULL;
+
+      actNameBase = lastNameBase;
+      actNameBase->next = newNameBase;
+      lastNameBase = newNameBase;
+
+      actStrBase = actStrBase->next;
+    }
+  }
+  return firstNameBase;
+}
+name *create_name_list(str *firstStr)
+{
+  str *actStr = firstStr;
+
+  name *firstName = NULL;
+  name *actName = NULL;
+  name *newName = NULL;
+  name *lastName = NULL;
+
+  if (actStr)
+  {
+    newName = create_name(actStr->line);
+
+    firstName = newName;
+    lastName = newName;
+
+    actStr = actStr->next;
+
+    while (actStr)
+    {
+      newName = create_name(actStr->line);
+
+      actName = lastName;
+      actName->next = newName;
+      lastName = newName;
+
+      actStr = actStr->next;
+    }
+  }
+
+  return firstName;
+}
+name *create_name(char *stringName)
+{
+  name *new = (name *)malloc(sizeof(name));
+  new->operation = NONE;
+  new->content = (char *)malloc(sizeof(char) * strlen(stringName));
+  strcpy(new->content, stringName);
+  new->next = NULL;
+
+  return new;
 }
 strBase *create_str_matrix(str *firstLine)
 {
@@ -25,7 +111,7 @@ strBase *create_str_matrix(str *firstLine)
 
   if (firstStrList)
   {
-    newStrBase = (strBase*)malloc(sizeof(strBase));
+    newStrBase = (strBase *)malloc(sizeof(strBase));
     newStrBase->content = break_lines_in_str_list(firstStrList);
     newStrBase->next = NULL;
 
@@ -35,7 +121,7 @@ strBase *create_str_matrix(str *firstLine)
     firstStrList = firstStrList->next;
     while (firstStrList)
     {
-      newStrBase = (strBase*)malloc(sizeof(strBase));
+      newStrBase = (strBase *)malloc(sizeof(strBase));
       newStrBase->content = break_lines_in_str_list(firstStrList);
       newStrBase->next = NULL;
 
@@ -63,8 +149,8 @@ str *break_lines_in_str_list(str *line)
   {
     if (!isEmpty(strList))
     {
-      newStrList = (str*)malloc(sizeof(str));
-      newStrList->line = (char*)malloc(sizeof(char) * strlen(strList));
+      newStrList = (str *)malloc(sizeof(str));
+      newStrList->line = (char *)malloc(sizeof(char) * strlen(strList));
       strcpy(newStrList->line, strList);
       newStrList->next = NULL;
 
@@ -80,8 +166,8 @@ str *break_lines_in_str_list(str *line)
       }
       if (strList)
       {
-        newStrList = (str*)malloc(sizeof(str));
-        newStrList->line = (char*)malloc(sizeof(char) * strlen(strList));
+        newStrList = (str *)malloc(sizeof(str));
+        newStrList->line = (char *)malloc(sizeof(char) * strlen(strList));
         strcpy(newStrList->line, strList);
         newStrList->next = NULL;
 
@@ -97,8 +183,8 @@ str *break_lines_in_str_list(str *line)
       {
         if (!isEmpty(strList))
         {
-          newStrList = (str*)malloc(sizeof(str));
-          newStrList->line = (char*)malloc(sizeof(char) * strlen(strList));
+          newStrList = (str *)malloc(sizeof(str));
+          newStrList->line = (char *)malloc(sizeof(char) * strlen(strList));
 
           strcpy(newStrList->line, strList);
 
@@ -169,4 +255,41 @@ bool isEmpty(char *string)
     }
   }
   return true;
+}
+void free_str_memory_allocated(str **first)
+{
+  str *act = *first;
+  str *prev = NULL;
+
+  while (act)
+  {
+    prev = act;
+    act = act->next;
+    free(prev);
+    prev = NULL;
+  }
+
+  *first = NULL;
+}
+void show_all_name_list(nameBase *firstNameBase)
+{
+  nameBase *act = firstNameBase;
+
+  int i = 1;
+
+  while (act)
+  {
+    printf("linha[%d]", i);
+    name *actName = act->list;
+
+    while (actName)
+    {
+      printf(" %s {%d}", actName->content, actName->operation);
+      actName = actName->next;
+    }
+    printf("\n");
+
+    i++;
+    act = act->next;
+  }
 }

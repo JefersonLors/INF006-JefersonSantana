@@ -17,7 +17,7 @@ const char *names[NAME_LIST_SIZE] = {
 void L1Q2_in_generator()
 {
   srand(time(NULL));
-  _str *start = create_name_list();
+  _str *start = create_name_list_to_in();
 
   if (!write_in_file(start))
   {
@@ -60,7 +60,7 @@ bool write_in_file(_str *start)
   }
   return false;
 }
-_str *create_name_list()
+_str *create_name_list_to_in()
 {
   _str *first = NULL;
   _str *act = NULL;

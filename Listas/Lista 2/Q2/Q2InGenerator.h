@@ -21,7 +21,7 @@ extern const char *R1Q2_file_in;
 extern const char *names[NAME_LIST_SIZE];
 
 void L1Q2_in_generator();
-_str *create_name_list();
+_str *create_name_list_to_in();
 char *create_line(int qty);
 bool write_in_file(_str *start);
 void delete_line_list(_str **start);
