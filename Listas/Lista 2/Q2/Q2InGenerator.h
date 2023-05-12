@@ -7,7 +7,7 @@
 
 #define NAME_LIST_SIZE 52
 #define _MAX_SIZE_LINE 255
-#define MAX_QTY_NAME 30
+#define MAX_QTY_NAME 10
 #define MAX_QTY_LINE 60000
 #define MIN_QTY_LINE 10000
 
