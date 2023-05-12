@@ -17,53 +17,21 @@ const char *names[NAME_LIST_SIZE] = {
 void L1Q2_in_generator()
 {
   srand(time(NULL));
-  _str *start = create_name_list_to_in();
+  _str *firstLine = create_name_list_to_in();
 
-  if (!write_in_file(start))
+  if (!write_in_file(firstLine))
   {
     printf("\nops!generate issues in L1Q2.in!\n");
   }
   else
   {
-    delete_line_list(&start);
+    delete_line_list(&firstLine);
   }
-}
-void delete_line_list(_str **start)
-{
-  _str *act = *start;
-  _str *prev = NULL;
-
-  while(act ){
-    prev = act;
-    act = act->next;
-    free(act);
-    act = NULL;
-  }
-  start = NULL;
-}
-bool write_in_file(_str *start)
-{
-  FILE *fileResultPtr = fopen(R1Q2_file_in, "w");
-
-  _str *act = start;
-  int i = 1;
-  if (fileResultPtr)
-  {
-    while (act)
-    {
-      fprintf(fileResultPtr, "%s", act->line);
-      fprintf(fileResultPtr, "%c", '\n');
-      act = act->next;
-    }
-    fclose(fileResultPtr);
-    return true;
-  }
-  return false;
 }
 _str *create_name_list_to_in()
 {
   _str *first = NULL;
-  _str *act = NULL;
+  _str *curr = NULL;
   _str *new = NULL;
   _str *last = NULL;
 
@@ -88,14 +56,33 @@ _str *create_name_list_to_in()
       new->line = create_line(quantyName);
       new->next = NULL;
 
-      act = last;
-      act->next = new;
+      curr = last;
+      curr->next = new;
       last = new;
 
       i++;
     }
   }
   return first;
+}
+bool write_in_file(_str *firstLine)
+{
+  FILE *fileResultPtr = fopen(R1Q2_file_in, "w");
+
+  _str *curr = firstLine;
+  int i = 1;
+  if (fileResultPtr)
+  {
+    while (curr)
+    {
+      fprintf(fileResultPtr, "%s", curr->line);
+      fprintf(fileResultPtr, "%c", '\n');
+      curr = curr->next;
+    }
+    fclose(fileResultPtr);
+    return true;
+  }
+  return false;
 }
 char *create_line(int qty)
 {
@@ -117,4 +104,17 @@ char *create_line(int qty)
   line[strlen(line)] = '\0';
 
   return line;
+}
+void delete_line_list(_str **firstLine)
+{
+  _str *curr = *firstLine;
+  _str *prev = NULL;
+
+  while(curr ){
+    prev = curr;
+    curr = curr->next;
+    free(curr);
+    curr = NULL;
+  }
+  *firstLine = NULL;
 }

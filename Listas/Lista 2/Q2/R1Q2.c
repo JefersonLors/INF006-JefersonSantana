@@ -14,75 +14,233 @@ int main()
 
   free_str_memory_allocated(&firstLine);
 
-  // while (firstStrBase)
-  // {
-  //   free_str_memory_allocated(&firstStrBase->content);
-  //   firstStrBase = firstStrBase->next;
-  // }
-  // show_all_name_list(firstStrBase);
-
-  puts("fim");
+  while (firstStrBase)
+  {
+    free_str_memory_allocated(&firstStrBase->content);
+    firstStrBase = firstStrBase->next;
+  }
+  write_result_in_file(logLines);
+  free_logLine_memory_allocated(&logLines);
+  puts("end run!");
   return EXIT_SUCCESS;
 }
-logBase *create_log_line_matrix(strBase *firstStack)
+logBase *create_log_line_matrix(strBase *nameList)
 {
-  strBase *actStack = firstStack;
+  strBase *currNameList = nameList;
 
   logBase *firstLogLine = NULL;
-  logBase *actLogLine = NULL;
+  logBase *currLogLine = NULL;
   logBase *newLogLine = NULL;
   logBase *lastLogLine = NULL;
 
-  if (actStack)
+  if (currNameList)
   {
     newLogLine = (logBase *)malloc(sizeof(logBase));
-    newLogLine->content = create_log_line(actStack->content);
+    newLogLine->content = create_log_line(currNameList->content);
     newLogLine->next = NULL;
 
     firstLogLine = newLogLine;
     lastLogLine = newLogLine;
 
-    actStack = actStack->next;
+    currNameList = currNameList->next;
 
-    int i = 2;
-    while (actStack)
+    while (currNameList)
     {
       newLogLine = (logBase *)malloc(sizeof(logBase));
-      printf("linha[%d] - ", i);
-      newLogLine->content = create_log_line(actStack->content);
+      newLogLine->content = create_log_line(currNameList->content);
       newLogLine->next = NULL;
-      actLogLine = lastLogLine;
-      actLogLine->next = newLogLine;
+      currLogLine = lastLogLine;
+      currLogLine->next = newLogLine;
       lastLogLine = newLogLine;
-      i++;
-      actStack = actStack->next;
+      currNameList = currNameList->next;
     }
   }
   return firstLogLine;
 }
-char *create_log_line(str *stack)
+strBase *create_str_stack_matrix(str *firstLine)
 {
-  str *actItem = stack;
+  str *firstStrList = firstLine;
+
+  strBase *firstStrBase = NULL;
+  strBase *currStrBase = NULL;
+  strBase *newStrBase = NULL;
+  strBase *lastStrBase = NULL;
+
+  if (firstStrList)
+  {
+    newStrBase = (strBase *)malloc(sizeof(strBase));
+    newStrBase->content = break_lines_in_str_list(firstStrList);
+    newStrBase->next = NULL;
+
+    firstStrBase = newStrBase;
+    lastStrBase = newStrBase;
+
+    firstStrList = firstStrList->next;
+    while (firstStrList)
+    {
+      newStrBase = (strBase *)malloc(sizeof(strBase));
+      newStrBase->content = break_lines_in_str_list(firstStrList);
+      newStrBase->next = NULL;
+
+      currStrBase = lastStrBase;
+      currStrBase->next = newStrBase;
+      lastStrBase = newStrBase;
+
+      firstStrList = firstStrList->next;
+    }
+  }
+  return firstStrBase;
+}
+str *break_lines_in_str_list(str *line)
+{
+  str *firstName = NULL;
+  str *currName = NULL;
+  str *lastName = NULL;
+  str *newName = NULL;
+
+  char *strList;
+
+  strList = strtok(line->content, KEY_WORD);
+
+  if (strList)
+  {
+    if (!isEmpty(strList))
+    {
+      newName = (str *)malloc(sizeof(str));
+      newName->content = (char *)malloc(sizeof(char) * strlen(strList));
+      strcpy(newName->content, strList);
+      newName->next = NULL;
+      newName->prev = NULL;
+
+      firstName = newName;
+      lastName = newName;
+    }
+    else
+    {
+      strList = strtok(NULL, KEY_WORD);
+      while (isEmpty(strList) && strList)
+      {
+        strList = strtok(NULL, KEY_WORD);
+      }
+      if (strList)
+      {
+        newName = (str *)malloc(sizeof(str));
+        newName->content = (char *)malloc(sizeof(char) * strlen(strList));
+        strcpy(newName->content, strList);
+        newName->next = NULL;
+        newName->prev = NULL;
+
+        firstName = newName;
+        lastName = newName;
+      }
+    }
+    if (firstName)
+    {
+      strList = strtok(NULL, KEY_WORD);
+
+      while (strList != NULL)
+      {
+        if (!isEmpty(strList))
+        {
+          newName = (str *)malloc(sizeof(str));
+          newName->content = (char *)malloc(sizeof(char) * strlen(strList));
+
+          strcpy(newName->content, strList);
+
+          newName->next = NULL;
+          newName->prev = NULL;
+
+          currName = lastName;
+          currName->next = newName;
+          newName->prev = currName;
+          lastName = newName;
+        }
+        strList = strtok(NULL, KEY_WORD);
+      }
+    }
+  }
+  firstName->prev = NULL;
+  lastName->next = NULL;
+  return firstName;
+}
+str *get_lines_from_file()
+{
+  FILE *fileInPtr = fopen(R1Q2_file_in_path, "r");
+
+  str *firstStr = NULL;
+  str *lastStr = NULL;
+  str *currStr = NULL;
+  str *newStr = NULL;
+
+  char line[MAX_SIZE_LINE];
+
+  if (fileInPtr)
+  {
+    if (fgets(line, MAX_SIZE_LINE, fileInPtr))
+    {
+      line[strlen(line) - 1] = '\0';
+      newStr = (str *)malloc(sizeof(str));
+      newStr->content = (char *)malloc(sizeof(char) * MAX_SIZE_LINE);
+      strcpy(newStr->content, line);
+      newStr->next = NULL;
+
+      firstStr = newStr;
+      lastStr = newStr;
+
+      while (fgets(line, MAX_SIZE_LINE, fileInPtr))
+      {
+        line[strlen(line) - 1] = '\0';
+        newStr = (str *)malloc(sizeof(str));
+        newStr->content = (char *)malloc(sizeof(char) * MAX_SIZE_LINE);
+        strcpy(newStr->content, line);
+        newStr->next = NULL;
+
+        currStr = lastStr;
+        currStr->next = newStr;
+        lastStr = newStr;
+      }
+    }
+  }
+  return firstStr;
+}
+bool isEmpty(char *string)
+{
+  int i = 0;
+
+  if (string)
+  {
+    while (string[i] != '\0')
+    {
+      if (string[i] != ' ')
+      {
+        return false;
+      }
+      i++;
+    }
+  }
+  return true;
+}
+char *create_log_line(str *nameList)
+{
+  str *currItem = nameList;
   char *newLogLine = NULL;
 
-  if (actItem)
+  if (currItem)
   {
     newLogLine = (char *)malloc(sizeof(char) * MAX_SIZE_LINE);
     strcpy(newLogLine, "");
-    
-    sprintf(newLogLine, "push-%s ", actItem->content);
-    if (actItem->next)
+
+    sprintf(newLogLine, "push-%s ", currItem->content);
+    if (currItem->next)
     {
-      actItem = actItem->next;
-      int i = 2;
+      currItem = currItem->next;
       do
       {
-        stack_name_insert_sorted(actItem, newLogLine);
-        actItem = actItem->next;
-      } while (actItem);
+        stack_name_insert_sorted(currItem, newLogLine);
+        currItem = currItem->next;
+      } while (currItem);
     }
   }
-  printf("logLine-> %s\n\n",newLogLine);
   return newLogLine;
 }
 void stack_name_insert_sorted(str *currItem, char *log)
@@ -99,7 +257,7 @@ void stack_name_insert_sorted(str *currItem, char *log)
       char *currItemContent = (char *)malloc(sizeof(char) * 20);
 
       strcpy(currItemContent, currItem->content);
-      
+
       if (strcmp(prev->content, currItemContent) > 0)
       {
         while (prev && strcmp(prev->content, currItemContent) > 0)
@@ -182,209 +340,51 @@ void stack_name_insert_sorted(str *currItem, char *log)
     }
   }
 }
-strBase *create_str_stack_matrix(str *firstLine)
+void write_result_in_file(logBase *firstLog)
 {
-  str *firstStrList = firstLine;
+  logBase *currLog = firstLog;
+  FILE *fileOutPtr = fopen(R1Q2_file_out_path, "w");
 
-  strBase *firstStrBase = NULL;
-  strBase *actStrBase = NULL;
-  strBase *newStrBase = NULL;
-  strBase *lastStrBase = NULL;
-
-  if (firstStrList)
+  if (fileOutPtr)
   {
-    newStrBase = (strBase *)malloc(sizeof(strBase));
-    newStrBase->content = break_lines_in_str_list(firstStrList);
-    newStrBase->next = NULL;
-
-    firstStrBase = newStrBase;
-    lastStrBase = newStrBase;
-
-    firstStrList = firstStrList->next;
-    while (firstStrList)
+    while (currLog)
     {
-      newStrBase = (strBase *)malloc(sizeof(strBase));
-      newStrBase->content = break_lines_in_str_list(firstStrList);
-      newStrBase->next = NULL;
-
-      actStrBase = lastStrBase;
-      actStrBase->next = newStrBase;
-      lastStrBase = newStrBase;
-
-      firstStrList = firstStrList->next;
+      fprintf(fileOutPtr, "%s\n", currLog->content);
+      currLog = currLog->next;
     }
+    fclose(fileOutPtr);
   }
-  return firstStrBase;
-}
-str *break_lines_in_str_list(str *line)
-{
-  str *firstName = NULL;
-  str *actName = NULL;
-  str *lastName = NULL;
-  str *newName = NULL;
-
-  char *strList;
-
-  strList = strtok(line->content, KEY_WORD);
-
-  if (strList)
+  else
   {
-    if (!isEmpty(strList))
-    {
-      newName = (str *)malloc(sizeof(str));
-      newName->content = (char *)malloc(sizeof(char) * strlen(strList));
-      strcpy(newName->content, strList);
-      newName->next = NULL;
-      newName->prev = NULL;
-
-      firstName = newName;
-      lastName = newName;
-    }
-    else
-    {
-      strList = strtok(NULL, KEY_WORD);
-      while (isEmpty(strList) && strList)
-      {
-        strList = strtok(NULL, KEY_WORD);
-      }
-      if (strList)
-      {
-        newName = (str *)malloc(sizeof(str));
-        newName->content = (char *)malloc(sizeof(char) * strlen(strList));
-        strcpy(newName->content, strList);
-        newName->next = NULL;
-        newName->prev = NULL;
-
-        firstName = newName;
-        lastName = newName;
-      }
-    }
-    if (firstName)
-    {
-      strList = strtok(NULL, KEY_WORD);
-
-      while (strList != NULL)
-      {
-        if (!isEmpty(strList))
-        {
-          newName = (str *)malloc(sizeof(str));
-          newName->content = (char *)malloc(sizeof(char) * strlen(strList));
-
-          strcpy(newName->content, strList);
-
-          newName->next = NULL;
-          newName->prev = NULL;
-
-          actName = lastName;
-          actName->next = newName;
-          newName->prev = actName;
-          lastName = newName;
-        }
-        strList = strtok(NULL, KEY_WORD);
-      }
-    }
+    puts("ops! file issues!:(");
   }
-  firstName->prev = NULL;
-  lastName->next = NULL;
-  return firstName;
 }
-str *get_lines_from_file()
+void free_str_memory_allocated(str **firstStr)
 {
-  FILE *fileInPtr = fopen(R1Q2_file_in_path, "r");
-
-  str *firstStr = NULL;
-  str *lastStr = NULL;
-  str *actStr = NULL;
-  str *newStr = NULL;
-
-  char line[MAX_SIZE_LINE];
-
-  if (fileInPtr)
-  {
-    if (fgets(line, MAX_SIZE_LINE, fileInPtr))
-    {
-      line[strlen(line) - 1] = '\0';
-      newStr = (str *)malloc(sizeof(str));
-      newStr->content = (char *)malloc(sizeof(char) * MAX_SIZE_LINE);
-      strcpy(newStr->content, line);
-      newStr->next = NULL;
-
-      firstStr = newStr;
-      lastStr = newStr;
-
-      while (fgets(line, MAX_SIZE_LINE, fileInPtr))
-      {
-        line[strlen(line) - 1] = '\0';
-        newStr = (str *)malloc(sizeof(str));
-        newStr->content = (char *)malloc(sizeof(char) * MAX_SIZE_LINE);
-        strcpy(newStr->content, line);
-        newStr->next = NULL;
-
-        actStr = lastStr;
-        actStr->next = newStr;
-        lastStr = newStr;
-      }
-    }
-  }
-  return firstStr;
-}
-bool isEmpty(char *string)
-{
-  int i = 0;
-
-  if (string)
-  {
-    while (string[i] != '\0')
-    {
-      if (string[i] != ' ')
-      {
-        return false;
-      }
-      i++;
-    }
-  }
-  return true;
-}
-void free_str_memory_allocated(str **first)
-{
-  str *act = *first;
+  str *curr = *firstStr;
   str *prev = NULL;
 
-  while (act)
+  while (curr)
   {
-    prev = act;
-    act = act->next;
+    prev = curr;
+    curr = curr->next;
     free(prev);
     prev = NULL;
   }
 
-  *first = NULL;
+  *firstStr = NULL;
 }
-void show_all_name_list(strBase *firstBase)
+void free_logLine_memory_allocated(logBase **firstLog)
 {
-  strBase *act = firstBase;
+  logBase *currLog = *firstLog;
+  logBase *prev = NULL;
 
-  int i = 1;
-
-  while (act)
+  while (currLog)
   {
-    // mostra lista de trás pra frente
-    printf("linha[%d]", i);
-    str *actName = act->content;
-
-    while (actName->next)
-    {
-      actName = actName->next;
-    }
-
-    while (actName)
-    {
-      printf(" %s ", actName->content);
-      actName = actName->prev;
-    }
-    printf("\n");
-
-    i++;
-    act = act->next;
+    prev = currLog;
+    currLog = currLog->next;
+    free(prev);
+    prev = NULL;
   }
+  *firstLog = NULL;
 }
