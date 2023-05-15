@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
+#include <string.h>
 #include <time.h>
 #include "Q3InGenerator.h"
 
@@ -14,48 +15,150 @@ int main()
   puts("end run");
   return EXIT_SUCCESS;
 }
-bool write_in_file(listBase *firstBase)
+void L1Q3_in_generator()
+{
+  listBase *firstBase = create_number_base_list();
+  values *firstValues = make_list_of_values( firstBase );
+
+  delete_list_Base(&firstBase);
+  write_in_file(firstValues);
+  delete_list_value(&firstValues);
+  // show_values_content( firstValues );
+  // show_list_base_content(firstBase);
+}
+void write_in_file(values *firstValue)
 {
   FILE *fileOutPtr = fopen(R1Q3_file_in, "w");
 
-  if( fileOutPtr ){
-    listBase *curr = firstBase;
-    // int i = 0;
-    // int k = 0;
-    
-    // while (curr)
-    // {
-    //   k = 0;
-    //   printf("line[%d]\n", i);
-    //   number **vector = curr->numbersVector;
+  if (fileOutPtr)
+  {
+    values *currValue = firstValue;
+    while( currValue ){
+      fprintf(fileOutPtr, "%s", "LE");
+      int i = 0;
 
-    //   while (k < curr->numQTY)
-    //   {
-    //     number *subVector = curr->numbersVector[k];
-    //     int j = 0;
-    //     printf("\tnumber[%d] -> ", subVector->baseInt);
-    //     while (j < subVector->floatQTY)
-    //     {
-    //       printf("%.2f, ", subVector->floatings[j]);
-    //       j++;
-    //     }
-    //     k++;
-    //     printf("\n");
-    //   }
-    //   printf("\n");
-    //   i++;
-    //   curr = curr->next;
-    // }
-  }else{
+      while( i < currValue->intQTY ){
+        fprintf(fileOutPtr, " %d", currValue->intList[i]);
+        i++;
+      }
+
+      i = 0;
+      fprintf(fileOutPtr, " %s", "LI");
+      while( i < currValue->floatQTY ){
+        fprintf(fileOutPtr, " %.2f", currValue->floatList[i]);
+        i++;
+      }
+      fprintf(fileOutPtr, "\n");
+
+      currValue = currValue->next;
+    }
+    fclose(fileOutPtr);
+  }
+  else
+  {
     puts("ops! file issues :[");
   }
 }
-void L1Q3_in_generator()
+values *make_list_of_values( listBase *firstBase )
 {
-  listBase *first = create_number_base_list();
-  write_in_file(first);
-  delete_line_list(&first);
-  // show_all_content(first);
+  listBase *curr = firstBase;
+
+  values *firstValues = NULL;
+  values *currValues = NULL;
+  values *newValues = NULL;
+  values *lastValues = NULL;
+
+  int i = 0;
+  int sizeFloatList = 0;
+
+  int *intList = (int*)malloc(sizeof(int)*curr->numQTY);
+
+  while (i < curr->numQTY)
+  {
+    number *numberList = curr->numbersVector[i];
+    intList[i] = numberList->baseInt;
+    sizeFloatList += numberList->floatQTY;
+    i++;
+  }
+
+  float *floatList = (float *)malloc(sizeof(float) * sizeFloatList);
+  merge_floats(floatList, sizeFloatList, curr);
+  random_float_vector( floatList, sizeFloatList );
+
+  newValues = (values*)malloc(sizeof(values));
+  newValues->floatQTY = sizeFloatList;
+  newValues->floatList = floatList;
+  newValues->intQTY = curr->numQTY;
+  newValues->intList = intList;
+  newValues->next = NULL;
+
+  firstValues = newValues;
+  lastValues = newValues;
+
+  while (curr)
+  {
+    int i = 0;
+    int sizeFloatList = 0;
+
+    int *intList = (int*)malloc(sizeof(int)*curr->numQTY);
+
+    while (i < curr->numQTY)
+    {
+      number *numberList = curr->numbersVector[i];
+      intList[i] = numberList->baseInt;
+      sizeFloatList += numberList->floatQTY;
+      i++;
+    }
+
+    float *floatList = (float *)malloc(sizeof(float) * sizeFloatList);
+    merge_floats(floatList, sizeFloatList, curr);
+    random_float_vector( floatList, sizeFloatList );
+    newValues = (values*)malloc(sizeof(values));
+    newValues->floatQTY = sizeFloatList;
+    newValues->floatList = floatList;
+    newValues->intQTY = curr->numQTY;
+    newValues->intList = intList;
+    newValues->next = NULL;
+
+    currValues = lastValues;
+    currValues->next = newValues;
+    lastValues = newValues;
+
+    curr = curr->next;
+  }
+  return firstValues;
+}
+void merge_floats(float *floatRandomList, int size, listBase *listBase)
+{
+  int k = 0;
+  int i = 0;
+ 
+  while (i < listBase->numQTY)
+  {
+    int j = 0;
+    number *list = listBase->numbersVector[i];
+
+    while (j < list->floatQTY)
+    {
+      floatRandomList[k] = list->floatings[j];
+      k++;
+      j++;
+    }
+    i++;
+  }
+
+}
+void random_float_vector( float *vector, int vectorSize)
+{
+  int i = 0;
+  while (i < vectorSize)
+  {
+    int r = rand() % vectorSize;
+    float temp = vector[i];
+    vector[i] = vector[r];
+    vector[r] = temp;
+    i++;
+  }
 }
 listBase *create_number_base_list()
 {
@@ -141,7 +244,7 @@ int get_random_qty(int max)
 {
   return 1 + rand() % (max + 1);
 }
-void show_all_content(listBase *first)
+void show_list_base_content(listBase *first)
 {
   int i = 0;
   int k = 0;
@@ -170,7 +273,7 @@ void show_all_content(listBase *first)
     first = first->next;
   }
 }
-void delete_line_list(listBase **firstBase)
+void delete_list_Base(listBase **firstBase)
 {
   listBase *curr = *firstBase;
   listBase *prev = NULL;
@@ -187,4 +290,48 @@ void delete_line_list(listBase **firstBase)
     prev = NULL;
   }
   *firstBase = NULL;
+}
+void delete_list_value(values **firstValues)
+{
+  values *curr = *firstValues;
+  values *prev = NULL;
+
+  int i = 0;
+  int k = 0;
+
+  while (curr)
+  {
+    prev = curr;
+    curr = curr->next;
+    free(prev);
+    prev = NULL;
+  }
+  *firstValues = NULL;
+}
+void show_values_content( values *firstValues )
+{
+  values *firstLine = firstValues;
+
+  int l = 0;
+  while( firstLine ){
+    printf("line[%d] -> ", l);
+    int i = 0;
+
+    printf("ints: ");
+    while( i < firstLine->intQTY )
+    {
+      printf("%d\t", firstLine->intList[i]);
+      i++;
+    }
+    i = 0;
+    printf("floats: ");
+    while( i < firstLine->floatQTY )
+    {
+      printf("%.2f\t", firstLine->floatList[i]);
+      i++;
+    }
+    puts("\n");
+    l++;
+    firstLine = firstLine->next;
+  }
 }
