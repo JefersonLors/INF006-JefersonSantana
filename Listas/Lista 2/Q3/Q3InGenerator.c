@@ -11,7 +11,7 @@ void L1Q3_in_generator()
 {
   srand(time(NULL));
   listBase *firstBase = create_number_base_list();
-  values *firstValues = make_list_of_values( firstBase );
+  values *firstValues = make_list_of_values(firstBase);
 
   delete_list_Base(&firstBase);
   write_in_file(firstValues);
@@ -26,18 +26,21 @@ void write_in_file(values *firstValue)
   if (fileOutPtr)
   {
     values *currValue = firstValue;
-    while( currValue ){
+    while (currValue)
+    {
       fprintf(fileOutPtr, "%s", "LE");
       int i = 0;
 
-      while( i < currValue->intQTY ){
+      while (i < currValue->intQTY)
+      {
         fprintf(fileOutPtr, " %d", currValue->intList[i]);
         i++;
       }
 
       i = 0;
       fprintf(fileOutPtr, " %s", "LI");
-      while( i < currValue->floatQTY ){
+      while (i < currValue->floatQTY)
+      {
         fprintf(fileOutPtr, " %.2f", currValue->floatList[i]);
         i++;
       }
@@ -52,7 +55,7 @@ void write_in_file(values *firstValue)
     puts("ops! file issues :[");
   }
 }
-values *make_list_of_values( listBase *firstBase )
+values *make_list_of_values(listBase *firstBase)
 {
   listBase *curr = firstBase;
 
@@ -64,7 +67,7 @@ values *make_list_of_values( listBase *firstBase )
   int i = 0;
   int sizeFloatList = 0;
 
-  int *intList = (int*)malloc(sizeof(int)*curr->numQTY);
+  int *intList = (int *)malloc(sizeof(int) * curr->numQTY);
 
   while (i < curr->numQTY)
   {
@@ -76,9 +79,9 @@ values *make_list_of_values( listBase *firstBase )
 
   float *floatList = (float *)malloc(sizeof(float) * sizeFloatList);
   merge_floats(floatList, sizeFloatList, curr);
-  random_float_vector( floatList, sizeFloatList );
+  random_float_vector(floatList, sizeFloatList);
 
-  newValues = (values*)malloc(sizeof(values));
+  newValues = (values *)malloc(sizeof(values));
   newValues->floatQTY = sizeFloatList;
   newValues->floatList = floatList;
   newValues->intQTY = curr->numQTY;
@@ -93,7 +96,7 @@ values *make_list_of_values( listBase *firstBase )
     int i = 0;
     int sizeFloatList = 0;
 
-    int *intList = (int*)malloc(sizeof(int)*curr->numQTY);
+    int *intList = (int *)malloc(sizeof(int) * curr->numQTY);
 
     while (i < curr->numQTY)
     {
@@ -105,8 +108,8 @@ values *make_list_of_values( listBase *firstBase )
 
     float *floatList = (float *)malloc(sizeof(float) * sizeFloatList);
     merge_floats(floatList, sizeFloatList, curr);
-    random_float_vector( floatList, sizeFloatList );
-    newValues = (values*)malloc(sizeof(values));
+    random_float_vector(floatList, sizeFloatList);
+    newValues = (values *)malloc(sizeof(values));
     newValues->floatQTY = sizeFloatList;
     newValues->floatList = floatList;
     newValues->intQTY = curr->numQTY;
@@ -125,7 +128,7 @@ void merge_floats(float *floatRandomList, int size, listBase *listBase)
 {
   int k = 0;
   int i = 0;
- 
+
   while (i < listBase->numQTY)
   {
     int j = 0;
@@ -139,9 +142,8 @@ void merge_floats(float *floatRandomList, int size, listBase *listBase)
     }
     i++;
   }
-
 }
-void random_float_vector( float *vector, int vectorSize)
+void random_float_vector(float *vector, int vectorSize)
 {
   int i = 0;
   while (i < vectorSize)
@@ -233,7 +235,7 @@ int generate_random_int()
 {
   return 1 + rand() % (MAX_INT + 1);
 }
-int get_random_qty(int min, int max )
+int get_random_qty(int min, int max)
 {
   return min + rand() % (max + 1);
 }
@@ -301,24 +303,25 @@ void delete_list_value(values **firstValues)
   }
   *firstValues = NULL;
 }
-void show_values_content( values *firstValues )
+void show_values_content(values *firstValues)
 {
   values *firstLine = firstValues;
 
   int l = 0;
-  while( firstLine ){
+  while (firstLine)
+  {
     printf("line[%d] -> ", l);
     int i = 0;
 
     printf("ints: ");
-    while( i < firstLine->intQTY )
+    while (i < firstLine->intQTY)
     {
       printf("%d\t", firstLine->intList[i]);
       i++;
     }
     i = 0;
     printf("floats: ");
-    while( i < firstLine->floatQTY )
+    while (i < firstLine->floatQTY)
     {
       printf("%.2f\t", firstLine->floatList[i]);
       i++;
