@@ -7,16 +7,9 @@
 
 const char *R1Q3_file_in = "L1Q3.in";
 
-int main()
-{
-  srand(time(NULL));
-  L1Q3_in_generator();
-
-  puts("end run");
-  return EXIT_SUCCESS;
-}
 void L1Q3_in_generator()
 {
+  srand(time(NULL));
   listBase *firstBase = create_number_base_list();
   values *firstValues = make_list_of_values( firstBase );
 
@@ -167,10 +160,10 @@ listBase *create_number_base_list()
   listBase *new = NULL;
   listBase *last = NULL;
 
-  int qtyLine = get_random_qty(MAX_QTY_LINE);
+  int qtyLine = get_random_qty(MIN_QTY_LINE, MAX_QTY_LINE);
 
   new = (listBase *)malloc(sizeof(listBase));
-  new->numQTY = get_random_qty(INT_LIST_MAX_SIZE);
+  new->numQTY = get_random_qty(1, INT_LIST_MAX_SIZE);
   new->numbersVector = (number **)malloc(sizeof(number *) * new->numQTY);
   new->next = NULL;
 
@@ -189,7 +182,7 @@ listBase *create_number_base_list()
   while (j <= qtyLine)
   {
     new = (listBase *)malloc(sizeof(listBase));
-    new->numQTY = get_random_qty(INT_LIST_MAX_SIZE);
+    new->numQTY = get_random_qty(1, INT_LIST_MAX_SIZE);
     new->numbersVector = (number **)malloc(sizeof(number *) * new->numQTY);
     new->next = NULL;
 
@@ -211,7 +204,7 @@ number *create_number()
 {
   number *new = (number *)malloc(sizeof(number));
   new->baseInt = generate_random_int();
-  new->floatQTY = get_random_qty(FLOAT_LIST_MAX_SIZE);
+  new->floatQTY = get_random_qty(1, FLOAT_LIST_MAX_SIZE);
   new->floatings = (float *)malloc(sizeof(float) * new->floatQTY);
   generate_random_float_list(new->baseInt, new->floatQTY, &new->floatings);
 
@@ -240,9 +233,9 @@ int generate_random_int()
 {
   return 1 + rand() % (MAX_INT + 1);
 }
-int get_random_qty(int max)
+int get_random_qty(int min, int max )
 {
-  return 1 + rand() % (max + 1);
+  return min + rand() % (max + 1);
 }
 void show_list_base_content(listBase *first)
 {

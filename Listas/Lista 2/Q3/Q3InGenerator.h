@@ -9,6 +9,7 @@
 #define FLOAT_LIST_MAX_SIZE 10
 #define MAX_INT 50
 #define MAX_QTY_LINE 60000
+#define MIN_QTY_LINE 20000
 #define MAX_SIZE_LINE 255
 
 typedef struct values
@@ -40,7 +41,7 @@ listBase *create_number_base_list();
 number *create_number();
 values *make_list_of_values( listBase *firstBase );
 
-int get_random_qty(int max);
+int get_random_qty(int min, int max);
 int generate_random_int();
 
 void L1Q3_in_generator();
