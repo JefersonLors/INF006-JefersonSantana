@@ -12,6 +12,9 @@ int main()
   strV *firstStrV = create_strV_list(firstStr);
   numbers *firstsNumbers = create_numbers_list(firstStrV);
 
+  delete_str_list(&firstStr);
+  delete_strV_list(&firstStrV);
+  delete_numbers_list(&firstsNumbers);
   // int l = 0;
   // while (firstsNumbers)
   // {
@@ -270,6 +273,33 @@ void delete_str_list(str **firstStr)
   }
   *firstStr = NULL;
 }
+void delete_strV_list(strV **firstStrV)
+{
+  strV *curr = *firstStrV;
+  strV *prev = NULL;
+
+  while (curr)
+  {
+    prev = curr;
+    curr = curr->next;
+    free(prev);
+    prev = NULL;
+  }
+  *firstStrV = NULL;
+}
+void delete_numbers_list( numbers **firstNumbers )
+{
+  numbers *curr = *firstNumbers;
+  numbers *prev = NULL;
+
+  while( curr ){
+    prev = curr;
+    curr = curr->next;
+    free(prev);
+    prev = NULL;
+  }
+  *firstNumbers = NULL;
+} 
 void remove_alphabetic_non_numeric_characters_from_string(char *string)
 {
   int i = 0;
