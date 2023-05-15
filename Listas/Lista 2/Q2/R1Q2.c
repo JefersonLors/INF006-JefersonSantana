@@ -183,6 +183,7 @@ str *get_lines_from_file()
       newStr->content = (char *)malloc(sizeof(char) * MAX_SIZE_LINE);
       strcpy(newStr->content, line);
       newStr->next = NULL;
+      newStr->prev = NULL;
 
       firstStr = newStr;
       lastStr = newStr;
@@ -194,7 +195,8 @@ str *get_lines_from_file()
         newStr->content = (char *)malloc(sizeof(char) * MAX_SIZE_LINE);
         strcpy(newStr->content, line);
         newStr->next = NULL;
-
+        newStr->prev = NULL;
+        
         currStr = lastStr;
         currStr->next = newStr;
         lastStr = newStr;
