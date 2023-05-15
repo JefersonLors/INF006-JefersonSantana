@@ -10,7 +10,6 @@
 #define MAX_INT 50
 #define MAX_QTY_LINE 60000
 #define MIN_QTY_LINE 20000
-#define MAX_SIZE_LINE 255
 
 typedef struct values
 {
