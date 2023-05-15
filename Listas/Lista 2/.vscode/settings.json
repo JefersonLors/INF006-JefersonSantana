@@ -1,5 +1,8 @@
 {
   "files.associations": {
-    "q3ingenerator.h": "c"
+    "q3ingenerator.h": "c",
+    "stdlib.h": "c",
+    "stdio.h": "c",
+    "stdbool.h": "c"
   }
 }

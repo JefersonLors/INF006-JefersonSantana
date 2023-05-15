@@ -9,16 +9,117 @@ int main()
 {
   // L1Q3_in_generator();
   str *firstStr = get_lines_from_file();
-  strV *fistStrV = create_strV_list(firstStr);
-  // int i = 1;
-  // while( firstStr ){
-  //   printf("line[%d] -> %s\n", i, firstStr->content);
-  //   i++;
-  //   firstStr = firstStr->next;
+  strV *firstStrV = create_strV_list(firstStr);
+  numbers *firstsNumbers = create_numbers_list(firstStrV);
+
+  // int l = 0;
+  // while (firstsNumbers)
+  // {
+  //   int i = 0;
+
+  //   printf("line[%d] -> keys: ", l);
+  //   while (i < firstsNumbers->keyQTY)
+  //   {
+  //     printf("%d\t", firstsNumbers->keys[i]);
+  //     i++;
+  //   }
+  //   i = 0;
+
+  //   printf("values: ");
+  //   while (i < firstsNumbers->valuesQTY)
+  //   {
+  //     printf("%.2f\t", firstsNumbers->values[i]);
+  //     i++;
+  //   }
+  //   printf("\n\n");
+  //   l++;
+  //   firstsNumbers = firstsNumbers->next;
   // }
 
   puts("end run!");
   return EXIT_SUCCESS;
+}
+str *get_lines_from_file()
+{
+  FILE *fileInPtr = fopen(R1Q3_file_in_path, "r");
+
+  str *firstStr = NULL;
+  str *lastStr = NULL;
+  str *currStr = NULL;
+  str *newStr = NULL;
+
+  char line[MAX_SIZE_LINE];
+
+  if (fileInPtr)
+  {
+    if (fgets(line, MAX_SIZE_LINE, fileInPtr))
+    {
+      line[strlen(line) - 1] = '\0';
+      newStr = (str *)malloc(sizeof(str));
+      newStr->content = (char *)malloc(sizeof(char) * MAX_SIZE_LINE);
+      strcpy(newStr->content, line);
+      newStr->next = NULL;
+
+      firstStr = newStr;
+      lastStr = newStr;
+
+      while (fgets(line, MAX_SIZE_LINE, fileInPtr))
+      {
+        line[strlen(line) - 1] = '\0';
+        newStr = (str *)malloc(sizeof(str));
+        newStr->content = (char *)malloc(sizeof(char) * MAX_SIZE_LINE);
+        strcpy(newStr->content, line);
+        newStr->next = NULL;
+
+        currStr = lastStr;
+        currStr->next = newStr;
+        lastStr = newStr;
+      }
+    }
+  }
+  return firstStr;
+}
+str *break_line_in_str_list(char *line)
+{
+  str *firstS = NULL;
+  str *currS = NULL;
+  str *newS = NULL;
+  str *lastS = NULL;
+
+  char *middleWhere = NULL;
+
+  middleWhere = strtok(line, " ");
+  int sizeStr = strlen(middleWhere);
+
+  if (sizeStr)
+  {
+    newS = (str *)malloc(sizeof(str));
+    newS->content = (char *)malloc(sizeof(char) * sizeStr);
+    newS->next = NULL;
+    strcpy(newS->content, "");
+    strcpy(newS->content, middleWhere);
+    firstS = newS;
+    lastS = newS;
+  }
+
+  middleWhere = strtok(NULL, " ");
+  while (middleWhere)
+  {
+    sizeStr = strlen(middleWhere);
+    if (sizeStr)
+    {
+      newS = (str *)malloc(sizeof(str));
+      newS->content = (char *)malloc(sizeof(char) * sizeStr);
+      newS->next = NULL;
+      strcpy(newS->content, "");
+      strcpy(newS->content, middleWhere);
+      currS = lastS;
+      currS->next = newS;
+      lastS = newS;
+    }
+    middleWhere = strtok(NULL, " ");
+  }
+  return firstS;
 }
 strV *create_strV_list(str *firstLine)
 {
@@ -65,6 +166,110 @@ strV *break_in_two_lists(str *line)
 
   return new;
 }
+numbers *create_numbers_list(strV *firstsStrValues)
+{
+  strV *currStrV = firstsStrValues;
+
+  numbers *firstN = NULL;
+  numbers *currN = NULL;
+  numbers *newN = NULL;
+  numbers *lastN = NULL;
+
+  str *firstStrKey = break_line_in_str_list(currStrV->intStrList);
+  str *firstStrFloat = break_line_in_str_list(currStrV->floatStrList);
+
+  str *currStrKey = firstStrKey;
+  str *currStrFloat = firstStrFloat;
+
+  newN = (numbers *)malloc(sizeof(numbers));
+  newN->keyQTY = get_size_str_linked_list(currStrKey);
+  newN->keys = (int *)malloc(sizeof(int) * newN->keyQTY);
+
+  int i = 0;
+
+  while (i < newN->keyQTY && currStrKey)
+  {
+    newN->keys[i] = atoi(currStrKey->content);
+    i++;
+    currStrKey = currStrKey->next;
+  }
+
+  newN->valuesQTY = get_size_str_linked_list(currStrFloat);
+  newN->values = (float *)malloc(sizeof(float) * newN->valuesQTY);
+
+  i = 0;
+
+  while (i < newN->valuesQTY && currStrFloat)
+  {
+    newN->values[i] = atof(currStrFloat->content);
+    i++;
+    currStrFloat = currStrFloat->next;
+  }
+  delete_str_list(&firstStrKey);
+  delete_str_list(&firstStrFloat);
+
+  firstN = newN;
+  lastN = newN;
+
+  currStrV = currStrV->next;
+
+  while (currStrV)
+  {
+    firstStrKey = break_line_in_str_list(currStrV->intStrList);
+    firstStrFloat = break_line_in_str_list(currStrV->floatStrList);
+
+    str *currStrKey = firstStrKey;
+    str *currStrFloat = firstStrFloat;
+
+    newN = (numbers *)malloc(sizeof(numbers));
+    newN->keyQTY = get_size_str_linked_list(currStrKey);
+    newN->keys = (int *)malloc(sizeof(int) * newN->keyQTY);
+
+    int i = 0;
+
+    while (i < newN->keyQTY && currStrKey)
+    {
+      newN->keys[i] = atoi(currStrKey->content);
+      i++;
+      currStrKey = currStrKey->next;
+    }
+
+    newN->valuesQTY = get_size_str_linked_list(currStrFloat);
+    newN->values = (float *)malloc(sizeof(float) * newN->valuesQTY);
+
+    i = 0;
+
+    while (i < newN->valuesQTY && currStrFloat)
+    {
+      newN->values[i] = atof(currStrFloat->content);
+      i++;
+      currStrFloat = currStrFloat->next;
+    }
+    delete_str_list(&firstStrKey);
+    delete_str_list(&firstStrFloat);
+
+    currN = lastN;
+    currN->next = newN;
+    lastN = newN;
+
+    currStrV = currStrV->next;
+  }
+  return firstN;
+}
+void delete_str_list(str **firstStr)
+{
+  str *curr = *firstStr;
+  str *prev = NULL;
+
+  while (curr)
+  {
+    prev = curr;
+    curr = curr->next;
+    free(prev);
+    prev = NULL;
+  }
+  *firstStr = NULL;
+}
 void remove_alphabetic_non_numeric_characters_from_string(char *string)
 {
   int i = 0;
@@ -77,43 +282,14 @@ void remove_alphabetic_non_numeric_characters_from_string(char *string)
     i++;
   }
 }
-str *get_lines_from_file()
+int get_size_str_linked_list(str *start)
 {
-  FILE *fileInPtr = fopen(R1Q3_file_in_path, "r");
-
-  str *firstStr = NULL;
-  str *lastStr = NULL;
-  str *currStr = NULL;
-  str *newStr = NULL;
-
-  char line[MAX_SIZE_LINE];
-
-  if (fileInPtr)
+  str *curr = start;
+  int i = 0;
+  while (curr)
   {
-    if (fgets(line, MAX_SIZE_LINE, fileInPtr))
-    {
-      line[strlen(line) - 1] = '\0';
-      newStr = (str *)malloc(sizeof(str));
-      newStr->content = (char *)malloc(sizeof(char) * MAX_SIZE_LINE);
-      strcpy(newStr->content, line);
-      newStr->next = NULL;
-
-      firstStr = newStr;
-      lastStr = newStr;
-
-      while (fgets(line, MAX_SIZE_LINE, fileInPtr))
-      {
-        line[strlen(line) - 1] = '\0';
-        newStr = (str *)malloc(sizeof(str));
-        newStr->content = (char *)malloc(sizeof(char) * MAX_SIZE_LINE);
-        strcpy(newStr->content, line);
-        newStr->next = NULL;
-
-        currStr = lastStr;
-        currStr->next = newStr;
-        lastStr = newStr;
-      }
-    }
+    i++;
+    curr = curr->next;
   }
-  return firstStr;
+  return i;
 }

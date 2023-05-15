@@ -11,7 +11,7 @@ void L1Q3_in_generator()
 {
   srand(time(NULL));
   listBase *firstBase = create_number_base_list();
-  values *firstValues = make_list_of_values(firstBase);
+  _values *firstValues = make_list_of_values(firstBase);
 
   delete_list_Base(&firstBase);
   write_in_file(firstValues);
@@ -19,13 +19,13 @@ void L1Q3_in_generator()
   // show_values_content( firstValues );
   // show_list_base_content(firstBase);
 }
-void write_in_file(values *firstValue)
+void write_in_file(_values *firstValue)
 {
   FILE *fileOutPtr = fopen(R1Q3_file_in, "w");
 
   if (fileOutPtr)
   {
-    values *currValue = firstValue;
+    _values *currValue = firstValue;
     while (currValue)
     {
       fprintf(fileOutPtr, "%s", "LE");
@@ -55,14 +55,14 @@ void write_in_file(values *firstValue)
     puts("ops! file issues :[");
   }
 }
-values *make_list_of_values(listBase *firstBase)
+_values *make_list_of_values(listBase *firstBase)
 {
   listBase *curr = firstBase;
 
-  values *firstValues = NULL;
-  values *currValues = NULL;
-  values *newValues = NULL;
-  values *lastValues = NULL;
+  _values *firstValues = NULL;
+  _values *currValues = NULL;
+  _values *newValues = NULL;
+  _values *lastValues = NULL;
 
   int i = 0;
   int sizeFloatList = 0;
@@ -81,7 +81,7 @@ values *make_list_of_values(listBase *firstBase)
   merge_floats(floatList, sizeFloatList, curr);
   random_float_vector(floatList, sizeFloatList);
 
-  newValues = (values *)malloc(sizeof(values));
+  newValues = (_values *)malloc(sizeof(_values));
   newValues->floatQTY = sizeFloatList;
   newValues->floatList = floatList;
   newValues->intQTY = curr->numQTY;
@@ -109,7 +109,7 @@ values *make_list_of_values(listBase *firstBase)
     float *floatList = (float *)malloc(sizeof(float) * sizeFloatList);
     merge_floats(floatList, sizeFloatList, curr);
     random_float_vector(floatList, sizeFloatList);
-    newValues = (values *)malloc(sizeof(values));
+    newValues = (_values *)malloc(sizeof(_values ));
     newValues->floatQTY = sizeFloatList;
     newValues->floatList = floatList;
     newValues->intQTY = curr->numQTY;
@@ -286,10 +286,10 @@ void delete_list_Base(listBase **firstBase)
   }
   *firstBase = NULL;
 }
-void delete_list_value(values **firstValues)
+void delete_list_value(_values **firstValues)
 {
-  values *curr = *firstValues;
-  values *prev = NULL;
+  _values *curr = *firstValues;
+  _values *prev = NULL;
 
   int i = 0;
   int k = 0;
@@ -303,9 +303,9 @@ void delete_list_value(values **firstValues)
   }
   *firstValues = NULL;
 }
-void show_values_content(values *firstValues)
+void show_values_content(_values *firstValues)
 {
-  values *firstLine = firstValues;
+  _values *firstLine = firstValues;
 
   int l = 0;
   while (firstLine)

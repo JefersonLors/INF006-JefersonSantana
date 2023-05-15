@@ -8,6 +8,26 @@
 #define KEY_WORD1 "LE"
 #define KEY_WORD2 "LI"
 
+typedef struct values{
+  float *content;
+  struct values *next;
+} values;
+
+typedef struct key{
+  int content;
+  values *list;
+  struct key *prev;
+  struct key *next;
+} key;
+
+typedef struct numbers{
+  int keyQTY;
+  int *keys;
+  int valuesQTY;
+  float *values;
+  struct numbers *next;
+} numbers;
+
 typedef struct string
 {
   char *content;
@@ -25,8 +45,13 @@ const char R1Q3_file_in_path[] = "L1Q3.in";
 const char R1Q3_file_out_path[] = "L1Q3.out";
 
 str *get_lines_from_file();
-void remove_alphabetic_non_numeric_characters_from_string(char *string);
+str *break_line_in_str_list( char *line );
 strV *create_strV_list(str *firstLine);
 strV *break_in_two_lists(str *line);
+numbers *create_numbers_list( strV *firstsStrValues );
 
+
+void remove_alphabetic_non_numeric_characters_from_string(char *string);
+void delete_str_list( str **firstStr );
+int get_size_str_linked_list( str *start );
 #endif
