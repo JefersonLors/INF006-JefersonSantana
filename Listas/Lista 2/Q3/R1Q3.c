@@ -60,12 +60,12 @@ strV *break_in_two_lists(str *line)
   strcpy(new->intStrList, strtok(line->content, KEY_WORD2));
   strcpy(new->floatStrList, strtok(NULL, KEY_WORD2));
 
-  remove_alfabetic_non_numeric_characters_from_string(new->intStrList);
-  remove_alfabetic_non_numeric_characters_from_string(new->floatStrList);
+  remove_alphabetic_non_numeric_characters_from_string(new->intStrList);
+  remove_alphabetic_non_numeric_characters_from_string(new->floatStrList);
 
   return new;
 }
-void remove_alfabetic_non_numeric_characters_from_string(char *string)
+void remove_alphabetic_non_numeric_characters_from_string(char *string)
 {
   int i = 0;
   while (string[i] != '\0')
