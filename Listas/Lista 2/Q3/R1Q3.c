@@ -15,6 +15,7 @@ int main()
   delete_str_list(&firstStr);
   delete_strV_list(&firstStrV);
   delete_numbers_list(&firstsNumbers);
+  printf("teste");
   // int l = 0;
   // while (firstsNumbers)
   // {
