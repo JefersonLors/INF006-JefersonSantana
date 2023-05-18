@@ -12,11 +12,11 @@ int main()
   strBase *firstStrBase = create_str_matrix(firstLine);
   natBase *firstNatBase = create_nat_matrix(firstStrBase);
 
-  free_str_memory_allocated(&firstLine);
+  delete_str_list(&firstLine);
 
   while (firstStrBase)
   {
-    free_str_memory_allocated(&firstStrBase->content);
+    delete_str_list(&firstStrBase->content);
     firstStrBase = firstStrBase->next;
   }
 
@@ -32,7 +32,7 @@ int main()
 
   while (firstNatBase)
   {
-    free_nat_memory_allocated(&firstNatBase->content);
+    delete_nat_list(&firstNatBase->content);
     firstNatBase = firstNatBase->next;
   }
 
@@ -307,11 +307,11 @@ int create_nat_int_list(char *stringList, int **vectorInt)
     i++;
     currInt = currInt->next;
   }
-  free_str_memory_allocated(&firstInt);
+  delete_str_list(&firstInt);
   return vectorSize;
 }
 
-void free_str_memory_allocated(str **first)
+void delete_str_list(str **first)
 {
   str *curr = *first;
   str *prev = NULL;
@@ -326,7 +326,7 @@ void free_str_memory_allocated(str **first)
 
   *first = NULL;
 }
-void free_nat_memory_allocated(nat **first)
+void delete_nat_list(nat **first)
 {
   nat *curr = *first;
   nat *prev = NULL;
@@ -534,5 +534,9 @@ natBase *new_natBase()
 
 char *new_char_vector(int size)
 {
+  if (size < 1)
+  {
+    return NULL;
+  }
   return (char *)malloc(sizeof(char) * size);
 }

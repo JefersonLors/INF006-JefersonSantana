@@ -50,8 +50,8 @@ void sort_line(natBase *start);
 void insertio_sort(int *vector, int size);
 void swap_list_content(nat *listA, nat *listB);
 
-void free_str_memory_allocated(str **first);
-void free_nat_memory_allocated(nat **first);
+void delete_str_list(str **first);
+void delete_nat_list(nat **first);
 
 void show_str_list(str *firstStrList);
 void show_natBase_list_content(natBase *start);
