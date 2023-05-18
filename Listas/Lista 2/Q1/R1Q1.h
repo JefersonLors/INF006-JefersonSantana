@@ -45,15 +45,16 @@ natBase *create_nat_matrix(strBase *firstStrBase);
 
 nat *create_nat_list(str *stringList);
 
-void ordernate_vector(natBase *start);
-void ordenate_line(natBase *start);
+void sort_vector(natBase *start);
+void sort_line(natBase *start);
 void insertio_sort(int *vector, int size);
 void swap_list_content(nat *listA, nat *listB);
 
 void free_str_memory_allocated(str **first);
 void free_nat_memory_allocated(nat **first);
-void show_lines_as_strings(str *first);
-void show_all_content(natBase *start);
+
+void show_str_list(str *firstStrList);
+void show_natBase_list_content(natBase *start);
 
 int create_nat_int_list(char *stringVector, int **intVector);
 int calculate_list_sum(int *natList, int size);
@@ -61,4 +62,10 @@ int calculate_list_sum(int *natList, int size);
 bool isEmpty(char *string);
 
 void write_result_in_file( natBase *firstLine );
+
+str *new_str();
+nat *new_nat();
+natBase *new_natBase();
+strBase *new_strBase();
+char *new_char_vector(int size);
 #endif

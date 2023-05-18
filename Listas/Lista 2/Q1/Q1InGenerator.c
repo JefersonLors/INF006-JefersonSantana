@@ -23,14 +23,15 @@ void L1Q1_in_generator()
 }
 void delete_line_list(_str **start)
 {
-  _str *act = *start;
+  _str *curr = *start;
   _str *prev = NULL;
 
-  while(act ){
-    prev = act;
-    act = act->next;
-    free(act);
-    act = NULL;
+  while (curr)
+  {
+    prev = curr;
+    curr = curr->next;
+    free(curr);
+    curr = NULL;
   }
   start = NULL;
 }
@@ -38,14 +39,14 @@ bool write_in_file(_str *start)
 {
   FILE *fileResultPtr = fopen(R1Q1_file_in, "w");
 
-  _str *act = start;
+  _str *curr = start;
 
   if (fileResultPtr)
   {
-    while (act)
+    while (curr)
     {
-      fprintf(fileResultPtr, "%s", act->line);
-      act = act->next;
+      fprintf(fileResultPtr, "%s", curr->line);
+      curr = curr->next;
     }
     fclose(fileResultPtr);
     return true;
@@ -55,7 +56,7 @@ bool write_in_file(_str *start)
 _str *create_line_list()
 {
   _str *first = NULL;
-  _str *act = NULL;
+  _str *curr = NULL;
   _str *new = NULL;
   _str *last = NULL;
 
@@ -65,7 +66,7 @@ _str *create_line_list()
   if (quantyLine > 0)
   {
     quantyList = 1 + rand() % MAX_QTY_LIST;
-    new = malloc(sizeof(_str));
+    new = (_str*)malloc(sizeof(_str));
     new->line = create_line(quantyList);
     new->next = NULL;
     first = new;
@@ -75,12 +76,12 @@ _str *create_line_list()
     while (quantyLine > 0)
     {
       quantyList = 1 + rand() % MAX_QTY_LIST;
-      new = malloc(sizeof(_str));
+      new = (_str*)malloc(sizeof(_str));
       new->line = create_line(quantyList);
       new->next = NULL;
 
-      act = last;
-      act->next = new;
+      curr = last;
+      curr->next = new;
       last = new;
 
       quantyLine--;
@@ -100,7 +101,7 @@ char *create_line(int qty)
   }
   if (qty)
   {
-    line[strlen(line)-1] = '\n';
+    line[strlen(line) - 1] = '\n';
   }
   return line;
 }
@@ -109,8 +110,10 @@ char *generate_naturals_number_list()
   int number = 0;
   char sNumber[5];
   char *line = malloc(sizeof(char) * 50);
-  int quanty =  1 + rand() % 7;
+  int quanty = 1 + rand() % 7;
+
   strcpy(line, "start ");
+
   while (quanty > 0)
   {
     number = rand() % 100;
