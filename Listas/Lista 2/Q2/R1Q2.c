@@ -12,16 +12,16 @@ int main()
   strBase *firstStrBase = create_str_stack_matrix(firstLine);
   logBase *logLines = create_log_line_matrix(firstStrBase);
 
-  free_str_memory_allocated(&firstLine);
+  delet_str_list(&firstLine);
 
   while (firstStrBase)
   {
-    free_str_memory_allocated(&firstStrBase->content);
+    delet_str_list(&firstStrBase->content);
     firstStrBase = firstStrBase->next;
   }
   write_result_in_file(logLines);
 
-  free_logLine_memory_allocated(&logLines);
+  delete_logLine_list(&logLines);
 
   puts("END RUN!");
 
@@ -183,7 +183,7 @@ str *get_lines_from_file()
     {
       line[strlen(line) - 1] = '\0';
       newStr = new_str();
-      newStr->content = new_char_vector( MAX_SIZE_LINE);
+      newStr->content = new_char_vector(MAX_SIZE_LINE);
       strcpy(newStr->content, line);
       newStr->next = NULL;
       newStr->prev = NULL;
@@ -199,7 +199,7 @@ str *get_lines_from_file()
         strcpy(newStr->content, line);
         newStr->next = NULL;
         newStr->prev = NULL;
-        
+
         currStr = lastStr;
         currStr->next = newStr;
         lastStr = newStr;
@@ -232,7 +232,7 @@ char *create_log_line(str *nameList)
 
   if (currItem)
   {
-    newLogLine = new_char_vector( MAX_SIZE_LINE);
+    newLogLine = new_char_vector(MAX_SIZE_LINE);
     strcpy(newLogLine, "");
 
     sprintf(newLogLine, "push-%s ", currItem->content);
@@ -344,7 +344,7 @@ void write_result_in_file(logBase *firstLog)
   }
   fclose(fileOutPtr);
 }
-void free_str_memory_allocated(str **firstStr)
+void delet_str_list(str **firstStr)
 {
   str *curr = *firstStr;
   str *prev = NULL;
@@ -359,7 +359,7 @@ void free_str_memory_allocated(str **firstStr)
 
   *firstStr = NULL;
 }
-void free_logLine_memory_allocated(logBase **firstLog)
+void delete_logLine_list(logBase **firstLog)
 {
   logBase *currLog = *firstLog;
   logBase *prev = NULL;
@@ -387,5 +387,9 @@ str *new_str()
 }
 char *new_char_vector(int size)
 {
+  if (size < 1)
+  {
+    return NULL;
+  }
   return (char *)malloc(sizeof(char) * size);
 }

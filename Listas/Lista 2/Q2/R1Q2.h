@@ -44,8 +44,8 @@ void write_result_in_file(logBase *firstLog);
 void stack_name_insert_sorted(str *currItem, char *log);
 void shift_list_content(str *prev, str *next);
 
-void free_str_memory_allocated(str **firstStr);
-void free_logLine_memory_allocated(logBase **firstLog);
+void delet_str_list(str **firstStr);
+void delete_logLine_list(logBase **firstLog);
 
 logBase *new_logBase();
 strBase *new_strBase();
