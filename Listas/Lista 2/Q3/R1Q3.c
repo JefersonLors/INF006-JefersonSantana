@@ -16,10 +16,15 @@ int main()
 
   firstStr = get_lines_from_file();
   firstStrV = create_strV_list(firstStr);
+
   delete_str_list(&firstStr);
+
   firstsNumbers = create_numbers_list(firstStrV);
+
   delete_strV_list(&firstStrV);
+
   firstPackBase = create_packBase_list(firstsNumbers);
+
   delete_numbers_list(&firstsNumbers);
 
   currPackBase = firstPackBase;
@@ -36,7 +41,7 @@ int main()
     }
     currPackBase = currPackBase->next;
   }
-  write_result_in_file( firstPackBase );
+  write_result_in_file(firstPackBase);
   // show_packaBase_content(firstPackBase);
 
   currPackBase = firstPackBase;
@@ -49,7 +54,7 @@ int main()
 
   delete_packBase_list(&firstPackBase);
 
-  puts("end run!");
+  puts("END RUN!");
   return EXIT_SUCCESS;
 }
 packBase *create_packBase_list(numbers *firstNumbers)
@@ -63,7 +68,7 @@ packBase *create_packBase_list(numbers *firstNumbers)
 
   if (currNumbers)
   {
-    new = (packBase *)malloc(sizeof(packBase));
+    new = new_packBase();
     new->packs = create_number_pack(currNumbers);
     new->next = NULL;
 
@@ -73,7 +78,7 @@ packBase *create_packBase_list(numbers *firstNumbers)
     currNumbers = currNumbers->next;
     while (currNumbers)
     {
-      new = (packBase *)malloc(sizeof(packBase));
+      new = new_packBase();
       new->packs = create_number_pack(currNumbers);
       new->next = NULL;
 
@@ -98,7 +103,7 @@ pack *create_number_pack(numbers *firstsNumbers)
   if (currNumbers)
   {
     int i = 0;
-    new = (pack *)malloc(sizeof(pack));
+    new = new_pack();
     new->key = currNumbers->keys[i];
     new->floats = get_values(new->key, currNumbers->values, currNumbers->valuesQTY, &new->valuesQTY);
     new->next = NULL;
@@ -110,7 +115,7 @@ pack *create_number_pack(numbers *firstsNumbers)
     i++;
     while (i < currNumbers->keyQTY)
     {
-      new = (pack *)malloc(sizeof(pack));
+      new = new_pack();
       new->key = currNumbers->keys[i];
       new->floats = get_values(new->key, currNumbers->values, currNumbers->valuesQTY, &new->valuesQTY);
       new->next = NULL;
@@ -124,7 +129,6 @@ pack *create_number_pack(numbers *firstsNumbers)
       i++;
     }
   }
-
   return first;
 }
 value *get_values(int key, float *values, int valuesQTY, int *sizeList)
@@ -138,7 +142,7 @@ value *get_values(int key, float *values, int valuesQTY, int *sizeList)
   if (valuesQTY > 0)
   {
     int i = 0;
-    new = (value *)malloc(sizeof(value));
+    new = new_value();
     new->next = NULL;
 
     while (i < valuesQTY)
@@ -160,7 +164,7 @@ value *get_values(int key, float *values, int valuesQTY, int *sizeList)
     {
       if (values[i] >= key && values[i] < key + 1)
       {
-        new = (value *)malloc(sizeof(value));
+        new = new_value();
         new->content = values[i];
         new->next = NULL;
         _sizeList++;
@@ -192,8 +196,8 @@ str *get_lines_from_file()
     if (fgets(line, MAX_SIZE_LINE, fileInPtr))
     {
       line[strlen(line) - 1] = '\0';
-      newStr = (str *)malloc(sizeof(str));
-      newStr->content = (char *)malloc(sizeof(char) * MAX_SIZE_LINE);
+      newStr = new_str();
+      newStr->content = new_char_vector(MAX_SIZE_LINE);
       strcpy(newStr->content, line);
       newStr->next = NULL;
 
@@ -203,8 +207,8 @@ str *get_lines_from_file()
       while (fgets(line, MAX_SIZE_LINE, fileInPtr))
       {
         line[strlen(line) - 1] = '\0';
-        newStr = (str *)malloc(sizeof(str));
-        newStr->content = (char *)malloc(sizeof(char) * MAX_SIZE_LINE);
+        newStr = new_str();
+        newStr->content = new_char_vector(MAX_SIZE_LINE);
         strcpy(newStr->content, line);
         newStr->next = NULL;
 
@@ -230,8 +234,8 @@ str *break_line_in_str_list(char *line)
 
   if (sizeStr)
   {
-    newS = (str *)malloc(sizeof(str));
-    newS->content = (char *)malloc(sizeof(char) * sizeStr);
+    newS = new_str();
+    newS->content = new_char_vector(sizeStr);
     newS->next = NULL;
     strcpy(newS->content, "");
     strcpy(newS->content, middleWhere);
@@ -245,8 +249,8 @@ str *break_line_in_str_list(char *line)
     sizeStr = strlen(middleWhere);
     if (sizeStr)
     {
-      newS = (str *)malloc(sizeof(str));
-      newS->content = (char *)malloc(sizeof(char) * sizeStr);
+      newS = new_str();
+      newS->content = new_char_vector(sizeStr);
       newS->next = NULL;
       strcpy(newS->content, "");
       strcpy(newS->content, middleWhere);
@@ -291,8 +295,8 @@ strV *break_in_two_lists(str *line)
 {
   strV *new = (strV *)malloc(sizeof(strV));
 
-  new->intStrList = (char *)malloc(sizeof(char) * 100);
-  new->floatStrList = (char *)malloc(sizeof(char) * 1000);
+  new->intStrList = new_char_vector(100);
+  new->floatStrList = new_char_vector(1000);
   new->next = NULL;
 
   strcpy(new->intStrList, strtok(line->content, KEY_WORD2));
@@ -318,9 +322,9 @@ numbers *create_numbers_list(strV *firstsStrValues)
   str *currStrKey = firstStrKey;
   str *currStrFloat = firstStrFloat;
 
-  newN = (numbers *)malloc(sizeof(numbers));
+  newN = new_numbers();
   newN->keyQTY = get_size_str_linked_list(currStrKey);
-  newN->keys = (int *)malloc(sizeof(int) * newN->keyQTY);
+  newN->keys = new_int_vector(newN->keyQTY);
   newN->next = NULL;
   int i = 0;
 
@@ -332,7 +336,7 @@ numbers *create_numbers_list(strV *firstsStrValues)
   }
 
   newN->valuesQTY = get_size_str_linked_list(currStrFloat);
-  newN->values = (float *)malloc(sizeof(float) * newN->valuesQTY);
+  newN->values = new_float_vector(newN->valuesQTY);
 
   i = 0;
 
@@ -358,9 +362,9 @@ numbers *create_numbers_list(strV *firstsStrValues)
     str *currStrKey = firstStrKey;
     str *currStrFloat = firstStrFloat;
 
-    newN = (numbers *)malloc(sizeof(numbers));
+    newN = new_numbers();
     newN->keyQTY = get_size_str_linked_list(currStrKey);
-    newN->keys = (int *)malloc(sizeof(int) * newN->keyQTY);
+    newN->keys = new_int_vector(newN->keyQTY);
     newN->next = NULL;
 
     int i = 0;
@@ -373,7 +377,7 @@ numbers *create_numbers_list(strV *firstsStrValues)
     }
 
     newN->valuesQTY = get_size_str_linked_list(currStrFloat);
-    newN->values = (float *)malloc(sizeof(float) * newN->valuesQTY);
+    newN->values = new_float_vector(newN->valuesQTY);
 
     i = 0;
 
@@ -595,32 +599,38 @@ void sort_pack_list(pack *firstPack)
     }
   }
 }
-void write_result_in_file( packBase *firstPackBase )
+void write_result_in_file(packBase *firstPackBase)
 {
-  FILE *fileOutPtr = fopen( R1Q3_file_out_path, "w" );
+  FILE *fileOutPtr = fopen(R1Q3_file_out_path, "w");
 
-  if( fileOutPtr ){
+  if (fileOutPtr)
+  {
     packBase *currPackBase = firstPackBase;
 
-    while( currPackBase ){
-      fprintf(fileOutPtr, "["); 
+    while (currPackBase)
+    {
+      fprintf(fileOutPtr, "[");
 
       pack *currPack = currPackBase->packs;
 
-      while( currPack ){
+      while (currPack)
+      {
         fprintf(fileOutPtr, "%d(", currPack->key);
         int i = 0;
         value *currValue = currPack->floats;
-        while( i < currPack->valuesQTY ){
+        while (i < currPack->valuesQTY)
+        {
           fprintf(fileOutPtr, "%.2f", currValue->content);
-          if(i + 1 != currPack->valuesQTY){
+          if (i + 1 != currPack->valuesQTY)
+          {
             fprintf(fileOutPtr, "->");
           }
           currValue = currValue->next;
           i++;
-        }  
-        fprintf(fileOutPtr,")");
-        if( currPack->next ){
+        }
+        fprintf(fileOutPtr, ")");
+        if (currPack->next)
+        {
           fprintf(fileOutPtr, "->");
         }
         currPack = currPack->next;
@@ -630,7 +640,55 @@ void write_result_in_file( packBase *firstPackBase )
       currPackBase = currPackBase->next;
     }
     fclose(fileOutPtr);
-  }else{
+  }
+  else
+  {
     printf("ops! file creation issues :[\n");
   }
+}
+str *new_str()
+{
+  return (str *)malloc(sizeof(str));
+}
+packBase *new_packBase()
+{
+  return (packBase *)malloc(sizeof(packBase));
+}
+pack *new_pack()
+{
+  return (pack *)malloc(sizeof(pack));
+}
+value *new_value()
+{
+  return (value *)malloc(sizeof(value));
+}
+char *new_char_vector(int size)
+{
+  if (size < 1)
+  {
+    return NULL;
+  }
+  return (char *)malloc(sizeof(char) * size);
+}
+int *new_int_vector(int size)
+{
+  if (size < 1)
+  {
+    return NULL;
+  }
+
+  return (int *)malloc(sizeof(int) * size);
+}
+float *new_float_vector(int size)
+{
+  if (size < 1)
+  {
+    return NULL;
+  }
+
+  return (float *)malloc(sizeof(float) * size);
+}
+numbers *new_numbers()
+{
+  return (numbers *)malloc(sizeof(numbers));
 }

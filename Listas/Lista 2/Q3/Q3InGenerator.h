@@ -44,13 +44,19 @@ int get_random_qty(int min, int max);
 int generate_random_int();
 
 void L1Q3_in_generator();
+
 void generate_random_float_list(int baseInterger, int sizeList, float **emptyList);
+
 void random_float_vector(float *vector, int vectorSize);
+
 void merge_floats(float *floatRandomList, int size, listBase *listBase);
-void show_list_base_content(listBase *firstBase);
+
+void show_listBase_content(listBase *firstBase);
 void show_values_content(_values *firstValues);
-void delete_list_Base(listBase **firstBase);
-void delete_list_value(_values **firstValues);
+
+void delete_Base_list(listBase **firstBase);
+void delete_value_list(_values **firstValues);
+
 void write_in_file(_values *firstStringList);
 
 #endif

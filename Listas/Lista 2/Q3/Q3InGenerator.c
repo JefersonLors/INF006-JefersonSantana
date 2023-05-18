@@ -13,11 +13,11 @@ void L1Q3_in_generator()
   listBase *firstBase = create_number_base_list();
   _values *firstValues = make_list_of_values(firstBase);
 
-  delete_list_Base(&firstBase);
+  delete_Base_list(&firstBase);
   write_in_file(firstValues);
-  delete_list_value(&firstValues);
+  delete_value_list(&firstValues);
   // show_values_content( firstValues );
-  // show_list_base_content(firstBase);
+  // show_listBase_content(firstBase);
 }
 void write_in_file(_values *firstValue)
 {
@@ -239,7 +239,7 @@ int get_random_qty(int min, int max)
 {
   return min + rand() % (max + 1);
 }
-void show_list_base_content(listBase *first)
+void show_listBase_content(listBase *first)
 {
   int i = 0;
   int k = 0;
@@ -268,7 +268,7 @@ void show_list_base_content(listBase *first)
     first = first->next;
   }
 }
-void delete_list_Base(listBase **firstBase)
+void delete_Base_list(listBase **firstBase)
 {
   listBase *curr = *firstBase;
   listBase *prev = NULL;
@@ -286,7 +286,7 @@ void delete_list_Base(listBase **firstBase)
   }
   *firstBase = NULL;
 }
-void delete_list_value(_values **firstValues)
+void delete_value_list(_values **firstValues)
 {
   _values *curr = *firstValues;
   _values *prev = NULL;

@@ -56,22 +56,42 @@ const char R1Q3_file_out_path[] = "L1Q3.out";
 
 str *get_lines_from_file();
 str *break_line_in_str_list(char *line);
-strV *create_strV_list(str *firstLine);
+
 strV *break_in_two_lists(str *line);
+strV *create_strV_list(str *firstLine);
+
 pack *create_number_pack(numbers *firstsNumbers);
+
 value *get_values(int key, float *values, int valuesQTY, int *sizeList);
+
 numbers *create_numbers_list(strV *firstsStrValues);
+
 packBase *create_packBase_list(numbers *firstNumbers);
 
 void write_result_in_file( packBase *firstPackBase );
+
 void sort_pack_list( pack *firstPack );
 void sort_value_list( value *firstValue, int sizeList );
+
 void remove_non_numeric_characters_from_string(char *string);
+
 void delete_str_list(str **firstStr);
 void delete_numbers_list(numbers **firstNumbers);
 void delete_strV_list(strV **firstStrV);
 void delete_pack_list(pack **firstPack);
 void delete_packBase_list(packBase **firstPackBase);
+
 void show_packaBase_content(packBase *firstPack);
+
 int get_size_str_linked_list(str *start);
+
+str *new_str();
+packBase *new_packBase();
+pack *new_pack();
+value *new_value();
+numbers *new_numbers();
+int *new_int_vector(int size);
+float *new_float_vector(int size);
+char *new_char_vector(int size);
+
 #endif
