@@ -36,6 +36,7 @@ _str *create_name_list_to_in()
   _str *last = NULL;
 
   int sizeLine = MIN_QTY_LINE + rand() % MAX_QTY_LINE;
+  printf("%d - %d -> %d\n", MIN_QTY_LINE, MAX_QTY_LINE, sizeLine);
   int i = 0;
   int quantyName = 0;
 

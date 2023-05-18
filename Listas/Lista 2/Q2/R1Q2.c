@@ -7,7 +7,7 @@
 
 int main()
 {
-  // L1Q2_in_generator();
+  L1Q2_in_generator();
   str *firstLine = get_lines_from_file();
   strBase *firstStrBase = create_str_stack_matrix(firstLine);
   logBase *logLines = create_log_line_matrix(firstStrBase);

@@ -7,13 +7,6 @@
 #define MAX_SIZE_LINE 1000
 #define KEY_WORD " "
 
-enum operation
-{
-  NONE = 0,
-  PUSH,
-  POP,
-};
-
 typedef struct string
 {
   char *content;
