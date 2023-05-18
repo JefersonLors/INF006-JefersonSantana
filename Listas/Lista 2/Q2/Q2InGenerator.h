@@ -26,5 +26,6 @@ void L1Q2_in_generator();
 char *create_line(int qty);
 bool write_in_file(_str *firstLine);
 void delete_line_list(_str **firstLine);
+int get_random_int( int min, int max );
 
 #endif

@@ -7,7 +7,7 @@
 
 int main()
 {
-  L1Q2_in_generator();
+  // L1Q2_in_generator();
   str *firstLine = get_lines_from_file();
   strBase *firstStrBase = create_str_stack_matrix(firstLine);
   logBase *logLines = create_log_line_matrix(firstStrBase);
@@ -20,8 +20,11 @@ int main()
     firstStrBase = firstStrBase->next;
   }
   write_result_in_file(logLines);
+
   free_logLine_memory_allocated(&logLines);
-  puts("end run!");
+
+  puts("END RUN!");
+
   return EXIT_SUCCESS;
 }
 logBase *create_log_line_matrix(strBase *nameList)
@@ -35,7 +38,7 @@ logBase *create_log_line_matrix(strBase *nameList)
 
   if (currNameList)
   {
-    newLogLine = (logBase *)malloc(sizeof(logBase));
+    newLogLine = new_logBase();
     newLogLine->content = create_log_line(currNameList->content);
     newLogLine->next = NULL;
 
@@ -46,7 +49,7 @@ logBase *create_log_line_matrix(strBase *nameList)
 
     while (currNameList)
     {
-      newLogLine = (logBase *)malloc(sizeof(logBase));
+      newLogLine = new_logBase();
       newLogLine->content = create_log_line(currNameList->content);
       newLogLine->next = NULL;
       currLogLine = lastLogLine;
@@ -68,7 +71,7 @@ strBase *create_str_stack_matrix(str *firstLine)
 
   if (firstStrList)
   {
-    newStrBase = (strBase *)malloc(sizeof(strBase));
+    newStrBase = new_strBase();
     newStrBase->content = break_lines_in_str_list(firstStrList);
     newStrBase->next = NULL;
 
@@ -78,7 +81,7 @@ strBase *create_str_stack_matrix(str *firstLine)
     firstStrList = firstStrList->next;
     while (firstStrList)
     {
-      newStrBase = (strBase *)malloc(sizeof(strBase));
+      newStrBase = new_strBase();
       newStrBase->content = break_lines_in_str_list(firstStrList);
       newStrBase->next = NULL;
 
@@ -106,8 +109,8 @@ str *break_lines_in_str_list(str *line)
   {
     if (!isEmpty(strList))
     {
-      newName = (str *)malloc(sizeof(str));
-      newName->content = (char *)malloc(sizeof(char) * strlen(strList));
+      newName = new_str();
+      newName->content = new_char_vector(strlen(strList));
       strcpy(newName->content, strList);
       newName->next = NULL;
       newName->prev = NULL;
@@ -124,8 +127,8 @@ str *break_lines_in_str_list(str *line)
       }
       if (strList)
       {
-        newName = (str *)malloc(sizeof(str));
-        newName->content = (char *)malloc(sizeof(char) * strlen(strList));
+        newName = new_str();
+        newName->content = new_char_vector(strlen(strList));
         strcpy(newName->content, strList);
         newName->next = NULL;
         newName->prev = NULL;
@@ -142,8 +145,8 @@ str *break_lines_in_str_list(str *line)
       {
         if (!isEmpty(strList))
         {
-          newName = (str *)malloc(sizeof(str));
-          newName->content = (char *)malloc(sizeof(char) * strlen(strList));
+          newName = new_str();
+          newName->content = new_char_vector(strlen(strList));
 
           strcpy(newName->content, strList);
 
@@ -179,8 +182,8 @@ str *get_lines_from_file()
     if (fgets(line, MAX_SIZE_LINE, fileInPtr))
     {
       line[strlen(line) - 1] = '\0';
-      newStr = (str *)malloc(sizeof(str));
-      newStr->content = (char *)malloc(sizeof(char) * MAX_SIZE_LINE);
+      newStr = new_str();
+      newStr->content = new_char_vector( MAX_SIZE_LINE);
       strcpy(newStr->content, line);
       newStr->next = NULL;
       newStr->prev = NULL;
@@ -191,8 +194,8 @@ str *get_lines_from_file()
       while (fgets(line, MAX_SIZE_LINE, fileInPtr))
       {
         line[strlen(line) - 1] = '\0';
-        newStr = (str *)malloc(sizeof(str));
-        newStr->content = (char *)malloc(sizeof(char) * MAX_SIZE_LINE);
+        newStr = new_str();
+        newStr->content = new_char_vector(MAX_SIZE_LINE);
         strcpy(newStr->content, line);
         newStr->next = NULL;
         newStr->prev = NULL;
@@ -229,7 +232,7 @@ char *create_log_line(str *nameList)
 
   if (currItem)
   {
-    newLogLine = (char *)malloc(sizeof(char) * MAX_SIZE_LINE);
+    newLogLine = new_char_vector( MAX_SIZE_LINE);
     strcpy(newLogLine, "");
 
     sprintf(newLogLine, "push-%s ", currItem->content);
@@ -256,7 +259,7 @@ void stack_name_insert_sorted(str *currItem, char *log)
     if (prev)
     {
       int sizeCurrItemContent = strlen(currItem->content);
-      char *currItemContent = (char *)malloc(sizeof(char) * 20);
+      char *currItemContent = new_char_vector(MIN_NAME_SIZE);
 
       strcpy(currItemContent, currItem->content);
 
@@ -264,18 +267,7 @@ void stack_name_insert_sorted(str *currItem, char *log)
       {
         while (prev && strcmp(prev->content, currItemContent) > 0)
         {
-          next = prev->next;
-
-          int newSize = strlen(prev->content);
-          int oldSize = strlen(next->content);
-
-          if (oldSize < newSize)
-          {
-            next->content = NULL;
-            next->content = (char *)malloc(sizeof(char) * newSize);
-            strcpy(next->content, "");
-          }
-          strcpy(next->content, prev->content);
+          shift_list_content(prev, next);
 
           next = prev;
           popI++;
@@ -283,31 +275,13 @@ void stack_name_insert_sorted(str *currItem, char *log)
         }
         if (prev)
         {
-          int newSize = strlen(currItemContent);
-          int oldSize = strlen(prev->next->content);
-
-          if (oldSize < newSize)
-          {
-            prev->next->content = NULL;
-            prev->next->content = (char *)malloc(sizeof(char) * newSize);
-            strcpy(prev->next->content, "");
-          }
-          strcpy(prev->next->content, currItemContent);
+          prev->next->content = currItemContent;
         }
         else
         {
-          int newSize = strlen(currItemContent);
-          int oldSize = strlen(next->content);
-
-          if (oldSize < newSize)
-          {
-            next->content = NULL;
-            next->content = (char *)malloc(sizeof(char) * newSize);
-            strcpy(next->content, "");
-          }
-          strcpy(next->content, currItemContent);
+          next->content = currItemContent;
         }
-        char *popS = (char *)malloc(sizeof(char) * 10);
+        char *popS = new_char_vector(STRING_NUMBER_SIZE);
         strcpy(popS, "");
         sprintf(popS, "%d", popI);
 
@@ -342,24 +316,33 @@ void stack_name_insert_sorted(str *currItem, char *log)
     }
   }
 }
+void shift_list_content(str *prev, str *next)
+{
+  next->content = prev->content;
+}
 void write_result_in_file(logBase *firstLog)
 {
+  if (!firstLog)
+  {
+    printf("empty content! :[\n");
+    return;
+  }
+
   logBase *currLog = firstLog;
   FILE *fileOutPtr = fopen(R1Q2_file_out_path, "w");
 
-  if (fileOutPtr)
-  {
-    while (currLog)
-    {
-      fprintf(fileOutPtr, "%s\n", currLog->content);
-      currLog = currLog->next;
-    }
-    fclose(fileOutPtr);
-  }
-  else
+  if (!fileOutPtr)
   {
     puts("ops! file issues!:(");
+    return;
   }
+
+  while (currLog)
+  {
+    fprintf(fileOutPtr, "%s\n", currLog->content);
+    currLog = currLog->next;
+  }
+  fclose(fileOutPtr);
 }
 void free_str_memory_allocated(str **firstStr)
 {
@@ -389,4 +372,20 @@ void free_logLine_memory_allocated(logBase **firstLog)
     prev = NULL;
   }
   *firstLog = NULL;
+}
+logBase *new_logBase()
+{
+  return (logBase *)malloc(sizeof(logBase));
+}
+strBase *new_strBase()
+{
+  return (strBase *)malloc(sizeof(strBase));
+}
+str *new_str()
+{
+  return (str *)malloc(sizeof(str));
+}
+char *new_char_vector(int size)
+{
+  return (char *)malloc(sizeof(char) * size);
 }
