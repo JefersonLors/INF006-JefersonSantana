@@ -8,8 +8,8 @@
 #define INT_LIST_MAX_SIZE 10
 #define FLOAT_LIST_MAX_SIZE 10
 #define MAX_INT 50
-#define MAX_QTY_LINE 60000
-#define MIN_QTY_LINE 20000
+#define MAX_QTY_LINE 10000
+#define MIN_QTY_LINE 5000
 
 typedef struct _values
 {

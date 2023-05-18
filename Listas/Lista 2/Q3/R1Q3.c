@@ -8,40 +8,173 @@
 int main()
 {
   // L1Q3_in_generator();
-  str *firstStr = get_lines_from_file();
-  strV *firstStrV = create_strV_list(firstStr);
-  numbers *firstsNumbers = create_numbers_list(firstStrV);
+  str *firstStr = NULL;
+  strV *firstStrV = NULL;
+  numbers *firstsNumbers = NULL;
+  packBase *firstPackBase = NULL;
+  packBase *currPackBase = NULL;
 
+  firstStr = get_lines_from_file();
+  firstStrV = create_strV_list(firstStr);
   delete_str_list(&firstStr);
+  firstsNumbers = create_numbers_list(firstStrV);
   delete_strV_list(&firstStrV);
+  firstPackBase = create_packBase_list(firstsNumbers);
   delete_numbers_list(&firstsNumbers);
-  printf("teste");
-  // int l = 0;
-  // while (firstsNumbers)
-  // {
-  //   int i = 0;
 
-  //   printf("line[%d] -> keys: ", l);
-  //   while (i < firstsNumbers->keyQTY)
-  //   {
-  //     printf("%d\t", firstsNumbers->keys[i]);
-  //     i++;
-  //   }
-  //   i = 0;
+  currPackBase = firstPackBase;
 
-  //   printf("values: ");
-  //   while (i < firstsNumbers->valuesQTY)
-  //   {
-  //     printf("%.2f\t", firstsNumbers->values[i]);
-  //     i++;
-  //   }
-  //   printf("\n\n");
-  //   l++;
-  //   firstsNumbers = firstsNumbers->next;
-  // }
+  while (currPackBase)
+  {
+    sort_pack_list(currPackBase->packs);
+    pack *currPack = currPackBase->packs;
+
+    while (currPack)
+    {
+      sort_value_list(currPack->floats, currPack->valuesQTY);
+      currPack = currPack->next;
+    }
+    currPackBase = currPackBase->next;
+  }
+  write_result_in_file( firstPackBase );
+  // show_packaBase_content(firstPackBase);
+
+  currPackBase = firstPackBase;
+
+  while (currPackBase)
+  {
+    delete_pack_list(&currPackBase->packs);
+    currPackBase = currPackBase->next;
+  }
+
+  delete_packBase_list(&firstPackBase);
 
   puts("end run!");
   return EXIT_SUCCESS;
+}
+packBase *create_packBase_list(numbers *firstNumbers)
+{
+  numbers *currNumbers = firstNumbers;
+
+  packBase *first = NULL;
+  packBase *curr = NULL;
+  packBase *new = NULL;
+  packBase *last = NULL;
+
+  if (currNumbers)
+  {
+    new = (packBase *)malloc(sizeof(packBase));
+    new->packs = create_number_pack(currNumbers);
+    new->next = NULL;
+
+    first = new;
+    last = new;
+
+    currNumbers = currNumbers->next;
+    while (currNumbers)
+    {
+      new = (packBase *)malloc(sizeof(packBase));
+      new->packs = create_number_pack(currNumbers);
+      new->next = NULL;
+
+      curr = last;
+      curr->next = new;
+      last = new;
+
+      currNumbers = currNumbers->next;
+    }
+  }
+  return first;
+}
+pack *create_number_pack(numbers *firstsNumbers)
+{
+  numbers *currNumbers = firstsNumbers;
+
+  pack *first = NULL;
+  pack *curr = NULL;
+  pack *new = NULL;
+  pack *last = NULL;
+
+  if (currNumbers)
+  {
+    int i = 0;
+    new = (pack *)malloc(sizeof(pack));
+    new->key = currNumbers->keys[i];
+    new->floats = get_values(new->key, currNumbers->values, currNumbers->valuesQTY, &new->valuesQTY);
+    new->next = NULL;
+    new->prev = NULL;
+
+    first = new;
+    last = new;
+
+    i++;
+    while (i < currNumbers->keyQTY)
+    {
+      new = (pack *)malloc(sizeof(pack));
+      new->key = currNumbers->keys[i];
+      new->floats = get_values(new->key, currNumbers->values, currNumbers->valuesQTY, &new->valuesQTY);
+      new->next = NULL;
+      new->prev = NULL;
+
+      curr = last;
+      curr->next = new;
+      new->prev = curr;
+      last = new;
+
+      i++;
+    }
+  }
+
+  return first;
+}
+value *get_values(int key, float *values, int valuesQTY, int *sizeList)
+{
+  value *first = NULL;
+  value *curr = NULL;
+  value *new = NULL;
+  value *last = NULL;
+  int _sizeList = 0;
+
+  if (valuesQTY > 0)
+  {
+    int i = 0;
+    new = (value *)malloc(sizeof(value));
+    new->next = NULL;
+
+    while (i < valuesQTY)
+    {
+      if (values[i] >= key && values[i] < key + 1)
+      {
+        new->content = values[i];
+        _sizeList++;
+        break;
+      }
+      i++;
+    }
+    first = new;
+    last = new;
+    last->next = first;
+
+    i++;
+    while (i < valuesQTY)
+    {
+      if (values[i] >= key && values[i] < key + 1)
+      {
+        new = (value *)malloc(sizeof(value));
+        new->content = values[i];
+        new->next = NULL;
+        _sizeList++;
+
+        curr = last;
+        curr->next = new;
+        last = new;
+        last->next = first;
+      }
+      i++;
+    }
+  }
+  *sizeList = _sizeList;
+  return first;
 }
 str *get_lines_from_file()
 {
@@ -165,8 +298,8 @@ strV *break_in_two_lists(str *line)
   strcpy(new->intStrList, strtok(line->content, KEY_WORD2));
   strcpy(new->floatStrList, strtok(NULL, KEY_WORD2));
 
-  remove_alphabetic_non_numeric_characters_from_string(new->intStrList);
-  remove_alphabetic_non_numeric_characters_from_string(new->floatStrList);
+  remove_non_numeric_characters_from_string(new->intStrList);
+  remove_non_numeric_characters_from_string(new->floatStrList);
 
   return new;
 }
@@ -188,7 +321,7 @@ numbers *create_numbers_list(strV *firstsStrValues)
   newN = (numbers *)malloc(sizeof(numbers));
   newN->keyQTY = get_size_str_linked_list(currStrKey);
   newN->keys = (int *)malloc(sizeof(int) * newN->keyQTY);
-
+  newN->next = NULL;
   int i = 0;
 
   while (i < newN->keyQTY && currStrKey)
@@ -228,6 +361,7 @@ numbers *create_numbers_list(strV *firstsStrValues)
     newN = (numbers *)malloc(sizeof(numbers));
     newN->keyQTY = get_size_str_linked_list(currStrKey);
     newN->keys = (int *)malloc(sizeof(int) * newN->keyQTY);
+    newN->next = NULL;
 
     int i = 0;
 
@@ -260,6 +394,17 @@ numbers *create_numbers_list(strV *firstsStrValues)
   }
   return firstN;
 }
+int get_size_str_linked_list(str *start)
+{
+  str *curr = start;
+  int i = 0;
+  while (curr)
+  {
+    i++;
+    curr = curr->next;
+  }
+  return i;
+}
 void delete_str_list(str **firstStr)
 {
   str *curr = *firstStr;
@@ -288,20 +433,49 @@ void delete_strV_list(strV **firstStrV)
   }
   *firstStrV = NULL;
 }
-void delete_numbers_list( numbers **firstNumbers )
+void delete_numbers_list(numbers **firstNumbers)
 {
   numbers *curr = *firstNumbers;
   numbers *prev = NULL;
 
-  while( curr ){
+  while (curr)
+  {
     prev = curr;
     curr = curr->next;
     free(prev);
     prev = NULL;
   }
   *firstNumbers = NULL;
-} 
-void remove_alphabetic_non_numeric_characters_from_string(char *string)
+}
+void delete_pack_list(pack **firstPack)
+{
+  pack *curr = *firstPack;
+  pack *prev = NULL;
+
+  while (curr)
+  {
+    prev = curr;
+    curr = curr->next;
+    free(prev);
+    prev = NULL;
+  }
+  *firstPack = NULL;
+}
+void delete_packBase_list(packBase **firstPackBase)
+{
+  packBase *curr = *firstPackBase;
+  packBase *prev = NULL;
+
+  while (curr)
+  {
+    prev = curr;
+    curr = curr->next;
+    free(prev);
+    prev = NULL;
+  }
+  *firstPackBase = NULL;
+}
+void remove_non_numeric_characters_from_string(char *string)
 {
   int i = 0;
   while (string[i] != '\0')
@@ -313,14 +487,150 @@ void remove_alphabetic_non_numeric_characters_from_string(char *string)
     i++;
   }
 }
-int get_size_str_linked_list(str *start)
+void show_packaBase_content(packBase *firstPack)
 {
-  str *curr = start;
-  int i = 0;
+  packBase *curr = firstPack;
+  int l = 1;
+
   while (curr)
   {
-    i++;
+    printf("linha[%d] -> ", l);
+    pack *currT = curr->packs;
+    printf("[");
+    while (currT)
+    {
+      int j = 0;
+      printf("%d(", currT->key);
+
+      value *floats = currT->floats;
+      while (j < currT->valuesQTY)
+      {
+        printf("%.2f", floats->content);
+        if (j + 1 < currT->valuesQTY)
+        {
+          printf("->");
+        }
+        floats = floats->next;
+        j++;
+      }
+      printf(")");
+      if (currT->next)
+      {
+        printf("->");
+      }
+
+      currT = currT->next;
+    }
+    printf("]\n");
+    l++;
     curr = curr->next;
   }
-  return i;
+}
+void sort_value_list(value *firstValue, int sizeList)
+{
+  if (firstValue)
+  {
+    value *currValue = firstValue;
+    int i = 0;
+
+    while (i < sizeList)
+    {
+      value *nextValue = currValue->next;
+
+      int j = 1;
+      while (j < sizeList)
+      {
+        if (currValue->content < nextValue->content)
+        {
+          float saveValue = nextValue->content;
+          nextValue->content = currValue->content;
+          currValue->content = saveValue;
+        }
+        j++;
+        nextValue = nextValue->next;
+      }
+      i++;
+      currValue = currValue->next;
+    }
+  }
+}
+void sort_pack_list(pack *firstPack)
+{
+  if (firstPack)
+  {
+    pack *currPack = firstPack->next;
+
+    while (currPack)
+    {
+      pack *prevPack = currPack->prev;
+      pack *nextPack = NULL;
+
+      value *saveCurrValues = currPack->floats;
+      int saveCurrValuesQTY = currPack->valuesQTY;
+      int saveCurrKey = currPack->key;
+
+      while (prevPack && (prevPack->key > saveCurrKey))
+      {
+        nextPack = prevPack->next;
+
+        nextPack->key = prevPack->key;
+        nextPack->floats = prevPack->floats;
+        nextPack->valuesQTY = prevPack->valuesQTY;
+
+        prevPack = prevPack->prev;
+      }
+      if (prevPack)
+      {
+        prevPack->next->floats = saveCurrValues;
+        prevPack->next->valuesQTY = saveCurrValuesQTY;
+        prevPack->next->key = saveCurrKey;
+      }
+      else
+      {
+        nextPack->prev->floats = saveCurrValues;
+        nextPack->prev->valuesQTY = saveCurrValuesQTY;
+        nextPack->prev->key = saveCurrKey;
+      }
+      currPack = currPack->next;
+    }
+  }
+}
+void write_result_in_file( packBase *firstPackBase )
+{
+  FILE *fileOutPtr = fopen( R1Q3_file_out_path, "w" );
+
+  if( fileOutPtr ){
+    packBase *currPackBase = firstPackBase;
+
+    while( currPackBase ){
+      fprintf(fileOutPtr, "["); 
+
+      pack *currPack = currPackBase->packs;
+
+      while( currPack ){
+        fprintf(fileOutPtr, "%d(", currPack->key);
+        int i = 0;
+        value *currValue = currPack->floats;
+        while( i < currPack->valuesQTY ){
+          fprintf(fileOutPtr, "%.2f", currValue->content);
+          if(i + 1 != currPack->valuesQTY){
+            fprintf(fileOutPtr, "->");
+          }
+          currValue = currValue->next;
+          i++;
+        }  
+        fprintf(fileOutPtr,")");
+        if( currPack->next ){
+          fprintf(fileOutPtr, "->");
+        }
+        currPack = currPack->next;
+      }
+
+      fprintf(fileOutPtr, "]\n");
+      currPackBase = currPackBase->next;
+    }
+    fclose(fileOutPtr);
+  }else{
+    printf("ops! file creation issues :[\n");
+  }
 }
