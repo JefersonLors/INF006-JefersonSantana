@@ -3,11 +3,9 @@
 #include <string.h>
 #include <stdbool.h>
 #include "R1Q1.h"
-#include "Q1InGenerator.h"
 
 int main()
 {
-  // L1Q1_in_generator();
   str *firstLine = get_lines_from_file();
   strBase *firstStrBase = create_str_matrix(firstLine);
   natBase *firstNatBase = create_nat_matrix(firstStrBase);
