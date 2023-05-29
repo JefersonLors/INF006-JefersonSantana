@@ -2,12 +2,10 @@
 #include <stdlib.h>
 #include <stdbool.h>
 #include <string.h>
-#include "Q3InGenerator.h"
 #include "R1Q3.h"
 
 int main()
 {
-  // L1Q3_in_generator();
   str *firstStr = NULL;
   strV *firstStrV = NULL;
   numbers *firstsNumbers = NULL;
