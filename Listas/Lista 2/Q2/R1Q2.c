@@ -3,11 +3,9 @@
 #include <string.h>
 #include <stdbool.h>
 #include "R1Q2.h"
-#include "Q2InGenerator.h"
 
 int main()
 {
-  // L1Q2_in_generator();
   str *firstLine = get_lines_from_file();
   strBase *firstStrBase = create_str_stack_matrix(firstLine);
   logBase *logLines = create_log_line_matrix(firstStrBase);
@@ -46,7 +44,6 @@ logBase *create_log_line_matrix(strBase *nameList)
     lastLogLine = newLogLine;
 
     currNameList = currNameList->next;
-
     while (currNameList)
     {
       newLogLine = new_logBase();
@@ -235,7 +232,7 @@ char *create_log_line(str *nameList)
     newLogLine = new_char_vector(MAX_SIZE_LINE);
     strcpy(newLogLine, "");
 
-    sprintf(newLogLine, "push-%s ", currItem->content);
+    sprintf(newLogLine, "push-%s%s", currItem->content, (currItem->next ? " " : ""));
     if (currItem->next)
     {
       currItem = currItem->next;
@@ -269,8 +266,8 @@ void stack_name_insert_sorted(str *currItem, char *log)
         {
           shift_list_content(prev, next);
 
-          next = prev;
           popI++;
+          next = prev;
           prev = prev->prev;
         }
         if (prev)
@@ -312,7 +309,6 @@ void stack_name_insert_sorted(str *currItem, char *log)
           strcat(log, " ");
         }
       }
-      free(currItemContent);
     }
   }
 }
