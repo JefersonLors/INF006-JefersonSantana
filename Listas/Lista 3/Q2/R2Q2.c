@@ -4,14 +4,202 @@
 
 int main()
 {
-  L2Q2_in_generator();
+  // L2Q2_in_generator();
   str *firstStr = get_lines_from_file();
   numbers *firstNumber = create_numbers_list(firstStr);
-  show_lines_like_numbers_list(firstNumber);
+  delete_str_list(&firstStr);
+  lineResult *firstLineResult = create_line_result_list(firstNumber);
+  delete_numbers_list(&firstNumber);
+  write_result_in_file(firstLineResult);
+  delete_line_result_list(&firstLineResult);
+  puts("\nend execution");
 
-  puts("end execution");
   return EXIT_SUCCESS;
 }
+void write_result_in_file(lineResult *firstLineResult)
+{
+  FILE *fileOutPtr = fopen(R2Q2_file_out_path, "w");  
+  char resultLine[MAX_SIZE_LINE];
+
+  while (firstLineResult)
+  {
+    strcpy(resultLine, "");
+    create_string_result_in_order(firstLineResult->root, resultLine);
+    resultLine[strlen(resultLine)-1] = '\0';
+    fprintf(fileOutPtr, "%s\n", resultLine);
+    firstLineResult = firstLineResult->next;
+  }
+  fclose(fileOutPtr);
+}
+void create_string_result_in_order(node *root, char *string)
+{
+  if (root)
+  {
+    char tempLine[50];
+    strcpy(tempLine, "");
+    create_string_result_in_order(root->left, string);
+    sprintf(tempLine, "%d (%d) ", root->key, root->subTRLessSubTL );
+    strcat(string, tempLine);
+    create_string_result_in_order(root->right, string);
+  }
+}
+lineResult *create_line_result_list(numbers *firstNumbers)
+{
+  lineResult *first = NULL;
+
+  if (firstNumbers)
+  {
+    lineResult *new = new_line_result();
+    lineResult *curr = NULL;
+    lineResult *last = NULL;
+
+    new->next = NULL;
+    new->root = create_tree(firstNumbers);
+
+    calculate_subTR_less_subTL(new->root);
+
+    first = new;
+    last = new;
+
+    firstNumbers = firstNumbers->next;
+
+    while (firstNumbers)
+    {
+      new = new_line_result();
+      new->next = NULL;
+      new->root = create_tree(firstNumbers);
+
+      calculate_subTR_less_subTL(new->root);
+
+      curr = last;
+      curr->next = new;
+      last = new;
+
+      firstNumbers = firstNumbers->next;
+    }
+  }
+  return first;
+}
+void show_in_order(node *root)
+{
+  if (root)
+  {
+    show_in_order(root->left);
+    printf("%d -> [%d]\t", root->key, root->subTRLessSubTL);
+    show_in_order(root->right);
+  }
+}
+node *create_tree(numbers *values)
+{
+  node *root = NULL;
+  int i = 0;
+
+  while (i < values->keyQTY)
+  {
+    insert_node(&root, new_node(values->keys[i]));
+
+    i++;
+  }
+  return root;
+}
+void calculate_subTR_less_subTL(node *root)
+{
+  if (root)
+  {
+    root->subTRLessSubTL = calculate_tree_keys_sum(root->right) - calculate_tree_keys_sum(root->left);
+    calculate_subTR_less_subTL(root->left);
+    calculate_subTR_less_subTL(root->right);
+  }
+}
+int calculate_tree_keys_sum(node *root)
+{
+  if (root)
+  {
+    return (root->key + calculate_tree_keys_sum(root->left) + calculate_tree_keys_sum(root->right));
+  }
+  return 0;
+}
+void insert_node(node **root, node *newNode)
+{
+  if (!(*root))
+  {
+    (*root) = newNode;
+  }
+  else
+  {
+    if ((*root)->key > newNode->key)
+    {
+      if ((*root)->left)
+      {
+        insert_node(&(*root)->left, newNode);
+      }
+      else
+      {
+        (*root)->left = newNode;
+        newNode->p = (*root);
+      }
+    }
+    else if ((*root)->key < newNode->key)
+    {
+      if ((*root)->right)
+      {
+        insert_node(&(*root)->right, newNode);
+      }
+      else
+      {
+        (*root)->right = newNode;
+        newNode->p = (*root);
+      }
+    }
+  }
+}
+node *new_node(int value)
+{
+  node *new = (node *)malloc(sizeof(node));
+  new->key = value;
+  new->left = NULL;
+  new->right = NULL;
+  new->p = NULL;
+  new->subTRLessSubTL = EMPTY;
+  return new;
+}
+lineResult *new_line_result()
+{
+  lineResult *new = (lineResult *)malloc(sizeof(lineResult));
+  new->next = NULL;
+  new->root = NULL;
+  return new;
+}
+void delete_numbers_list(numbers **firstNumbers)
+{
+  numbers *curr = *firstNumbers;
+  numbers *prev = NULL;
+
+  while (curr)
+  {
+    prev = curr;
+    curr = curr->next;
+    free(prev);
+    prev = NULL;
+  }
+  *firstNumbers = NULL;
+}
+void delete_line_result_list(lineResult **firstLineResult)
+{
+  lineResult *curr = *firstLineResult;
+  lineResult *prev = NULL;
+
+  while (curr)
+  {
+    prev = curr;
+    curr = curr->next;
+    free(prev);
+    prev = NULL;
+  }
+  *firstLineResult = NULL;
+}
+
+// SEÇÃO DE RECUPERAÇÃO DE DADOS DO ARQUIVO DE ENTRADA
 str *get_lines_from_file()
 {
   FILE *fileInPtr = fopen(R2Q2_file_in_path, "r");
