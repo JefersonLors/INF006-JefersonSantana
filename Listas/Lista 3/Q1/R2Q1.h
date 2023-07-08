@@ -55,7 +55,6 @@ node *maximum(node *root);
 node *predecessor(node *root);
 
 lineResult *create_line_result_list(numbers *values);
-lineResult *create_line_result();
 lineResult *new_line_result();
 
 void write_result_in_file(lineResult *firstLineResult);
