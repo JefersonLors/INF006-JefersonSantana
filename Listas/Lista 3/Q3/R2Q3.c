@@ -1,4 +1,3 @@
-#include "Q3InGenerator.h"
 #include "R2Q3.h"
 #include <stdlib.h>
 #include <stdio.h>
@@ -6,7 +5,6 @@
 
 int main()
 {
-  // L2Q3_in_generator();
   str *firstStr = get_lines_from_file();
   numbers *firstNumbers = create_numbers_list(firstStr);
   delete_str_list(&firstStr);

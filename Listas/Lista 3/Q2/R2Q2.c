@@ -1,10 +1,8 @@
 #include <string.h>
 #include "R2Q2.h"
-#include "Q2InGenerator.h"
 
 int main()
 {
-  // L2Q2_in_generator();
   str *firstStr = get_lines_from_file();
   numbers *firstNumber = create_numbers_list(firstStr);
   delete_str_list(&firstStr);
