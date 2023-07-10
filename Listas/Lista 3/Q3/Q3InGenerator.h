@@ -5,7 +5,7 @@
 #ifndef Q3InGenerator_h
 #define Q3InGenerator_h
 
-#define _MAX_SIZE_LINE 800
+#define _MAX_SIZE_LINE 1000
 #define MAX_QTY_NUMBERS 100
 #define MAX_QTY_LINE 60000
 #define MIN_QTY_LINE 10000

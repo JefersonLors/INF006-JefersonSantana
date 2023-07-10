@@ -7,12 +7,6 @@
 
 const char *R2Q3_file_in = "L2Q3.in";
 
-int main(){
-  L2Q3_in_generator();
-
-  return EXIT_SUCCESS;
-}
-
 void L2Q3_in_generator()
 {
   srand(time(NULL));
