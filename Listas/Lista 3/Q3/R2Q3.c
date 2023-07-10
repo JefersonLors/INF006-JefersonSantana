@@ -14,7 +14,6 @@ int main()
   delete_numbers_list(&firstNumbers);
   write_result_in_file(firstLineResult);
   delete_line_result_list(&firstLineResult);
-
   puts("end execution");
   return EXIT_SUCCESS;
 }
@@ -30,7 +29,7 @@ lineResult *create_line_result_list(numbers *firstNumbers)
 
     new->root = create_tree(firstNumbers);
     new->next = NULL;
-    
+
     calculate_height(new->root);
 
     first = new;

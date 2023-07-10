@@ -12,7 +12,7 @@ int main()
   delete_numbers_list(&firstNumber);
   write_result_in_file(firstLineResult);
   delete_line_result_list(&firstLineResult);
-  puts("\nend execution");
+  puts("end execution");
 
   return EXIT_SUCCESS;
 }
