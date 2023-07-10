@@ -30,8 +30,9 @@ lineResult *create_line_result_list(numbers *firstNumbers)
 
     new->root = create_tree(firstNumbers);
     new->next = NULL;
-    calculate_height(new->root);
     
+    calculate_height(new->root);
+
     first = new;
     last = new;
 
@@ -55,14 +56,14 @@ lineResult *create_line_result_list(numbers *firstNumbers)
 }
 void write_result_in_file(lineResult *firstLineResult)
 {
-  FILE *fileOutPtr = fopen(R2Q3_file_out_path, "w");  
+  FILE *fileOutPtr = fopen(R2Q3_file_out_path, "w");
   char resultLine[MAX_SIZE_LINE];
 
   while (firstLineResult)
   {
     strcpy(resultLine, "");
     create_string_result_in_order(firstLineResult->root, resultLine);
-    resultLine[strlen(resultLine)-1] = '\0';
+    resultLine[strlen(resultLine) - 1] = '\0';
     fprintf(fileOutPtr, "%s\n", resultLine);
     firstLineResult = firstLineResult->next;
   }
@@ -75,7 +76,7 @@ void create_string_result_in_order(node *root, char *string)
     char tempLine[50];
     strcpy(tempLine, "");
     create_string_result_in_order(root->left, string);
-    sprintf(tempLine, "%d (%d) ", root->key, root->height );
+    sprintf(tempLine, "%d (%d) ", root->key, root->height);
     strcat(string, tempLine);
     create_string_result_in_order(root->right, string);
   }
@@ -87,17 +88,16 @@ node *create_tree(numbers *values)
   int i = 0;
   while (i < values->keyQTY)
   {
-    //printf("%c %d\n", values->ops[i], values->keys[i]);
     if (values->ops[i] == 'a')
     {
       insert_node(&root, new_node(values->keys[i]));
     }
     else if (values->ops[i] == 'r')
     {
-
-      if (search_node(root, values->keys[i]))
+      node *toDelete = search_node(root, values->keys[i]);
+      if (toDelete)
       {
- 
+        delete_node(&root, toDelete);
       }
       else
       {
@@ -108,53 +108,53 @@ node *create_tree(numbers *values)
   }
   return root;
 }
-node *delete_node(node *root, int key)
+void delete_node(node **root, node *toDelete)
 {
-  if (!root)
+  node *sucessorNode = NULL;
+  node *parent = NULL;
+
+  if (toDelete->left == NULL || toDelete->right == NULL)
   {
-    return NULL;
-  }
-  else if (root->key < key)
-  {
-    root->right = delete_node(root->right, key);
-  }
-  else if (root->key > key)
-  {
-    root->left = delete_node(root->left, key);
+    sucessorNode = toDelete;
   }
   else
   {
-    // if (!root->right && !root->left)
-    // {
-    //   puts("folha");
-    //   free(root);
-    //   root = NULL;
-    // }
-    // else if (!root->right)
-    // {
-    //   puts("so filho a esquerda");
-    //   node *aux = root;
-    //   root = root->left;
-    //   free(aux);
-    // }
-    // else if (!root->left)
-    // {
-    //   puts("so filho a direita");
-    //   node *aux = root;
-    //   root = root->right;
-    //   free(aux);
-    // }
-    // else
-    if (root->right && root->left){
-      puts("com os dois filhos");
-      node* sucessorNode = sucesssor_node(root->right);
+    sucessorNode = sucesssor_node(toDelete);
+  }
 
-      root->key = sucessorNode->key;
-      sucessorNode->key = key;
-      root->right = delete_node(root->right, key);
+  if (sucessorNode->left != NULL)
+  {
+    parent = sucessorNode->left;
+  }
+  else
+  {
+    parent = sucessorNode->right;
+  }
+
+  if (parent != NULL)
+  {
+    parent->p = sucessorNode->p;
+  }
+
+  if (sucessorNode->p == NULL)
+  {
+    (*root) = parent;
+  }
+  else
+  {
+    if (sucessorNode->p->left == sucessorNode)
+    {
+      sucessorNode->p->left = parent;
+    }
+    else
+    {
+      sucessorNode->p->right = parent;
     }
   }
-  return root;
+  if (sucessorNode != toDelete)
+  {
+    toDelete->key = sucessorNode->key;
+  }
 }
 node *search_node(node *root, int key)
 {
@@ -226,23 +226,33 @@ void insert_node(node **root, node *newNode)
     }
   }
 }
-node *sucesssor_node(node *node)
+node *sucesssor_node(node *_node)
 {
-  if (node == NULL)
-  {
-    return NULL;
-  }
+  node *parent;
 
-  while (node->left != NULL)
+  if (_node->right != NULL)
   {
-    node = node->left;
+    return minimum(_node->right);
   }
-
-  return node;
+  parent = _node->p;
+  while (parent != NULL && _node == parent->right)
+  {
+    _node = parent;
+    parent = parent->p;
+  }
+  return parent;
+}
+node *minimum(node *_node)
+{
+  while (_node->left != NULL)
+  {
+    _node = _node->left;
+  }
+  return _node;
 }
 void calculate_height(node *root)
 {
-  if( root )
+  if (root)
   {
     int h = 0;
     node *parent = root;

@@ -53,9 +53,10 @@ lineResult *create_line_result();
 lineResult *new_line_result();
 
 void insert_node(node **root, node *newNode);
-node *delete_node(node *root, int key);
+void delete_node(node **root, node *toDelete);
 node *search_node(node *root, int key);
 node *sucesssor_node(node* node);
+node *minimum(node *_node);
 
 void delete_numbers_list(numbers **firstNumbers);
 void delete_str_list(str **firstStr);
